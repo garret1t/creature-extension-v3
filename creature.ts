@@ -8972,12 +8972,16 @@ namespace creatures {
     export function creatureBattleCreature(creature1: Creature, creature2: Creature): boolean {
         let turn: number = 0;
 
-        creature1.sprite.setPosition(50, 55)
-        creature2.sprite.setPosition(110, 55)
+        creature1.sprite.setPosition(45, 52)
+        creature2.sprite.setPosition(115, 52)
         creature1.setSayHP(true);
         creature2.setSayHP(true);
         creature1.sprite.setFlag(SpriteFlag.Invisible, false);
         creature2.sprite.setFlag(SpriteFlag.Invisible, false);
+        creature1.healthbar.attachToSprite(null);
+        creature2.healthbar.attachToSprite(null);
+        creature1.healthbar.setPosition(40, 25)
+        creature2.healthbar.setPosition(120, 25)
         creature1.healthbar.setFlag(SpriteFlag.Invisible, false);
         creature2.healthbar.setFlag(SpriteFlag.Invisible, false);
         creature1.healthbar.setStatusBarFlag(StatusBarFlag.SmoothTransition, true);
@@ -8986,13 +8990,13 @@ namespace creatures {
         //game.splash(creature1.level.toString())
         let creature1LevelTextSprite = textsprite.create("Lvl. " + creature1.level.toString(), 1, 15)
         let creature2LevelTextSprite = textsprite.create("Lvl. " + creature2.level.toString(), 1, 15)
-        creature1LevelTextSprite.setPosition(20, 25);
-        creature2LevelTextSprite.setPosition(140, 25);
+        creature1LevelTextSprite.setPosition(30, 18);
+        creature2LevelTextSprite.setPosition(130, 18);
 
         let creature1HealthTextSprite = textsprite.create(Math.round(creature1.hp).toString(), 1, 15)
         let creature2HealthTextSprite = textsprite.create(Math.round(creature2.hp).toString(), 1, 15)
-        creature1HealthTextSprite.setPosition(25, 35);
-        creature2HealthTextSprite.setPosition(135, 35);
+        creature1HealthTextSprite.setPosition(20, 25);
+        creature2HealthTextSprite.setPosition(140, 25);
 
         //picture.fillRect(0, 0, 0, 0, 0)
         while (creature1.hp > 0 && creature2.hp > 0) {
@@ -9255,8 +9259,8 @@ namespace creatures {
             777777cb999999999bcc999999999bbeee99bececbbcebeb9999ccceb99bc7777777777777eeeeeebbbebbbbbbebbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbebebbeeeeebbbbbbeebbbbbbbbeebbe
         `)
         scene.centerCameraAt(80, 60);
-        scene.backgroundImage().fillRect(15, 20, 130, 90, 1)
-        scene.backgroundImage().drawRect(15, 20, 130, 90, 15)
+        scene.backgroundImage().fillRect(5, 8, 150, 100, 1)
+        scene.backgroundImage().drawRect(5, 8, 150, 100, 15)
         let enemySprite = sprites.create(opponent.sprite.image,SpriteKind.Enemy);
         enemySprite.setPosition(80,45);
         enemySprite.z=100;
@@ -9647,8 +9651,8 @@ namespace creatures {
             777777cb999999999bcc999999999bbeee99bececbbcebeb9999ccceb99bc7777777777777eeeeeebbbebbbbbbebbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbebebbeeeeebbbbbbeebbbbbbbbeebbe
         `)
         scene.centerCameraAt(80, 60);
-        scene.backgroundImage().fillRect(15, 20, 130, 90, 1)
-        scene.backgroundImage().drawRect(15, 20, 130, 90, 15)
+        scene.backgroundImage().fillRect(5, 8, 150, 100, 1)
+        scene.backgroundImage().drawRect(5, 8, 150, 100, 15)
 
         game.setDialogFrame(img`
             ..99999999999999999999..
@@ -9930,6 +9934,7 @@ namespace creatures {
                 creature.sprite = evolution.sprite;
                 oldSprite.setImage(creature._sprite.image);
                 oldSprite.setPosition(scene.cameraLeft() + 80, scene.cameraTop() + 30)
+                creature.healthbar.destroy();
                 creature.creatureType1 = evolution.creatureType1;
                 creature.creatureType2 = evolution.creatureType2;
                 creature.name = evolution.name;
@@ -9948,8 +9953,9 @@ namespace creatures {
                 creature._sayXP = false;
                 creature.sprite.setFlag(SpriteFlag.Invisible, true);
                 creature.healthbar = statusbars.create(20, 4, StatusBarKind.Health)
-                creature.healthbar.attachToSprite(creature.sprite)
-                creature.healthbar.max = creature.hp;
+                creature.healthbar.attachToSprite(creature.sprite) 
+                creature.healthbar.max = creature.maxHP;
+                creature.healthbar.value = creature.hp;
                 creature.healthbar.setFlag(SpriteFlag.Invisible, true);
                 pause(500);
                 game.showLongText("Your Pokemon evolved into " + creature.name + ".", DialogLayout.Bottom);
