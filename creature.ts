@@ -90,11 +90,17 @@ namespace creatures {
             this._name = name;
             this._evolutionID = evolutionID;
             this._level = level;
+            
             this._evolutionLevel = evolutionLevel;
             this._xp = xp;
             this._hp = hp;
             this._maxHP = hp;
             this._attackValue = attackValue;
+            for (let i = 5; i < level; i++) {
+                this._maxHP *= 1.05;
+                this._hp *= 1.05;
+                this._attackValue *= 1.05;
+            }
             this._xpReward = xpReward;
             this._sayHP = false;
             this._sayXP = false;
@@ -272,6 +278,7 @@ namespace creatures {
         public _boxPokemon: Creature[];
 
         public _money: number;
+        public _badges: number;
         public _sprite: Sprite;
         public _moveUp: Image[];
         public _moveDown: Image[];
@@ -281,6 +288,7 @@ namespace creatures {
         constructor(name: string, money: number, sprite: Sprite, moveUp: Image[], moveDown: Image[], moveLeft: Image[], moveRight: Image[]) {
             this._name = name;
             this._money = money;
+            this._badges=0;
             this._sprite = sprite;
             this._moveUp = moveUp;
             this._moveDown = moveDown;
@@ -303,6 +311,14 @@ namespace creatures {
 
         set money(money: number) {
             this._money = money;
+        }
+
+        get badges(): number {
+            return this._badges;
+        }
+
+        set badges(badges: number) {
+            this._badges = badges;
         }
 
         get sprite(): Sprite {
@@ -8286,7 +8302,7 @@ namespace creatures {
     //% blockSetVariable=myCreature
     //% group="Create"
     //% weight=99
-    export function makeCreatureFromID(id: number, level: number = 5, xp: number = 50, hp: number = 20, attackValue: number = 5): Creature {
+    export function makeCreatureFromID(id: number, level: number = 5, xp: number = 50): Creature {
         //return null;
         let sprite = makeCreatureImageDex(id);
         if (id > 151) {
@@ -8295,590 +8311,590 @@ namespace creatures {
 
         switch (id) {
             case 0:
-                return new Creature(sprite, CreatureType.None, CreatureType.None, "Missingno", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.None, CreatureType.None, "Missingno", level, 0, 0, xp, 100, 100);
                 break;
             case 1:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Bulbasaur", level, 16, 2, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Bulbasaur", level, 16, 2, xp, 25, 5);
                 break;
             case 2:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Ivysaur", level, 32, 3, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Ivysaur", level, 32, 3, xp, 42, 12);
                 break;
             case 3:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Venosaur", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Venosaur", level, 0, 0, xp, 70, 18);
                 break;
             case 4:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Charmander", level, 16, 5, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Charmander", level, 16, 5, xp, 25, 5);
                 break;
             case 5:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Charmeleon", level, 32, 6, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Charmeleon", level, 32, 6, xp, 42, 12);
                 break;
             case 6:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.Flying, "Charizard", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Fire, CreatureType.Flying, "Charizard", level, 0, 0, xp, 70, 18);
                 break;
             case 7:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Squirtle", level, 16, 8, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Squirtle", level, 16, 8, xp, 25, 5);
                 break;
             case 8:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Wartortle", level, 32, 9, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Wartortle", level, 32, 9, xp, 42, 12);
                 break;
             case 9:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Blastoise", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Blastoise", level, 0, 0, xp, 70, 18);
                 break;
             case 10:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Caterpie", level, 7, 11, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Caterpie", level, 7, 11, xp, 20, 3);
                 break;
             case 11:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Metapod", level, 10, 12, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Metapod", level, 10, 12, xp, 22, 5);
                 break;
             case 12:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.Flying, "Butterfree", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Bug, CreatureType.Flying, "Butterfree", level, 0, 0, xp, 40, 8);
                 break;
             case 13:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Weedle", level, 7, 14, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Weedle", level, 7, 14, xp, 20, 3);
                 break;
             case 14:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Kakuna", level, 10, 15, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Kakuna", level, 10, 15, xp, 24, 4);
                 break;
             case 15:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Beedrill", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Beedrill", level, 0, 0, xp, 36, 9);
                 break;
             case 16:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Pidgey", level, 18, 17, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Pidgey", level, 18, 17, xp, 20, 4);
                 break;
             case 17:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Pidgeotto", level, 36, 18, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Pidgeotto", level, 36, 18, xp, 40, 8);
                 break;
             case 18:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Pidgeot", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Pidgeot", level, 0, 0, xp, 58, 13);
                 break;
             case 19:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Rattata", level, 20, 20, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Rattata", level, 20, 20, xp, 18, 5);
                 break;
             case 20:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Raticate", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Raticate", level, 0, 0, xp, 44, 12);
                 break;
             case 21:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Spearow", level, 20, 22, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Spearow", level, 20, 22, xp, 20, 5);
 
                 break;
             case 22:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Fearow", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Fearow", level, 0, 0, xp, 50, 11);
 
                 break;
             case 23:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Ekans", level, 22, 24, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Ekans", level, 22, 24, xp, 25, 5);
 
                 break;
             case 24:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Arbok", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Arbok", level, 0, 0, xp, 50, 12);
 
                 break;
             case 25:
-                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Pikachu", level, 20, 26, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Pikachu", level, 20, 26, xp, 25, 5);
 
                 break;
             case 26:
-                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Raichu", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Raichu", level, 0, 0, xp, 48, 13.5);
 
                 break;
             case 27:
-                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Sandshrew", level, 22, 28, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Sandshrew", level, 22, 28, xp, 34, 8);
 
                 break;
             case 28:
-                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Sandslash", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Sandslash", level, 0, 0, xp, 60, 13);
 
                 break;
             case 29:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Nidoran (f)", level, 16, 30, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Nidoran (f)", level, 16, 30, xp, 24, 6);
 
                 break;
             case 30:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Nidorina", level, 32, 31, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Nidorina", level, 32, 31, xp, 40, 10);
 
                 break;
             case 31:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.Ground, "Nidoqueen", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.Ground, "Nidoqueen", level, 0, 0, xp, 64, 13);
 
                 break;
             case 32:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Nidoran (m)", level, 16, 33, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Nidoran (m)", level, 16, 33, xp, 24, 6);
 
                 break;
             case 33:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Nidorino", level, 32, 34, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Nidorino", level, 32, 34, xp, 40, 10);
 
                 break;
             case 34:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.Ground, "Nidoking", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.Ground, "Nidoking", level, 0, 0, xp, 64, 13);
 
                 break;
             case 35:
-                return new Creature(sprite, CreatureType.Fairy, CreatureType.None, "Clefairy", level, 20, 36, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Fairy, CreatureType.None, "Clefairy", level, 20, 36, xp, 25, 5);
 
                 break;
             case 36:
-                return new Creature(sprite, CreatureType.Fairy, CreatureType.None, "Clefable", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Fairy, CreatureType.None, "Clefable", level, 0, 0, xp, 58, 10);
 
                 break;
             case 37:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Vulpix", level, 20, 38, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Vulpix", level, 20, 38, xp, 22, 6);
 
                 break;
             case 38:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Ninetales", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Ninetales", level, 0, 0, xp, 66, 17);
 
                 break;
             case 39:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.Fairy, "Jigglypuff", level, 20, 40, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.Fairy, "Jigglypuff", level, 20, 40, xp, 30, 4);
 
                 break;
             case 40:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.Fairy, "Wigglytuff", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.Fairy, "Wigglytuff", level, 0, 0, xp, 52, 10);
 
                 break;
             case 41:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.Flying, "Zubat", level, 22, 42, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.Flying, "Zubat", level, 22, 42, xp, 20, 5);
 
                 break;
             case 42:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.Flying, "Golbat", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.Flying, "Golbat", level, 0, 0, xp, 52, 13);
 
                 break;
             case 43:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Oddish", level, 21, 44, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Oddish", level, 21, 44, xp, 25, 5);
 
                 break;
             case 44:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Gloom", level, 34, 45, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Gloom", level, 34, 45, xp, 42, 10);
 
                 break;
             case 45:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Vileplume", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Vileplume", level, 0, 0, xp, 55, 14);
 
                 break;
             case 46:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.Grass, "Paras", level, 24, 47, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Bug, CreatureType.Grass, "Paras", level, 24, 47, xp, 20, 7);
 
                 break;
             case 47:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.Grass, "Parasect", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Bug, CreatureType.Grass, "Parasect", level, 0, 0, xp, 48, 9);
 
                 break;
             case 48:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.Poison, "Venonat", level, 31, 49, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Bug, CreatureType.Poison, "Venonat", level, 31, 49, xp, 26, 5.5);
 
                 break;
             case 49:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.Poison, "Venomoth", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Bug, CreatureType.Poison, "Venomoth", level, 0, 0, xp, 50, 11);
 
                 break;
             case 50:
-                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Diglett", level, 26, 51, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Diglett", level, 26, 51, xp, 16, 6);
 
                 break;
             case 51:
-                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Dugtrio", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Dugtrio", level, 0, 0, xp, 44, 15.5);
 
                 break;
             case 52:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Meowth", level, 28, 53, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Meowth", level, 28, 53, xp, 24, 6);
 
                 break;
             case 53:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Persian", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Persian", level, 0, 0, xp, 50, 11);
 
                 break;
             case 54:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Psyduck", level, 33, 55, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Psyduck", level, 33, 55, xp, 25, 5);
 
                 break;
             case 55:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Golduck", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Golduck", level, 0, 0, xp, 60, 11.5);
 
                 break;
             case 56:
-                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Mankey", level, 28, 57, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Mankey", level, 28, 57, xp, 25, 7);
 
                 break;
             case 57:
-                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Primeape", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Primeape", level, 0, 0, xp, 54, 14);
 
                 break;
             case 58:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Growlithe", level, 20, 59, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Growlithe", level, 20, 59, xp, 34, 8);
 
                 break;
             case 59:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Arcanine", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Arcanine", level, 0, 0, xp, 75, 13.5);
 
                 break;
             case 60:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Poliwag", level, 25, 61, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Poliwag", level, 25, 61, xp, 28, 6);
 
                 break;
             case 61:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Poliwhirl", level, 34, 62, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Poliwhirl", level, 34, 62, xp, 42, 9);
 
                 break;
             case 62:
-                return new Creature(sprite, CreatureType.Water, CreatureType.Fighting, "Poliwrath", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Water, CreatureType.Fighting, "Poliwrath", level, 0, 0, xp, 64, 13);
 
                 break;
             case 63:
-                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Abra", level, 16, 64, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Abra", level, 16, 64, xp, 25, 7);
 
                 break;
             case 64:
-                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Kadabra", level, 32, 65, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Kadabra", level, 32, 65, xp, 40, 12);
 
                 break;
             case 65:
-                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Alakazam", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Alakazam", level, 0, 0, xp, 65, 16);
 
                 break;
             case 66:
-                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Machop", level, 28, 67, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Machop", level, 28, 67, xp, 26, 7);
 
                 break;
             case 67:
-                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Machoke", level, 38, 68, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Machoke", level, 38, 68, xp, 44, 10);
 
                 break;
             case 68:
-                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Machamp", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Machamp", level, 0, 0, xp, 64, 14);
 
                 break;
             case 69:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Bellsprout", level, 21, 70, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Bellsprout", level, 21, 70, xp, 28, 6);
 
                 break;
             case 70:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Weepinbell", level, 34, 71, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Weepinbell", level, 34, 71, xp, 46, 9.5);
 
                 break;
             case 71:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Victreebel", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Victreebel", level, 0, 0, xp, 60, 13);
 
                 break;
             case 72:
-                return new Creature(sprite, CreatureType.Water, CreatureType.Poison, "Tentacool", level, 30, 73, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Water, CreatureType.Poison, "Tentacool", level, 30, 73, xp, 38, 8);
 
                 break;
             case 73:
-                return new Creature(sprite, CreatureType.Water, CreatureType.Poison, "Tentacruel", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Water, CreatureType.Poison, "Tentacruel", level, 0, 0, xp, 70, 12);
 
                 break;
             case 74:
-                return new Creature(sprite, CreatureType.Rock, CreatureType.Ground, "Geodude", level, 25, 75, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Rock, CreatureType.Ground, "Geodude", level, 25, 75, xp, 28, 6);
 
                 break;
             case 75:
-                return new Creature(sprite, CreatureType.Rock, CreatureType.Ground, "Graveler", level, 35, 76, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Rock, CreatureType.Ground, "Graveler", level, 35, 76, xp, 44, 10);
 
                 break;
             case 76:
-                return new Creature(sprite, CreatureType.Rock, CreatureType.Ground, "Golem", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Rock, CreatureType.Ground, "Golem", level, 0, 0, xp, 65, 18);
 
                 break;
             case 77:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Ponyta", level, 40, 78, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Ponyta", level, 40, 78, xp, 42, 10);
 
                 break;
             case 78:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Rapidash", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Rapidash", level, 0, 0, xp, 62, 19);
 
                 break;
             case 79:
-                return new Creature(sprite, CreatureType.Water, CreatureType.Psychic, "Slowpoke", level, 37, 80, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Water, CreatureType.Psychic, "Slowpoke", level, 37, 80, xp, 34, 6);
 
                 break;
             case 80:
-                return new Creature(sprite, CreatureType.Water, CreatureType.Psychic, "Slowbro", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Water, CreatureType.Psychic, "Slowbro", level, 0, 0, xp, 58, 10);
 
                 break;
             case 81:
-                return new Creature(sprite, CreatureType.Electric, CreatureType.Steel, "Magnemite", level, 30, 82, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Electric, CreatureType.Steel, "Magnemite", level, 30, 82, xp, 28, 6);
 
                 break;
             case 82:
-                return new Creature(sprite, CreatureType.Electric, CreatureType.Steel, "Magneton", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Electric, CreatureType.Steel, "Magneton", level, 0, 0, xp, 55, 12);
 
                 break;
             case 83:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Farfetchd", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Farfetchd", level, 0, 0, xp, 37, 9);
 
                 break;
             case 84:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Doduo", level, 31, 85, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Doduo", level, 31, 85, xp, 32, 8);
 
                 break;
             case 85:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Dodrio", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Dodrio", level, 0, 0, xp, 58, 13);
 
                 break;
             case 86:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Seel", level, 34, 87, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Seel", level, 34, 87, xp, 35, 7);
 
                 break;
             case 87:
-                return new Creature(sprite, CreatureType.Water, CreatureType.Ice, "Dewgong", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Water, CreatureType.Ice, "Dewgong", level, 0, 0, xp, 60, 13);
 
                 break;
             case 88:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Grimer", level, 38, 89, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Grimer", level, 38, 89, xp, 34, 7);
 
                 break;
             case 89:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Muk", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Muk", level, 0, 0, xp, 60, 12.5);
 
                 break;
             case 90:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Shelder", level, 26, 91, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Shelder", level, 26, 91, xp, 36, 7);
 
                 break;
             case 91:
-                return new Creature(sprite, CreatureType.Water, CreatureType.Ice, "Cloyster", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Water, CreatureType.Ice, "Cloyster", level, 0, 0, xp, 70, 12);
 
                 break;
             case 92:
-                return new Creature(sprite, CreatureType.Ghost, CreatureType.Poison, "Gastly", level, 25, 93, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Ghost, CreatureType.Poison, "Gastly", level, 25, 93, xp, 33, 8);
 
                 break;
             case 93:
-                return new Creature(sprite, CreatureType.Ghost, CreatureType.Poison, "Haunter", level, 35, 94, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Ghost, CreatureType.Poison, "Haunter", level, 35, 94, xp, 48, 13);
 
                 break;
             case 94:
-                return new Creature(sprite, CreatureType.Ghost, CreatureType.Poison, "Gengar", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Ghost, CreatureType.Poison, "Gengar", level, 0, 0, xp, 68, 19);
 
                 break;
             case 95:
-                return new Creature(sprite, CreatureType.Rock, CreatureType.Ground, "Onix", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Rock, CreatureType.Ground, "Onix", level, 0, 0, xp, 44, 10);
 
                 break;
             case 96:
-                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Drowsee", level, 26, 97, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Drowsee", level, 26, 97, xp, 38, 8);
 
                 break;
             case 97:
-                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Hypno", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Hypno", level, 0, 0, xp, 60, 13.5);
 
                 break;
             case 98:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Krabby", level, 28, 99, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Krabby", level, 28, 99, xp, 40, 8);
 
                 break;
             case 99:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Kingler", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Kingler", level, 0, 0, xp, 75, 16);
 
                 break;
             case 100:
-                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Voltorb", level, 30, 101, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Voltorb", level, 30, 101, xp, 33, 8);
 
                 break;
             case 101:
-                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Electrode", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Electrode", level, 0, 0, xp, 55, 15);
 
                 break;
             case 102:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Psychic, "Exeggcute", level, 30, 103, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Psychic, "Exeggcute", level, 30, 103, xp, 36, 7);
 
                 break;
             case 103:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Psychic, "Exeggutor", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Psychic, "Exeggutor", level, 0, 0, xp, 75, 13);
 
                 break;
             case 104:
-                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Cubone", level, 28, 105, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Cubone", level, 28, 105, xp, 30, 7);
 
                 break;
             case 105:
-                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Marowak", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Marowak", level, 0, 0, xp, 42, 12);
 
                 break;
             case 106:
-                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Hitmonlee", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Hitmonlee", level, 0, 0, xp, 41, 13);
 
                 break;
             case 107:
-                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Hitmonchan", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Hitmonchan", level, 0, 0, xp, 38, 13.5);
 
                 break;
             case 108:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Lickitung", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Lickitung", level, 0, 0, xp, 42, 11);
 
                 break;
             case 109:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Koffing", level, 35, 110, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Koffing", level, 35, 110, xp, 36, 9);
 
                 break;
             case 110:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Weezing", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Weezing", level, 0, 0, xp, 64, 18);
 
                 break;
             case 111:
-                return new Creature(sprite, CreatureType.Ground, CreatureType.Rock, "Rhyhorn", level, 42, 112, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Ground, CreatureType.Rock, "Rhyhorn", level, 42, 112, xp, 40, 11);
 
                 break;
             case 112:
-                return new Creature(sprite, CreatureType.Ground, CreatureType.Rock, "Rhydon", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Ground, CreatureType.Rock, "Rhydon", level, 0, 0, xp, 70, 13);
 
                 break;
             case 113:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Chansey", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Chansey", level, 0, 0, xp, 76, 10);
 
                 break;
             case 114:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.None, "Tangela", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Grass, CreatureType.None, "Tangela", level, 0, 0, xp, 55, 12);
 
                 break;
             case 115:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Kangaskhan", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Kangaskhan", level, 0, 0, xp, 70, 12.5);
 
                 break;
             case 116:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Horsea", level, 32, 117, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Horsea", level, 32, 117, xp, 30, 7);
 
                 break;
             case 117:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Seadra", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Seadra", level, 0, 0, xp, 57, 13);
 
                 break;
             case 118:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Goldeen", level, 33, 119, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Goldeen", level, 33, 119, xp, 38, 8);
 
                 break;
             case 119:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Seaking", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Seaking", level, 0, 0, xp, 52, 13);
 
                 break;
             case 120:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Staryu", level, 30, 121, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Staryu", level, 30, 121, xp, 37, 9);
 
                 break;
             case 121:
-                return new Creature(sprite, CreatureType.Water, CreatureType.Psychic, "Starmie", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Water, CreatureType.Psychic, "Starmie", level, 0, 0, xp, 65, 14);
 
                 break;
             case 122:
-                return new Creature(sprite, CreatureType.Psychic, CreatureType.Fairy, "Mr. Mime", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Psychic, CreatureType.Fairy, "Mr. Mime", level, 0, 0, xp, 40, 12);
 
                 break;
             case 123:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.Flying, "Scyther", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Bug, CreatureType.Flying, "Scyther", level, 0, 0, xp, 62, 16.5);
 
                 break;
             case 124:
-                return new Creature(sprite, CreatureType.Ice, CreatureType.Psychic, "Jynx", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Ice, CreatureType.Psychic, "Jynx", level, 0, 0, xp, 44, 11);
 
                 break;
             case 125:
-                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Electabuzz", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Electabuzz", level, 0, 0, xp, 55, 13);
 
                 break;
             case 126:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Magmar", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Magmar", level, 0, 0, xp, 55, 13);
 
                 break;
             case 127:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Pinsir", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Pinsir", level, 0, 0, xp, 52, 14);
 
                 break;
             case 128:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Tauros", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Tauros", level, 0, 0, xp, 60, 15.5);
 
                 break;
             case 129:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Magikarp", level, 20, 130, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Magikarp", level, 20, 130, xp, 18, 5);
 
                 break;
             case 130:
-                return new Creature(sprite, CreatureType.Water, CreatureType.Flying, "Gyarados", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Water, CreatureType.Flying, "Gyarados", level, 0, 0, xp, 68, 14);
 
                 break;
             case 131:
-                return new Creature(sprite, CreatureType.Water, CreatureType.Ice, "Lapras", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Water, CreatureType.Ice, "Lapras", level, 0, 0, xp, 63, 13.5);
 
                 break;
             case 132:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Ditto", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Ditto", level, 0, 0, xp, 22, 5);
 
                 break;
             case 133:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Eevee", level, 10, 134, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Eevee", level, 10, 134, xp, 24, 5);
 
                 break;
             case 134:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Vaporeon", level, 20, 135, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Vaporeon", level, 20, 135, xp, 44, 10);
 
                 break;
             case 135:
-                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Jolteon", level, 30, 136, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Jolteon", level, 30, 136, xp, 52, 13);
 
                 break;
             case 136:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Flareon", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Flareon", level, 0, 0, xp, 65, 17);
 
                 break;
             case 137:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Porygon", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Porygon", level, 0, 0, xp, 42, 11);
 
                 break;
             case 138:
-                return new Creature(sprite, CreatureType.Rock, CreatureType.Water, "Omanyte", level, 40, 139, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Rock, CreatureType.Water, "Omanyte", level, 40, 139, xp, 42, 8);
 
                 break;
             case 139:
-                return new Creature(sprite, CreatureType.Rock, CreatureType.Water, "Omastar", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Rock, CreatureType.Water, "Omastar", level, 0, 0, xp, 75, 16.5);
 
                 break;
             case 140:
-                return new Creature(sprite, CreatureType.Rock, CreatureType.Water, "Kabuto", level, 40, 141, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Rock, CreatureType.Water, "Kabuto", level, 40, 141, xp, 36, 10);
 
                 break;
             case 141:
-                return new Creature(sprite, CreatureType.Rock, CreatureType.Water, "Kabutops", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Rock, CreatureType.Water, "Kabutops", level, 0, 0, xp, 72, 17);
 
                 break;
             case 142:
-                return new Creature(sprite, CreatureType.Rock, CreatureType.Flying, "Aerodactyl", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Rock, CreatureType.Flying, "Aerodactyl", level, 0, 0, xp, 75, 17.5);
 
                 break;
             case 143:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Snorlax", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Snorlax", level, 0, 0, xp, 80, 15);
 
                 break;
             case 144:
-                return new Creature(sprite, CreatureType.Ice, CreatureType.Flying, "Articuno", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Ice, CreatureType.Flying, "Articuno", level, 0, 0, xp, 100, 22);
 
                 break;
             case 145:
-                return new Creature(sprite, CreatureType.Electric, CreatureType.Flying, "Zapdos", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Electric, CreatureType.Flying, "Zapdos", level, 0, 0, xp, 100, 22);
 
                 break;
             case 146:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.Flying, "Moltres", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Fire, CreatureType.Flying, "Moltres", level, 0, 0, xp, 100, 22);
 
                 break;
             case 147:
-                return new Creature(sprite, CreatureType.Dragon, CreatureType.None, "Dratini", level, 30, 148, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Dragon, CreatureType.None, "Dratini", level, 30, 148, xp, 25, 7);
 
                 break;
             case 148:
-                return new Creature(sprite, CreatureType.Dragon, CreatureType.None, "Dragonair", level, 55, 149, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Dragon, CreatureType.None, "Dragonair", level, 55, 149, xp, 50, 14);
 
                 break;
             case 149:
-                return new Creature(sprite, CreatureType.Dragon, CreatureType.Flying, "Dragonite", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Dragon, CreatureType.Flying, "Dragonite", level, 0, 0, xp, 105, 23);
 
                 break;
             case 150:
-                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Mewtwo", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Mewtwo", level, 0, 0, xp, 120, 25);
 
                 break;
             case 151:
-                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Mew", level, 0, 0, xp, hp, attackValue);
+                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Mew", level, 0, 0, xp, 120, 25);
 
                 break;
             default:
@@ -9013,6 +9029,8 @@ namespace creatures {
                 }
                 if (mult > 1) {
                     game.showLongText("Super Effective", DialogLayout.Bottom);
+                } else if (mult == 0) {
+                    game.showLongText("Does not effect " + creature2.name, DialogLayout.Bottom);
                 } else if (mult < 1) {
                     game.showLongText("Not very Effective", DialogLayout.Bottom);
                 }
@@ -9037,7 +9055,9 @@ namespace creatures {
                 let mult = calculateAttackMult(getTypeFromMove(enemyMove), [creature1.creatureType1, creature1.creatureType2]);
                 if (mult > 1) {
                     game.showLongText("Super Effective", DialogLayout.Bottom);
-                } else if (mult < 1) {
+                } else if (mult == 0) {
+                    game.showLongText("Does not effect " + creature1.name, DialogLayout.Bottom);
+                } else if (mult <1){
                     game.showLongText("Not very Effective", DialogLayout.Bottom);
                 }
                 if (Math.percentChance(6.25)) {
@@ -9060,11 +9080,13 @@ namespace creatures {
             //game.showLongText(creature2.name + " knocked out " + creature1.name + " and earned " + creature2.xpReward + " xp.", DialogLayout.Bottom)
             creature2.xp += creature1.xpReward;
         }
+        pause(1000)
+
         creature1LevelTextSprite.setText("")
         creature2LevelTextSprite.setText("")
         creature1HealthTextSprite.setText("")
         creature2HealthTextSprite.setText("")
-        //pause(1000)
+        
         creature1.sprite.setPosition(0, 0)
         creature2.sprite.setPosition(0, 0)
         creature1.setSayHP(false);
@@ -9093,7 +9115,7 @@ namespace creatures {
     //% expandableArgumentMode=toggle
     //% group="Battle"
     //% weight=80
-    export function trainerBattleTrainer(player: Trainer, opponent: Trainer) {
+    export function trainerBattleTrainer(player: Trainer, opponent: Trainer) : boolean {
         let battleResult = false;
         let playerCurrentCreature = player.partyPokemon[0];
         let opponentCurrentCreature = opponent.partyPokemon[0];
@@ -9101,6 +9123,11 @@ namespace creatures {
         let opponentCurrentIndex = 0;
 
         let playerRemainingPokemon = player.partyPokemon.length;
+        for (let creature of player.partyPokemon) {
+            if (creature.hp <= 0) {
+                playerRemainingPokemon--;
+            }
+        }
         let opponentRemainingPokemon = opponent.partyPokemon.length;
 
         let map: tiles.TileMapData = game.currentScene().tileMap.data;
@@ -9230,7 +9257,10 @@ namespace creatures {
         scene.centerCameraAt(80, 60);
         scene.backgroundImage().fillRect(15, 20, 130, 90, 1)
         scene.backgroundImage().drawRect(15, 20, 130, 90, 15)
-
+        let enemySprite = sprites.create(opponent.sprite.image,SpriteKind.Enemy);
+        enemySprite.setPosition(80,45);
+        enemySprite.z=100;
+        enemySprite.setFlag(SpriteFlag.Invisible, false);
         game.setDialogFrame(img`
             ..99999999999999999999..
             .9966666666666666666699.
@@ -9257,10 +9287,13 @@ namespace creatures {
             .9966666666666666666699.
             ..99999999999999999999..
         `)
-        game.showLongText("You challenged the trainer to a battle.", DialogLayout.Bottom)
+        game.showLongText("You challenged " + opponent.name + " to a battle.", DialogLayout.Bottom)
+
+        
         game.showLongText("You sent out " + playerCurrentCreature.name + " to battle!", DialogLayout.Bottom)
         game.showLongText("They sent out " + opponentCurrentCreature.name + " to battle!", DialogLayout.Bottom)
-
+        enemySprite.setFlag(SpriteFlag.Invisible, true);
+        enemySprite.destroy();
 
         while (playerRemainingPokemon > 0 && opponentRemainingPokemon > 0) {
             let win = creatureBattleCreature(playerCurrentCreature, opponentCurrentCreature)
@@ -9270,9 +9303,9 @@ namespace creatures {
                 if (opponentRemainingPokemon > 0) {
                     opponentCurrentIndex++;
                     opponentCurrentCreature = opponent.partyPokemon[opponentCurrentIndex];
-                    game.showLongText("They sent out " + opponentCurrentCreature.name, DialogLayout.Bottom);
+                    game.showLongText(opponent.name + " sent out " + opponentCurrentCreature.name, DialogLayout.Bottom);
                 } else {
-                    game.showLongText("You won the battle!.", DialogLayout.Bottom);
+                    game.showLongText("You won the battle and defeated " + opponent.name +"!", DialogLayout.Bottom);
                     battleResult = true;
                 }
             } else {
@@ -9294,19 +9327,19 @@ namespace creatures {
                             game.showLongText("You only have " + choices[0] + " remaining. You sent out " + choices[0] + ".", DialogLayout.Bottom);
                             break;
                         case 2:
-                            story.printDialog("Pick a Pokemon to sent out:", 80, 90, 50, 150, 15, 1, story.TextSpeed.VeryFast);
+                            story.printDialog("Pick a Pokemon to send out:", 80, 90, 50, 150, 15, 1, story.TextSpeed.VeryFast);
                             story.showPlayerChoices(choices[0], choices[1]);
                             break;
                         case 3:
-                            story.printDialog("Pick a Pokemon to sent out:", 80, 90, 50, 150, 15, 1, story.TextSpeed.VeryFast);
+                            story.printDialog("Pick a Pokemon to send out:", 80, 90, 50, 150, 15, 1, story.TextSpeed.VeryFast);
                             story.showPlayerChoices(choices[0], choices[1], choices[2]);
                             break;
                         case 4:
-                            story.printDialog("Pick a Pokemon to sent out:", 80, 90, 50, 150, 15, 1, story.TextSpeed.VeryFast);
+                            story.printDialog("Pick a Pokemon to send out:", 80, 90, 50, 150, 15, 1, story.TextSpeed.VeryFast);
                             story.showPlayerChoices(choices[0], choices[1], choices[2], choices[3]);
                             break;
                         case 5:
-                            story.printDialog("Pick a Pokemon to sent out:", 80, 90, 50, 150, 15, 1, story.TextSpeed.VeryFast);
+                            story.printDialog("Pick a Pokemon to send out:", 80, 90, 50, 150, 15, 1, story.TextSpeed.VeryFast);
                             story.showPlayerChoices(choices[0], choices[1], choices[2], choices[3], choices[4]);
                             break;
                     }
@@ -9460,9 +9493,15 @@ namespace creatures {
             ................................................................................................................................................................
         `);
         tiles.setCurrentTilemap(map)
+        scene.centerCameraAt(player.sprite.x, player.sprite.y);
+        scene.cameraFollowSprite(player.sprite);
+        pause(100);
         for (let creature of player.partyPokemon) {
+            checkLevelUp(creature);
             checkEvolve(creature);
         }
+
+        return battleResult;
 
     }
 
@@ -9843,6 +9882,17 @@ namespace creatures {
 
     }
 
+    //% blockId=creatures_trainerHealAll
+    //% block="$player=variables_get(myTrainer) heal all pokemon"
+    //% group="Other"
+    //% weight=75
+    export function trainerHealAll(player: Trainer){
+        for(let creature of player.partyPokemon){
+            creature.hp = creature.maxHP;
+        }
+    }
+
+
     export function checkEvolve(creature: Creature) {
         if (creature.evolutionLevel == 0) {
             return;
@@ -9877,24 +9927,30 @@ namespace creatures {
 
                 const evId = creature._evolutionID;
                 let evolution = makeCreatureFromID(evId);
-                creature._sprite = evolution.sprite;
+                creature.sprite = evolution.sprite;
                 oldSprite.setImage(creature._sprite.image);
                 oldSprite.setPosition(scene.cameraLeft() + 80, scene.cameraTop() + 30)
-                creature._creatureType1 = evolution.creatureType1;
-                creature._creatureType2 = evolution.creatureType2;
-                creature._name = evolution.name;
-                creature._evolutionID = evolution.evolutionID;
-                creature._xp = 0;
-                creature._hp = evolution.hp;;
-                creature._attackValue = evolution.attackValue;
-                creature._xpReward = evolution.xpReward;
+                creature.creatureType1 = evolution.creatureType1;
+                creature.creatureType2 = evolution.creatureType2;
+                creature.name = evolution.name;
+                creature.evolutionID = evolution.evolutionID;
+                creature.xp = 0;
+                creature.hp = evolution.hp;
+                creature.maxHP = evolution.maxHP;
+                creature.attackValue = evolution.attackValue;
+                for(let i = 0; i < creature.level-5; i++) {
+                    creature.maxHP *= 1.05;
+                    creature.hp *= 1.05;
+                    creature.attackValue *= 1.05;
+                }
+                creature.xpReward = evolution.xpReward;
                 creature._sayHP = false;
                 creature._sayXP = false;
-                creature._sprite.setFlag(SpriteFlag.Invisible, true);
-                creature._healthbar = statusbars.create(20, 4, StatusBarKind.Health)
-                creature._healthbar.attachToSprite(creature.sprite)
-                creature._healthbar.max = creature.hp;
-                creature._healthbar.setFlag(SpriteFlag.Invisible, true);
+                creature.sprite.setFlag(SpriteFlag.Invisible, true);
+                creature.healthbar = statusbars.create(20, 4, StatusBarKind.Health)
+                creature.healthbar.attachToSprite(creature.sprite)
+                creature.healthbar.max = creature.hp;
+                creature.healthbar.setFlag(SpriteFlag.Invisible, true);
                 pause(500);
                 game.showLongText("Your Pokemon evolved into " + creature.name + ".", DialogLayout.Bottom);
                 oldSprite.destroy();
@@ -9924,12 +9980,29 @@ namespace creatures {
         if (creature.xp > xpForLevel[creature.level]) {
             creature.level++;
             game.showLongText(creature.name + " leveled up to level " + creature.level, DialogLayout.Bottom);
-            creature.maxHP *= 1.1;
-            creature.attackValue *= 1.1;
+            creature.maxHP *= 1.05;
+            creature.attackValue *= 1.05;
             checkLevelUp(creature);
         }
         //throw "test"
 
+    }
+
+    export function getXpForLevel(level: number) {
+        let levelUpThresholds = [5, 6, 7, 8, 9, 10, 12, 14, 18, 25]
+        for (let i = 0; i < 90; i++) {
+            levelUpThresholds.push(levelUpThresholds[9 + i] + (i * 5) + 3)
+        }
+        let xpForLevel: number[] = []
+        for (let i = 0; i < 100; i++) {
+            xpForLevel.push(levelUpThresholds[i])
+            for (let j = 0; j < 100; j++) {
+                if (j <= i) {
+                    xpForLevel[i] += levelUpThresholds[j];
+                }
+            }
+        }
+        return xpForLevel[level];
     }
 
     interface TypeChart {
@@ -9961,16 +10034,16 @@ namespace creatures {
     //% group="Value"
     //% blockId="creatures_getAttackMultiplier"
     //% expandableArgumentMode=toggle
-    //% block="Calculate Attack Multiplier %attackType vs %defenseTypes" callInDebugger
+    //% block="Calculate Attack Multiplier %attackType vs %defenseTypes"
     export function calculateAttackMult(attackType: CreatureType, defenseTypes: CreatureType[]): number {
         let multiplier: number = 1.0;
         //game.splash(attackType);
-        defenseTypes.forEach((defenseType) => {
+        for(let defenseType of defenseTypes){
             //game.splash("Starting defenseType " + defenseType);
-            if (typeChart[attackType]) {
+            if (typeChart[attackType]!=null) {
                 //game.splash("attack type exists in chart");
                 // Check if defense type exists in attack type's chart
-                if (typeChart[attackType][defenseType]) {
+                if (typeChart[attackType][defenseType] != null) {
                     //game.splash("defense type exists in chart of " + attackType);
                     // Get effectiveness multiplier
                     const effectiveness = typeChart[attackType][defenseType];
@@ -9979,7 +10052,7 @@ namespace creatures {
                     multiplier *= effectiveness;
                 }
             }
-        });
+        }
         //game.splash(multiplier);
         return multiplier;
 
@@ -9989,7 +10062,8 @@ namespace creatures {
     //% group="Create"
     //% weight=98
     //% blockId="creatures_setMap"
-    //% block="set map to $tilemap with grass $grass door1 $door1 door2 $door2"
+    //% expandableArgumentMode=enabled
+    //% block="set map to $tilemap with grass $grass || house $door1 lab $door2 pokemon center $door3 gym $door4"
     //% tilemap.fieldEditor="tilemap"
     //% tilemap.fieldOptions.decompileArgumentAsString="true"
     //% tilemap.fieldOptions.filter="tile"
@@ -10000,9 +10074,32 @@ namespace creatures {
     //% door1.decompileIndirectFixedInstances=true
     //% door2.shadow=tileset_tile_picker
     //% door2.decompileIndirectFixedInstances=true
-    export function setCreatureMap(tilemap: tiles.TileMapData, grass: Image, door1: Image, door2: Image) {
+    //% door3.shadow=tileset_tile_picker
+    //% door3.decompileIndirectFixedInstances=true
+    //% door4.shadow=tileset_tile_picker
+    //% door4.decompileIndirectFixedInstances=true
+    export function setCreatureMap(tilemap: tiles.TileMapData, grass: Image, door1?: Image, door2?: Image, door3?: Image, door4?: Image) {
         tiles.setCurrentTilemap(tilemap)
-        tileUtil.createSpritesOnTiles(grass, img`
+
+        if(grass && !grass.equals(img`
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+        `)){
+            tileUtil.createSpritesOnTiles(grass, img`
         . . . . . . 6 6 6 6 . . . . . . 
         . . . . . c 6 7 7 6 c . . . . . 
         . . . . c 6 7 5 7 7 6 c . . . . 
@@ -10020,166 +10117,439 @@ namespace creatures {
         . . 6 6 6 6 c 6 7 6 c 6 6 6 . . 
         . . . 6 6 c . 6 6 6 . c 6 . . . 
         `, SpriteKind.Grass)
-        for (let value of tiles.getTilesByType(door1)) {
-            let mySprite = sprites.create(img`
-            dddddddddddd1ddddddddddddddd1ddddddddddddddd1ddddddddddddddd1ddddddddddddddd1d
-            ddddddddddbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbdddddddddd
-            ddddddddbb44444444444444444444444444444444444444444444444444444444eeccdddddddd
-            d1ddddbbdd44444444444444444444444444444444444444444444444444444444eeeecc9ddddd
-            ddddbb4ddd44444444444444444444444444444444444444444444444444444444eeeeeeccdd9d
-            ddbbdd4ddd444eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee4eeeeeeeeccdd
-            bb4ddd4ddd444e4444444444444444444444444444444444444444444444444444eeeeeeeeeecc
-            dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
-            dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
-            dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
-            dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
-            dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
-            dd4ddd4ddd444eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee44eeeeeeeeeeee
-            dd4ddd4ddd444e4444444444444444444444444444444444444444444444444e44eeeeeeeeeeee
-            dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
-            dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
-            dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
-            dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
-            dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
-            dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
-            dd4ddd4ddd444eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee44eeeeeeeeeeee
-            dd4ddd4ddd444e4444444444444444444444444444444444444444444444444e44eeeeeeeeeeee
-            dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
-            dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
-            dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
-            dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
-            dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
-            dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
-            dd4ddd4ddd444eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee44eeeeeeeeeeee
-            dd4ddd4ddd444e4444444444444444444444444444444444444444444444444e44eeeeeeeeeeee
-            dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
-            dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
-            dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
-            dd4ddd4deccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccceeeeeeee
-            dd4dddcceeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeecceeeeee
-            dd4dcceeecccccccccccccccccccccccccccccccccccccccccccccccccccccccccccceeecceeee
-            ddcceeeccbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcceeeccee
-            cceeeccbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcceeecc
-            eeeccbcbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcbcceee
-            eccbbbcbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcbbbcce
-            ccbbbbcbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcbbbbcc
-            bc1dddbdddddddddccccccccccccccccccccccddccccccccccccccccccccccdddddddddbdddbcb
-            bc1dddbdddddddddc666666666cc666666666cddc666666666cc666666666cdddddddddbdddbcb
-            bc1dddbdddddddddc666666666cc666666666cddc666666666cc666666666cdddddddddbdddbcb
-            bc1dddbdddddddddc999999999cc999999999cddc999999999cc999999999cdddddddddbdddbcb
-            bc1dddbdddddddddc999999999cc999999999cddc999999999cc999999999cdddddddddbdddbcb
-            bc1dddbdddddddddc999999999cc999999999cddc999999999cc999999999cdddddddddbdddbcb
-            bc1dddbdddddddddc999999999cc999999999cddc999999999cc999999999cdddddddddbdddbcb
-            bc1dddbdddddddddcbbbbbbbbbccbbbbbbbbbcddcbbbbbbbbbccbbbbbbbbbcdddddddddbdddbcb
-            bc1dddbdddddddddccccccccccccccccccccccddccccccccccccccccccccccdddddddddbdddbcb
-            bc1dddbddddddddd1111111111111111111111dd1111111111111111111111dddddddddbdddbcb
-            bc1dddbddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddbdddbcb
-            bc1dddbddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddbdddbcb
-            bc1dddbddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddbdddbcb
-            bc1dddbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbdddbcb
-            bc1dddbddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddbdddbcb
-            bc1dddbddddddddccccccccccccccccddddddddddddddddddddddddddddddddddddddddbdddbcb
-            bc1dddbddddddddcbbbbbbbbbbbbbbcdddddddddccccccccccccccccccccccdddddddddbdddbcb
-            bc1dddbddddddddcbccccccccccccbcdddddddddc666666666cc666666666cdddddddddbdddbcb
-            bc1dddbddddddddcec6666666666cecdddddddddc666666666cc666666666cdddddddddbdddbcb
-            bc1dddbddddddddcec6666666666c3cdddddddddc999999999cc999999999cdddddddddbdddbcb
-            bc1dddbddddddddcec6666666666c3cdddddddddc999999999cc999999999cdddddddddbdddbcb
-            bc1dddbddddddddcec9999999999c3cdddddddddc999999999cc999999999cdddddddddbdddbcb
-            bc1dddbddddddddcec9999999999c3cdddddddddc999999999cc999999999cdddddddddbdddbcb
-            bc1dddbddddddddcecccccccccccc3cdddddddddcbbbbbbbbbccbbbbbbbbbcdddddddddbdddbcb
-            bc1dddbddddddddccc333333333333cdddddddddccccccccccccccccccccccdddddddddbdddbcb
-            bc1dddbddddddddc1dc44444444444cddddddddd1111111111111111111111dddddddddbdddbcb
-            bcddddbddddddddcddceeeeeeeeeeecddddddddddddddddddddddddddddddddddddddddbdddbcb
-            bcddddbddddddddccceeeeeeeeeeeecddddddddddddddddddddddddddddddddddddddddbdddbcb
-            bcddddbddddddddceeeeeeeeeeeeeecddddddddddddddddddddddddddddddddddddddddbdddbcb
-            `, SpriteKind.House)
-            tiles.placeOnTile(mySprite, value)
-            mySprite.x += 16
-            mySprite.y += -32
         }
-        for (let value2 of tiles.getTilesByType(door2)) {
-            let mySprite = sprites.create(img`
-                cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-                bdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd111111111111111111111111ddddddb
-                dbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbccccccccccccccbbbbbbbbbbbbb
-                dbbccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccbbbbbbbbbbbbbeccccccccccbbb
-                dbcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccbbbbbbbbbbbbbecccccccccccbb
-                dbcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccbbeeeeeeeeeebecccccccccccbb
-                dbcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccbbeeeeeeeeeebecccccccccccbb
-                dbcbbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbccccbbeeeeeeeeeebeccccbbbbbbcbb
-                dbcbbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbcbbcbbeeeeeeeeeebecbbcbbbbbbcbb
-                dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddcebcbbccccccccccbecbecbbdddbcbb
-                dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceecbbccccccccccbeceecbbdddbcbb
-                dbcbbddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddceecbbccccccccccbeceecbbdddbcbb
-                dbccccccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbccceecbbccccccccccbeceecbbcccbcbb
-                dbcbbddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddceecbbccccccccccbeceecbbdddbcbb
-                dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceecbbccccccccccbeceecbbdddbcbb
-                dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceecbbbbbbbbbbbbbeceecbbdddbcbb
-                dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceecbbbbbbbbbbbbbeceecbbdddbcbb
-                dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceeceeeeeeeeeeeeeeceecbbdddbcbb
-                dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceeceeeeeeeeeeeeeeceecbbdddbcbb
-                dbcbbddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddceeceeeeeeeeeeeeeeceecbbdddbcbb
-                dbccccccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbccceeceeeeeeeeeeeeeeceecbbcccbcbb
-                dbcbbddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddceeceeeeeeeeeeeeeeceecbbdddbcbb
-                dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceeceeeeeeeeeeeeeeceecbbdddbcbb
-                dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceecccccccccccccccceecbbdddbcbb
-                dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceeceeeeeeeeeeeeeeceecbbdddbcbb
-                dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceceeeeeeeeeeeeeeeececbbdddbcbb
-                dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceceeeeeeeeeeeeeeeececbbdddbcbb
-                dbcbbddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddcceeeeeeeeeeeeeeeeeeccbbdddbcbb
-                dbccccccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbccccccccccccccccccccccccbbcccbcbb
-                dbcbbddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddbbbbbbbbbbbbbbbbbbbbbbbbdddbcbb
-                dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcddddbbbbbbbbbbbbbbbbbbbbbbbdddbcbb
-                dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcddddddbcbb
-                dbbccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccbbb
-                dbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
-                bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
-                bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
-                bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
-                bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
-                bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
-                cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-                cbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbc
-                cbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbc
-                cdbbbdddddd4d1111d4dddddddd4d1111d4dddddddddddddddddddddddddddddddddddddddd4d1111d4dddddddd4d1111d4ddddddbbbbc
-                c1dddddddd411bccb114dddddd411bccb114dddddddddddddddddddddddddddddddddddddd411bccb114dddddd411bccb114dddddddbbc
-                c1dddddddbd1c6666c1dbddddbd1c6666c1dbddddddddddddddddddddddddddddddddddddbd1c6666c1dbddddbd1c6666c1dbddddddbbc
-                c1bbbdddd41b666666b14dddd41b666666b14dddddddddddddddddddddddddddddddddddd41b666666b14dddd41b666666b14ddddbbbbc
-                c1bbbdddd41c666666c14dddd41c666666c14dddddddddddddddddddddddddddddddddddd41c666666c14dddd41c666666c14ddddbbbbc
-                c1ddddddd41c999999c14dddd41c999999c14dddddddddddddddddddddddddddddddddddd41c999999c14dddd41c999999c14ddddddbbc
-                c1ddddddd41b499994b14dddd41b499994b14dddddddddddddddddddddddddddddddddddd41b499994b14dddd41b499994b14ddddddbbc
-                c1bbbddddbd1c4444c1dbddddbd1c4444c1dbddddddddddddddddddddddddddddddddddddbd1c4444c1dbddddbd1c4444c1dbddddbbbbc
-                c1bbbddddd411bccb114dddddd411bccb114dddddddddddddddddddddddddddddddddddddd411bccb114dddddd411bccb114dddddbbbbc
-                c1ddddddddd4d1111d4dddddddd4d1111d4dddddddddddddddddddddddddddddddddddddddd4d1111d4dddddddd4d1111d4ddddddddbbc
-                c1ddddddddddb4444bddddddddddb4444bddddddddddddddddddddddddddddddddddddddddddb4444bddddddddddb4444bdddddddddbbc
-                c1bbbddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddbbbbc
-                c1bbbddddddddddccccccccccccccccccccccccddddddddddddddddddddddddddddddddccccccccccccccccccccccccddddddddddbbbbc
-                c1dddddddddddddcbebbbbbbbbbbbbbbbbbbebcddddddddccccccccccccccccddddddddcbebbbbbbbbbbbbbbbbbbebcddddddddddddbbc
-                c1dddddddddddddcbebbbbbbbbbbbbbbbbbbebcddddddddcbbbbbbbbbbbbbbcddddddddcbebbbbbbbbbbbbbbbbbbebcddddddddddddbbc
-                c1bbbddddddddddceeeeeeeeeeeeeeeeeeeeeecddddddddcbbbbccccccbbbbcddddddddceeeeeeeeeeeeeeeeeeeeeecddddddddddbbbbc
-                c1bbbddddddddddccccccccccccccccccccccccddddddddc666c666666c666cddddddddccccccccccccccccccccccccddddddddddbbbbc
-                c1ddddddddddddddc666666666cc666666666cdddddddddc66c66666666c66cdddddddddc666666666cc666666666cdddddddddddddbbc
-                c1ddddddddddddddc666666666cc666666666cdddddddddc66c66666666c66cdddddddddc666666666cc666666666cdddddddddddddbbc
-                c1bbbdddddddddddc666666666cc666666666cdddddddddc66c66666666c66cdddddddddc666666666cc666666666cdddddddddddbbbbc
-                c1bbbdddddddddddc999999999cc999999999cdddddddddc66c99999999c66cdddddddddc999999999cc999999999cdddddddddddbbbbc
-                c1ddddddddddddddc999999999cc999999999cdddddddddc666c999999c666cdddddddddc999999999cc999999999cdddddddddddddbbc
-                c1ddddddddddddddc444444444cc444444444cdddddddddccc66cccccc6666cdddddddddc444444444cc444444444cdddddddddddddbbc
-                c1bbbdddddddddddccccccccccccccccccccccdddddddddc1dc66666666666cdddddddddccccccccccccccccccccccdddddddddddbbbbc
-                c1bbbddddddddddd1111111111111111111111dddddddddcddc66666666666cddddddddd1111111111111111111111dddddddddddbbbbc
-                c1dddddddddddddddddddddddddddddddddddddddddddddccc666666666666cdddddddddddddddddddddddddddddddddddddddddddddbc
-                c1dddddddddddddddddddddddddddddddddddddddddddddc66666666666666cdddddddddddddddddddddddddddddddddddddddddddddbc
-                c1dddddddddddddddddddddddddddddddddddddddddddddccccccccccccccccdddddddddddddddddddddddddddddddddddddddddddddbc
-            `, SpriteKind.Lab)
-            tiles.placeOnTile(mySprite, value2)
-            mySprite.x += 0
-            mySprite.y += -32
+        
+        if (door1 && !door1.equals(img`
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+        `)) {
+            for (let value of tiles.getTilesByType(door1)) {
+                let mySprite = sprites.create(img`
+                    dddddddddddd1ddddddddddddddd1ddddddddddddddd1ddddddddddddddd1ddddddddddddddd1d
+                    ddddddddddbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbdddddddddd
+                    ddddddddbb44444444444444444444444444444444444444444444444444444444eeccdddddddd
+                    d1ddddbbdd44444444444444444444444444444444444444444444444444444444eeeecc9ddddd
+                    ddddbb4ddd44444444444444444444444444444444444444444444444444444444eeeeeeccdd9d
+                    ddbbdd4ddd444eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee4eeeeeeeeccdd
+                    bb4ddd4ddd444e4444444444444444444444444444444444444444444444444444eeeeeeeeeecc
+                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
+                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
+                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
+                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
+                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
+                    dd4ddd4ddd444eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee44eeeeeeeeeeee
+                    dd4ddd4ddd444e4444444444444444444444444444444444444444444444444e44eeeeeeeeeeee
+                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
+                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
+                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
+                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
+                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
+                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
+                    dd4ddd4ddd444eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee44eeeeeeeeeeee
+                    dd4ddd4ddd444e4444444444444444444444444444444444444444444444444e44eeeeeeeeeeee
+                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
+                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
+                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
+                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
+                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
+                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
+                    dd4ddd4ddd444eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee44eeeeeeeeeeee
+                    dd4ddd4ddd444e4444444444444444444444444444444444444444444444444e44eeeeeeeeeeee
+                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
+                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
+                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
+                    dd4ddd4deccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccceeeeeeee
+                    dd4dddcceeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeecceeeeee
+                    dd4dcceeecccccccccccccccccccccccccccccccccccccccccccccccccccccccccccceeecceeee
+                    ddcceeeccbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcceeeccee
+                    cceeeccbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcceeecc
+                    eeeccbcbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcbcceee
+                    eccbbbcbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcbbbcce
+                    ccbbbbcbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcbbbbcc
+                    bc1dddbdddddddddccccccccccccccccccccccddccccccccccccccccccccccdddddddddbdddbcb
+                    bc1dddbdddddddddc666666666cc666666666cddc666666666cc666666666cdddddddddbdddbcb
+                    bc1dddbdddddddddc666666666cc666666666cddc666666666cc666666666cdddddddddbdddbcb
+                    bc1dddbdddddddddc999999999cc999999999cddc999999999cc999999999cdddddddddbdddbcb
+                    bc1dddbdddddddddc999999999cc999999999cddc999999999cc999999999cdddddddddbdddbcb
+                    bc1dddbdddddddddc999999999cc999999999cddc999999999cc999999999cdddddddddbdddbcb
+                    bc1dddbdddddddddc999999999cc999999999cddc999999999cc999999999cdddddddddbdddbcb
+                    bc1dddbdddddddddcbbbbbbbbbccbbbbbbbbbcddcbbbbbbbbbccbbbbbbbbbcdddddddddbdddbcb
+                    bc1dddbdddddddddccccccccccccccccccccccddccccccccccccccccccccccdddddddddbdddbcb
+                    bc1dddbddddddddd1111111111111111111111dd1111111111111111111111dddddddddbdddbcb
+                    bc1dddbddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddbdddbcb
+                    bc1dddbddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddbdddbcb
+                    bc1dddbddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddbdddbcb
+                    bc1dddbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbdddbcb
+                    bc1dddbddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddbdddbcb
+                    bc1dddbddddddddccccccccccccccccddddddddddddddddddddddddddddddddddddddddbdddbcb
+                    bc1dddbddddddddcbbbbbbbbbbbbbbcdddddddddccccccccccccccccccccccdddddddddbdddbcb
+                    bc1dddbddddddddcbccccccccccccbcdddddddddc666666666cc666666666cdddddddddbdddbcb
+                    bc1dddbddddddddcec6666666666cecdddddddddc666666666cc666666666cdddddddddbdddbcb
+                    bc1dddbddddddddcec6666666666c3cdddddddddc999999999cc999999999cdddddddddbdddbcb
+                    bc1dddbddddddddcec6666666666c3cdddddddddc999999999cc999999999cdddddddddbdddbcb
+                    bc1dddbddddddddcec9999999999c3cdddddddddc999999999cc999999999cdddddddddbdddbcb
+                    bc1dddbddddddddcec9999999999c3cdddddddddc999999999cc999999999cdddddddddbdddbcb
+                    bc1dddbddddddddcecccccccccccc3cdddddddddcbbbbbbbbbccbbbbbbbbbcdddddddddbdddbcb
+                    bc1dddbddddddddccc333333333333cdddddddddccccccccccccccccccccccdddddddddbdddbcb
+                    bc1dddbddddddddc1dc44444444444cddddddddd1111111111111111111111dddddddddbdddbcb
+                    bcddddbddddddddcddceeeeeeeeeeecddddddddddddddddddddddddddddddddddddddddbdddbcb
+                    bcddddbddddddddccceeeeeeeeeeeecddddddddddddddddddddddddddddddddddddddddbdddbcb
+                    bcddddbddddddddceeeeeeeeeeeeeecddddddddddddddddddddddddddddddddddddddddbdddbcb
+                `, SpriteKind.Structure)
+                tiles.placeOnTile(mySprite, value)
+                mySprite.x += 16
+                mySprite.y += -32
+                for (let i = value.column-1; i < 4 + value.column; i++) {
+                    for (let j = value.row-4; j < value.row +1; j++) {
+                        tiles.setWallAt(new tiles.Location(i,j,game.currentScene().tileMap), true);
+                    }
+                }
+                tiles.setWallAt(value, false);
+            }
         }
+        if (door2 && !door2.equals(img`
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+        `)) {
+            for (let value2 of tiles.getTilesByType(door2)) {
+                let mySprite = sprites.create(img`
+                    cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+                    bdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd111111111111111111111111ddddddb
+                    dbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbccccccccccccccbbbbbbbbbbbbb
+                    dbbccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccbbbbbbbbbbbbbeccccccccccbbb
+                    dbcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccbbbbbbbbbbbbbecccccccccccbb
+                    dbcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccbbeeeeeeeeeebecccccccccccbb
+                    dbcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccbbeeeeeeeeeebecccccccccccbb
+                    dbcbbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbccccbbeeeeeeeeeebeccccbbbbbbcbb
+                    dbcbbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbcbbcbbeeeeeeeeeebecbbcbbbbbbcbb
+                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddcebcbbccccccccccbecbecbbdddbcbb
+                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceecbbccccccccccbeceecbbdddbcbb
+                    dbcbbddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddceecbbccccccccccbeceecbbdddbcbb
+                    dbccccccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbccceecbbccccccccccbeceecbbcccbcbb
+                    dbcbbddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddceecbbccccccccccbeceecbbdddbcbb
+                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceecbbccccccccccbeceecbbdddbcbb
+                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceecbbbbbbbbbbbbbeceecbbdddbcbb
+                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceecbbbbbbbbbbbbbeceecbbdddbcbb
+                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceeceeeeeeeeeeeeeeceecbbdddbcbb
+                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceeceeeeeeeeeeeeeeceecbbdddbcbb
+                    dbcbbddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddceeceeeeeeeeeeeeeeceecbbdddbcbb
+                    dbccccccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbccceeceeeeeeeeeeeeeeceecbbcccbcbb
+                    dbcbbddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddceeceeeeeeeeeeeeeeceecbbdddbcbb
+                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceeceeeeeeeeeeeeeeceecbbdddbcbb
+                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceecccccccccccccccceecbbdddbcbb
+                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceeceeeeeeeeeeeeeeceecbbdddbcbb
+                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceceeeeeeeeeeeeeeeececbbdddbcbb
+                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceceeeeeeeeeeeeeeeececbbdddbcbb
+                    dbcbbddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddcceeeeeeeeeeeeeeeeeeccbbdddbcbb
+                    dbccccccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbccccccccccccccccccccccccbbcccbcbb
+                    dbcbbddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddbbbbbbbbbbbbbbbbbbbbbbbbdddbcbb
+                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcddddbbbbbbbbbbbbbbbbbbbbbbbdddbcbb
+                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcddddddbcbb
+                    dbbccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccbbb
+                    dbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+                    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+                    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+                    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+                    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+                    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+                    cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+                    cbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbc
+                    cbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbc
+                    cdbbbdddddd4d1111d4dddddddd4d1111d4dddddddddddddddddddddddddddddddddddddddd4d1111d4dddddddd4d1111d4ddddddbbbbc
+                    c1dddddddd411bccb114dddddd411bccb114dddddddddddddddddddddddddddddddddddddd411bccb114dddddd411bccb114dddddddbbc
+                    c1dddddddbd1c6666c1dbddddbd1c6666c1dbddddddddddddddddddddddddddddddddddddbd1c6666c1dbddddbd1c6666c1dbddddddbbc
+                    c1bbbdddd41b666666b14dddd41b666666b14dddddddddddddddddddddddddddddddddddd41b666666b14dddd41b666666b14ddddbbbbc
+                    c1bbbdddd41c666666c14dddd41c666666c14dddddddddddddddddddddddddddddddddddd41c666666c14dddd41c666666c14ddddbbbbc
+                    c1ddddddd41c999999c14dddd41c999999c14dddddddddddddddddddddddddddddddddddd41c999999c14dddd41c999999c14ddddddbbc
+                    c1ddddddd41b499994b14dddd41b499994b14dddddddddddddddddddddddddddddddddddd41b499994b14dddd41b499994b14ddddddbbc
+                    c1bbbddddbd1c4444c1dbddddbd1c4444c1dbddddddddddddddddddddddddddddddddddddbd1c4444c1dbddddbd1c4444c1dbddddbbbbc
+                    c1bbbddddd411bccb114dddddd411bccb114dddddddddddddddddddddddddddddddddddddd411bccb114dddddd411bccb114dddddbbbbc
+                    c1ddddddddd4d1111d4dddddddd4d1111d4dddddddddddddddddddddddddddddddddddddddd4d1111d4dddddddd4d1111d4ddddddddbbc
+                    c1ddddddddddb4444bddddddddddb4444bddddddddddddddddddddddddddddddddddddddddddb4444bddddddddddb4444bdddddddddbbc
+                    c1bbbddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddbbbbc
+                    c1bbbddddddddddccccccccccccccccccccccccddddddddddddddddddddddddddddddddccccccccccccccccccccccccddddddddddbbbbc
+                    c1dddddddddddddcbebbbbbbbbbbbbbbbbbbebcddddddddccccccccccccccccddddddddcbebbbbbbbbbbbbbbbbbbebcddddddddddddbbc
+                    c1dddddddddddddcbebbbbbbbbbbbbbbbbbbebcddddddddcbbbbbbbbbbbbbbcddddddddcbebbbbbbbbbbbbbbbbbbebcddddddddddddbbc
+                    c1bbbddddddddddceeeeeeeeeeeeeeeeeeeeeecddddddddcbbbbccccccbbbbcddddddddceeeeeeeeeeeeeeeeeeeeeecddddddddddbbbbc
+                    c1bbbddddddddddccccccccccccccccccccccccddddddddc666c666666c666cddddddddccccccccccccccccccccccccddddddddddbbbbc
+                    c1ddddddddddddddc666666666cc666666666cdddddddddc66c66666666c66cdddddddddc666666666cc666666666cdddddddddddddbbc
+                    c1ddddddddddddddc666666666cc666666666cdddddddddc66c66666666c66cdddddddddc666666666cc666666666cdddddddddddddbbc
+                    c1bbbdddddddddddc666666666cc666666666cdddddddddc66c66666666c66cdddddddddc666666666cc666666666cdddddddddddbbbbc
+                    c1bbbdddddddddddc999999999cc999999999cdddddddddc66c99999999c66cdddddddddc999999999cc999999999cdddddddddddbbbbc
+                    c1ddddddddddddddc999999999cc999999999cdddddddddc666c999999c666cdddddddddc999999999cc999999999cdddddddddddddbbc
+                    c1ddddddddddddddc444444444cc444444444cdddddddddccc66cccccc6666cdddddddddc444444444cc444444444cdddddddddddddbbc
+                    c1bbbdddddddddddccccccccccccccccccccccdddddddddc1dc66666666666cdddddddddccccccccccccccccccccccdddddddddddbbbbc
+                    c1bbbddddddddddd1111111111111111111111dddddddddcddc66666666666cddddddddd1111111111111111111111dddddddddddbbbbc
+                    c1dddddddddddddddddddddddddddddddddddddddddddddccc666666666666cdddddddddddddddddddddddddddddddddddddddddddddbc
+                    c1dddddddddddddddddddddddddddddddddddddddddddddc66666666666666cdddddddddddddddddddddddddddddddddddddddddddddbc
+                    c1dddddddddddddddddddddddddddddddddddddddddddddccccccccccccccccdddddddddddddddddddddddddddddddddddddddddddddbc
+                `, SpriteKind.Structure)
+                tiles.placeOnTile(mySprite, value2)
+                mySprite.x += 0
+                mySprite.y += -32
+                for (let i = value2.column - 3; i < 4 + value2.column; i++) {
+                    for (let j = value2.row - 4; j < value2.row+1; j++) {
+                        tiles.setWallAt(new tiles.Location(i, j, game.currentScene().tileMap), true);
+                    }
+                }
+                tiles.setWallAt(value2, false);
+            }
+        }
+        if (door3 && !door3.equals(img`
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+        `)) {
+            for (let value3 of tiles.getTilesByType(door3)) {
+                let mySprite = sprites.create(img`
+                    dd3444444444444444444444444444444444444444444444444444444444444444444444444444ddddbbd
+                    444444e44444444444444444444444444444444444444444444444444444e4444444444444e434443bdbb
+                    4ee444444444444444444444444444444444444444444444444444444444444444444444444434ee443db
+                    eee444444444444444444444444444444444444444444444444444444444444444444444444434eeee4bb
+                    eee444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
+                    eee444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
+                    ee4444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
+                    ee4444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
+                    ee4444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
+                    ee44444444444444444444444444444444444e4444444444444444444444444444e44444444444eeeeeee
+                    ee4444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
+                    ee4444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
+                    eee444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
+                    eee444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
+                    eee444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
+                    eee444444444444444444444444444444444444444444444444444444444444444e44444444444eeeeeee
+                    eee444444444444444444444444444444444444444444444444444444444444344444444344444eeeeeee
+                    eee444444444444444444444444444444444444444444444444444444444444444444444444434eeeeeee
+                    eee444444444444444444444443444444444444444444444444444444444444444444444444444eeeeeee
+                    eee444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
+                    eee444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
+                    eee444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
+                    eee444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
+                    eee444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
+                    eee4444444444444444e4444444444444444444444444444444444444444444444444444444444eeeeeee
+                    eee444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
+                    eee444444444444444444444444444444444444434444444444444444444444444444444444444eeeeeee
+                    eee444444444444444444444443444444444444444444444444444444444444444444444444444eeeeeee
+                    eee444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
+                    eee444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
+                    e4444444444444444444444444444444444444444444444444444444444444444444444444444444eeeee
+                    444444444444444444444444444444444444444444444444444444444444444444444444444444444eeee
+                    4344444444444444444444444444444444444444344444444444444444444444444444444444444444eee
+                    44ee4444444444444444444444444444444444444444444444444444444444444444444444444e44444ee
+                    4eeeeee4344434444344434444344433444444443344434444444434443344434444444434eeeeee444be
+                    4eeeeee444444444444444444444444444444444444444444444444444444444444444444eeeeeee444be
+                    eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee43b
+                    eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeebbbbbbeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeebe
+                    eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedd1111111dbeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+                    eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1111111111dbeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeec
+                    eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeebd11ddddddd11deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeec
+                    eeeeeeeeeeeeeeeeeeeeeeeeecccccccd11bdbbbbbbbdd1dbcccccceeeeeeeeeeeeeeeeeeeeeeeeeeeecc
+                    beeeeeeeeeeeeeeeeeeeeeeebddddddd11ddbbbbbbbbbdd1ddddddddeeeeeeeeeeeeeeeeeeeeeeeeeeccc
+                    cccccccccccccccccccccccb11111111dddbb44bbb444bddd11111111dcccccccccccccccccccccccdbcb
+                    bbcccccccccccccccccccccbddddddddddbeeb3333beebbddddddddd1dccccccccccccccccccccccb1bcb
+                    dbbbbbcc66666bbcc66666cbddddddddddeeebddddbeeeedddddddddddc66666ccbb66666ccbbbbb11bcb
+                    11ddbbbc66666bbcc66666bbddbdddddddbbbdbeeeddbbbdddddddbddb666666cbbb66666ccbbddd11bcb
+                    111dddbc66666bdbc66666cbdbb1ddddddddddeeeeddddddddddddbddbc66666cbdb66666cbddd1111bcb
+                    dd11ddb6999969dbc9999bcbdd1dddddddbb3deeeeddbbbddddddddddbc69999cd1969999cbd111d111cc
+                    1d11ddb6999969dbc9999bcbdddddddd1bceedbeee33eeeddddddddddbc6999bcd1969999cbd11dd111cc
+                    1dd1d1bc666669dbc66666cbdddddddd1beeeb3db3beeeeddddddddd1bc66666cd1966666cbd11dd111cc
+                    11ddddbd1ddddddbbdddd1bcdddddddddddeeeeeeeeeeeddddddddddbcd1ddddddddddd1dbbddd1111dcc
+                    111dddd111111ddd111111bbbbbbbbbbbd1eeeeeeeeeeb1bbbbbbbbbbbd111111ddd11111ddddd111dbcc
+                    d1111dddddddddddddddd1bbbbbbbbbbbbc1deeeeeebddcbbbbbbbbbbbd1dddddddddddddddd1111ddbcb
+                    dd11ddddddddddddddddddbbbbbbbbbbbbcbdbbbbbbddbcbbbbbbbbbbbbdddddddddddddddddd11dd1bcb
+                    1d11ddddddddddddddddddbbbbbbbbbbbbbcbdddddddbcbbbbbbbbbbbbbddddddddddddddddd11dd11bcb
+                    11ddddddddddddddddddddbbddddddbbbbbbbcccccccbbbbbbddddddddbdddddddbbbbdddddbddd111bcb
+                    111dddddddddddddddddddbdddddddbcccccccccccccccccccdddddd1dbbbbbbbbbbbbbbbbbbbd1111bcb
+                    111d111dddd11111dddd11bbddddddbc6666666666666666ccdddddd1dbddddddddddddddddddd1111bcc
+                    111d11d222222112222211bdddddddbc6666666666666666ccdddddd1dbddddddddddddddddddd1111dcc
+                    111d11d222222212222211bb1dddddbc6666666666666666ccdddddd1dbddddddddddddddddddd111ddcc
+                    b11d11d222dd2212222211bbddddddbcbb6666666666666bccdddddd1dbddddddddddddddddddd11bd1cc
+                    bd1d11d222dd22122dd111bb1dddddbcbb6666666666666bccd1ddd11dbddddddddddddddddddd1dd11cc
+                    1ddd11d222222d122ddd11bbbbbbbbbcbb66666666666666ccbbbbbbdbbddddddddddddddddddddd1ddcc
+                    d1bd11d22211dd12222211bbbbbbbbbc6b66666666666666ccbbbbbbbbd1ddddddddddddddddddd1dddcc
+                    dddb11d22211dd122222d1bbddddddbc6b6666666666666bccbddddd1dbddddddddddddddddddb1ddd1cc
+                    ddd1bbbbbbbbbbbbb222bbbbddddddbc6b6666666666666bccbdddddddbbbbbbbbbbbbbbbbbbd1ddd1dcc
+                    ddddddddddddddddddddddbbbbbbbbbc6b6666666666666bccbbbbbbbbbdddddddddddddddddddddddbcc
+                    ddddbbbbbbbbbbbbbbbdbbbd1dddddbcbb6666666666666bccdddddd1dbdbbbbbbbbbbbbbddbddddbccbc
+                    bddddbbbbbbbbdbbbbbdddbd1dddddbcb999999999999999ccdddddd1dbdbbbbbbbbbbbbbbbddd11cccc.
+                    cbddddddddddddbbddbdddbdddddddbc9999999999999999ccdddddd1dbdbbdddddddddddddddddbcc...
+                    ccbdddddddddddddddddddbbddddddbcc666666666666c6cccbdddddddbdddddddddddddddddddccbc...
+                    c.cbbbbbbbbbbbbbbbbbbbbbddddddbcccccccccccccccccccbdddddddbbbbbbbbbbbbbbbbbbbbcbc....
+                    ..ccccccccccccccccccccccccccccccc.cccccc.......cccccccccbccccccccccccccccccccccc.....
+                    ......................cccccccccc.................cccccccccc..........................
+                `, SpriteKind.Structure)
+                tiles.placeOnTile(mySprite, value3)
+                mySprite.x += 3
+                mySprite.y += -32
+                for (let i = value3.column - 3; i < 4 + value3.column; i++) {
+                    for (let j = value3.row - 4; j < value3.row + 1; j++) {
+                        tiles.setWallAt(new tiles.Location(i, j, game.currentScene().tileMap), true);
+                    }
+                }
+                tiles.setWallAt(value3,false);
+            }
+        }
+        if (door4 && !door4.equals(img`
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+        `)) {
+            for (let value4 of tiles.getTilesByType(door4)) {
+                let mySprite = sprites.create(img`
+                    2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222.
+                    22dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd222
+                    2dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd22
+                    dddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222ddd2222
+                    ddddd22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e
+                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222c
+                    ddddd22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222c
+                    ddddd22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222c
+                    ddddd22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222c
+                    ddddd22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222c
+                    ddddd22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222c
+                    ddddd22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222c
+                    ddddd22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222c
+                    ddddd22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222c
+                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222c
+                    ddddd22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222c
+                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222c
+                    bdddd22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222c
+                    bdddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    bdddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    bdd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    bdd22e22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222eee22c
+                    d2222eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee222e2c
+                    222e22ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc22222c
+                    22eecccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccce222c
+                    222eccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc222c
+                    e22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222c222222222222c
+                    ceccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+                    ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+                    cbbbbbcc666666ccc666666ccc666666cc88888888ccc44444444444444444444444444444ccc8888c888cc666666cc666666ccc666666cc88888cc
+                    cb99bbbc6666666cc666666cc6666666c888888888ccc44444444444444444444444444444cc888888888cc666666cc6666666cc666666cc88898cb
+                    cb999bbc6666666cc666666cc6666666c888888888cc444444444444444444444444444444cc8888888888c666668cc6666666cc6666666888998cb
+                    cb999bbc6666666cc666666cc6666666c888888888cc444444444444441114444444444444cc8888888888c666668cc666666bcc6b66666888998cc
+                    cb199bbc9999999ccb9999bccb9999968888888888ccdd444444441111111111444444444d4c8888888888cc9bb98ccbb999bbcc6966666889999cc
+                    cb1199bcbddddbbccdddddbccbddddd8c888999988cbdd44444441111111111114444444dd4c889999988888dddd8ccbdddddbcc8d8ddd8889919cc
+                    cb1199bcbbbbbbcccbbbbbbccc888888c889999988cbd4444444111111111111114444444d4c8899999998c888888ccc88888ccc888888c899119cc
+                    cb1119bbbbbbbbbbbbbbbbbbc88888888889999988cc4444444441111111111111444444444c8899999b988888888888888888888888888899119cc
+                    cb1199999999999999999999999999999899999988cc444444444444411111444444444444cc8899999b999999999999999999999999999899119cc
+                    cb1119999999999999999999999999999999999988cc444444444444411111444444444444cc8899999bb9999999999999999999b999999899119cc
+                    cb1199889999999998999999999999999999999988cc4d444444111111111b1111444444444c8899999bb9999999999999999999b999999999119cc
+                    cb1199888888889988888999989998899999999988cbdd44444441111b11b11111444444dd4c8899999999999999999999999999999999989911bcc
+                    cbd119888888888999988888888888888888899988cbdd44444441111111111114444444dd4c8888888899888888889888888899898888889919bcc
+                    cbb999888888888888888888888888888888889988cbdd44444444111111111114444444dd4c8888888889888888888888888888888888899999bcc
+                    cb9998888888888888888888888888888888888988cbd4444444444111111114444444444d4c8888888888888888888886888888888888888999bcc
+                    cb1988888888888888812222212112121112188998cc4444444444444444444444444444444c8888888888888888888888888888888888888891dcc
+                    cb9198888888888888812111112112122122188888ccc4eeee444444444444444444444444cc8888888888888888888888888888888888888899bbb
+                    cb9998888888888888812122212222121212188888cccccccccccccccccccccccccccccccccc8888888888888888888888888888888888888919bbb
+                    cb999999888dd88888812111211112121112188888cccccccccccccccccccccccccccccccccc8d888888ddd8dd888ddddddd8dddd8dd888d89999cc
+                    cb19988888888888888122222122221211121888d8cccdbbbccc666666ccc666666ccbbbdccc88888888888888888888888888888888888889919cc
+                    cb1199888888888888888888888888888888888888cccddbbbcc666666cc6666666cbbbddccc88888888888888888888888888888888888889119cc
+                    cbd119999999999988888888888888888888888888ccc11ddbc6666666cc6666666cbdd11ccc8999999999999999999999999999999999999911bcc
+                    .cbd19999999999999999999999999999999999999ccc11ddbc6b66666cc6666666cbdd11ccc899999999999999999999999999999999999991bbc.
+                    .ccb999999999999999999999999999999999999988ccd1ddbcbb66666cc6b6b666cbdd1dccc899999999999999999999999999999999999999cc..
+                    ..cccccccccccccccccccccccccccccccccccccccccccd1ddbc6b66666cc6b6b666cbdd1dccccccccccccccccccccccccccccccccccccccccccc...
+                    ...6cccccccccccccccccccccccccccccccccccccccccddddbcbb66666cc6b6b666cbddddcccccccccccccccccccccccccccccccccccccccccc....
+                    ...........................................ccbdddbcbbb99bbcc6bbbbbbcbdddbcc............................................
+                    ...........................................ccddbbbcb99999bcc699999bcbbbddcc............................................
+                    ...........................................ccddbeecb99999bcc6b9999bceebddcc............................................
+                    ...........................................cbdddbbcb99999bcc699999bcbbdddcc............................................
+                `, SpriteKind.Structure)
+                tiles.placeOnTile(mySprite, value4)
+                mySprite.x += 0
+                mySprite.y += -32
+                for (let i = value4.column - 3; i < 5 + value4.column; i++) {
+                    for (let j = value4.row - 4; j < value4.row + 1; j++) {
+                        tiles.setWallAt(new tiles.Location(i, j, game.currentScene().tileMap), true);
+                    }
+                }
+                tiles.setWallAt(value4, false);
+            }
+        }
+
     }
     //let myTrainer : Trainer = null;
 
     //% group="Create"
     //% blockId=creatures_setTrainer 
-    //% block="make creature trainer with starter %starter || Sprite: %player=screen_image_picker Moving Up Animation %moveUp=animation_editor Moving Down Animation %moveDown=animation_editor Moving Left Animation %moveLeft=animation_editor Moving Right Animation %moveRight=animation_editor"
+    //% block="make player creature trainer with starter %starter || Sprite: %player=screen_image_picker Moving Up Animation %moveUp=animation_editor Moving Down Animation %moveDown=animation_editor Moving Left Animation %moveLeft=animation_editor Moving Right Animation %moveRight=animation_editor"
     //% expandableArgumentMode=toggle
     //% blockSetVariable=myTrainer
     //% weight=97 
@@ -10673,7 +11043,7 @@ namespace creatures {
         }
         let myTrainer = new Trainer("Ash", 0, myPlayer, moveUp, moveDown, moveLeft, moveRight);
         //game.splash(starter)
-        myTrainer.addPartyPokemon(makeCreatureFromID(starter, 5, 1200));
+        myTrainer.addPartyPokemon(makeCreatureFromID(starter, 5, 12000));
         //myTrainer.addPartyPokemon(makeCreatureFromID(150));
         //myTrainer.addPartyPokemon(makeCreatureFromID(1));
         //myTrainer.addPartyPokemon(makeCreatureFromID(4));
@@ -10688,8 +11058,367 @@ namespace creatures {
         return myTrainer;
     }
 
+    //% group="Create"
+    //% blockId=creatures_setEnemyTrainer 
+    //% block="make enemy creature trainer with ids $ids levels $levels || $sprite and name"
+    //% expandableArgumentMode=toggle
+    //% blockSetVariable=opponent
+    //% weight=96 
+    export function makeEnemyTrainer(ids: number[], levels: number[], sprite?: Image, name?: string){
+        let enemySprite = null;
+        if (!sprite){
+            enemySprite = sprites.create(img`
+                . . . . f f f f . . . .
+                . . f f e e e e f f . .
+                . f f e e e e e e f f .
+                f f f f 4 e e e f f f f
+                f f f 4 4 4 e e f f f f
+                f f f 4 4 4 4 e e f f f
+                f 4 e 4 4 4 4 4 4 e 4 f
+                f 4 4 f f 4 4 f f 4 4 f
+                f e 4 4 4 4 4 4 4 4 e f
+                . f e 4 4 b b 4 4 e f .
+                . f f e 4 4 4 4 e f f .
+                e 4 f b 1 1 1 1 b f 4 e
+                4 d f 1 1 1 1 1 1 f d 4
+                4 4 f 6 6 6 6 6 6 f 4 4
+                . . . f f f f f f . . .
+                . . . f f . . f f . . .
+            `, SpriteKind.Enemy);
+        } else {
+            enemySprite = sprites.create(sprite, SpriteKind.Enemy);
+        }
+        let trainerName = "Brock";
+        if(name){
+            trainerName=name;
+        }
+        enemySprite.setFlag(SpriteFlag.Invisible, true);
+        let enemyTrainer = new Trainer(trainerName, 0, enemySprite, [enemySprite.image], [enemySprite.image], [enemySprite.image], [enemySprite.image]);
+        //game.splash(starter)
+        for(let i = 0; i < ids.length && levels.length; i++) {
+            enemyTrainer.addPartyPokemon(makeCreatureFromID(ids[i], levels[i], getXpForLevel(levels[i])));
+        }
 
+        return enemyTrainer;
+        
+    }
+    
     //% group="Battle"
+    //% blockId=creatures_battleGym
+    //% block="make $player=variables_get(myTrainer) battle gym at location $location=variables_get(location)"
+    //% weight=70
+    export function battleGym(player: Trainer, location: tiles.Location) {
+
+        timer.throttle("gym", 500, function () {
+            tiles.setTileAt(location, assets.tile`transparency16`)
+            player.sprite.setFlag(SpriteFlag.GhostThroughTiles, true)
+            game.showLongText("Welcome to the Gym. Do you wish to battle?", DialogLayout.Bottom)
+            story.startCutscene(function () {
+                controller.moveSprite(player.sprite, 0, 0)
+                pause(200)
+                story.showPlayerChoices("Yes", "No")
+                scene.centerCameraAt(80, 60)
+                pause(200)
+                pauseUntil(() => !(story.isMenuOpen()))
+                if (story.checkLastAnswer("Yes")) {
+                    tiles.placeOnTile(player.sprite, tiles.getTileLocation(location.column, location.row + 1))
+                    let gym = player.badges + 1;
+                    let gymLeader = null;
+                    switch (gym) {
+                        case 1:
+                            gymLeader = makeEnemyTrainer([74, 95], [12, 14], img`
+                    . . . . f f f f . . . .
+                    . . f f e e e e f f . .
+                    . f f e e e e e e f f .
+                    f f f f 4 e e e f f f f
+                    f f f 4 4 4 e e f f f f
+                    f f f 4 4 4 4 e e f f f
+                    f 4 e 4 4 4 4 4 4 e 4 f
+                    f 4 4 f f 4 4 f f 4 4 f
+                    f e 4 4 4 4 4 4 4 4 e f
+                    . f e 4 4 b b 4 4 e f .
+                    . f f e 4 4 4 4 e f f .
+                    e 4 f b 1 1 1 1 b f 4 e
+                    4 d f 1 1 1 1 1 1 f d 4
+                    4 4 f 6 6 6 6 6 6 f 4 4
+                    . . . f f f f f f . . .
+                    . . . f f . . f f . . .
+                `, "Brock");
+                            break;
+                        case 2:
+                            gymLeader = makeEnemyTrainer([120, 121], [18, 21], img`
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                `, "Misty");
+                            break;
+                        case 3:
+                            gymLeader = makeEnemyTrainer([100, 25, 26], [21, 18, 24], img`
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                `, "Lt. Surge");
+                            break;
+                        case 4:
+                            gymLeader = makeEnemyTrainer([71, 114, 45], [29, 24, 29], img`
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                `, "Erika");
+                            break;
+                        case 5:
+                            gymLeader = makeEnemyTrainer([109, 89, 109, 110], [37, 39, 37, 43], img`
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                `, "Koga");
+                            break;
+                        case 6:
+                            gymLeader = makeEnemyTrainer([64, 122, 49, 65], [38, 37, 38, 43], img`
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                `, "Sabrina");
+                            break;
+                        case 7:
+                            gymLeader = makeEnemyTrainer([58, 77, 78, 59], [42, 40, 42, 47], img`
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                `, "Blaine");
+                            break;
+                        case 8:
+                            gymLeader = makeEnemyTrainer([111, 51, 31, 34, 112], [45, 42, 44, 45, 50], img`
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                `, "Giovanni");
+                            break;
+                        case 9:
+                            gymLeader = makeEnemyTrainer([87, 91, 80, 124, 131], [54, 53, 54, 56, 56], img`
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                `, "Lorelei");
+                            break;
+                        case 10:
+                            gymLeader = makeEnemyTrainer([95, 106, 107, 95, 68], [53, 55, 55, 56, 58], img`
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                `, "Bruno");
+                            break;
+                        case 11:
+                            gymLeader = makeEnemyTrainer([94, 42, 93, 24, 94], [56, 56, 55, 58, 60], img`
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                `, "Agatha");
+                            break;
+                        case 12:
+                            gymLeader = makeEnemyTrainer([130, 148, 148, 142, 149], [58, 56, 56, 60, 62], img`
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                `, "Lance");
+                            break;
+                        case 13:
+                            gymLeader = makeEnemyTrainer([18, 65, 112, 59, 130, 9], [61, 59, 61, 63, 61, 65], img`
+                                . . . . . . . . . . . . . . . .
+                                . . . . . . . . . . . . . . . .
+                                . . . . . . . . . . . . . . . .
+                                . . . . . . . . . . . . . . . .
+                                . . . . . . . . . . . . . . . .
+                                . . . . . . . . . . . . . . . .
+                                . . . . . . . . . . . . . . . .
+                                . . . . . . . . . . . . . . . .
+                                . . . . . . . . . . . . . . . .
+                                . . . . . . . . . . . . . . . .
+                                . . . . . . . . . . . . . . . .
+                                . . . . . . . . . . . . . . . .
+                                . . . . . . . . . . . . . . . .
+                                . . . . . . . . . . . . . . . .
+                                . . . . . . . . . . . . . . . .
+                                . . . . . . . . . . . . . . . .
+                            `, "Gary");
+                            break;
+                    }
+                    if (!gymLeader) {
+                        return;
+                    }
+
+                    let win = trainerBattleTrainer(player, gymLeader);
+
+
+                    if (win) {
+                        game.showLongText("You defeated the gym! Now battle the next.", DialogLayout.Bottom)
+                        controller.moveSprite(player.sprite, 80, 80)
+                        player.badges += 1
+                        tiles.setTileAt(location, assets.tile`myTile11`)
+                        if (player.badges == 14) {
+                            game.gameOver(true)
+                        }
+                    } else {
+                        game.showLongText("You lost. Get stronger and try again!", DialogLayout.Bottom)
+                        controller.moveSprite(player.sprite, 80, 80)
+                        tiles.setTileAt(location, assets.tile`myTile11`)
+                    }
+                } else {
+                    tiles.placeOnTile(player.sprite, tiles.getTileLocation(location.column, location.row + 1))
+                    game.showLongText("Not feeling strong enough yet?", DialogLayout.Bottom)
+                    controller.moveSprite(player.sprite, 80, 80)
+                    tiles.setTileAt(location, assets.tile`myTile11`)
+                }
+                player.sprite.setFlag(SpriteFlag.GhostThroughTiles, false)
+            })
+        })
+
+    }
+
+    //% group="Events"
     //% blockId=creatures_overlapGrass
     //% block="Player $sprite=variables_get(sprite) overlap Grass $otherSprite=variables_get(otherSprite) with ids $ids"
     export function overlapGrass(ids: number[], sprite: Sprite, otherSprite: Sprite) {
@@ -10700,7 +11429,7 @@ namespace creatures {
                     sprite.setFlag(SpriteFlag.GhostThroughSprites, true)
                     controller.moveSprite(sprite, 0, 0)
                     const wildCreature = creatures.makeCreatureFromID(
-                        ids._pickRandom(), 5, 0, 20, 5
+                        ids._pickRandom(), 5, 0
                     )
                     creatures.trainerBattleWild(myTrainer, wildCreature);
                     scene.cameraFollowSprite(sprite)
