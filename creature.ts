@@ -8967,6 +8967,25 @@ namespace creatures {
         creature.sprite = sprite;
     }
 
+    //% group="Value"
+    //% blockId="creatures_getTrainerSprite"
+    //% expandableArgumentMode=toggle
+    //% block="$trainer=variables_get(myTrainer) Sprite" callInDebugger
+    export function getTrainerSprite(trainer: Trainer): Sprite {
+        return trainer.sprite;
+    }
+
+    //% group="Value"
+    //% blockId="creatures_setTrainerSprite"
+    //% expandableArgumentMode=toggle
+    //% block="set $trainer=variables_get(myTrainer) Sprite to $sprite=variables_get(mySprite)" callInDebugger
+    export function setTrainerSprite(trainer: Trainer, sprite: Sprite) {
+        trainer.sprite = sprite;
+    }
+
+
+
+
 
 
     export function creatureBattleCreature(creature1: Creature, creature2: Creature): boolean {
