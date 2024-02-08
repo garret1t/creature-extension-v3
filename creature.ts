@@ -279,13 +279,14 @@ namespace creatures {
 
         public _money: number;
         public _badges: number;
+        public _currentRouteID: number;
         public _sprite: Sprite;
         public _moveUp: Image[];
         public _moveDown: Image[];
         public _moveLeft: Image[];
         public _moveRight: Image[];
 
-        constructor(name: string, money: number, sprite: Sprite, moveUp: Image[], moveDown: Image[], moveLeft: Image[], moveRight: Image[]) {
+        constructor(name: string, money: number, sprite: Sprite, moveUp: Image[], moveDown: Image[], moveLeft: Image[], moveRight: Image[], currentRouteID?: number) {
             this._name = name;
             this._money = money;
             this._badges=0;
@@ -295,6 +296,9 @@ namespace creatures {
             this._moveLeft = moveLeft;
             this._moveRight = moveRight;
             this._partyPokemon = [];
+            if(currentRouteID != null){
+                this._currentRouteID = currentRouteID;
+            }
         }
 
         get name(): string {
@@ -319,6 +323,14 @@ namespace creatures {
 
         set badges(badges: number) {
             this._badges = badges;
+        }
+
+        get currentRouteID() : number {
+            return this._currentRouteID;
+        }
+
+        set currentRouteID(currentRouteID : number){
+            this._currentRouteID = currentRouteID;
         }
 
         get sprite(): Sprite {
@@ -346,6 +358,3671 @@ namespace creatures {
         }
 
     }
+
+
+    export class Route {
+        public _map : tiles.TileMapData;
+        public _wildIDs : number[];
+
+        public _name : string;
+        public _routeID : number;
+
+        public _prevRouteID: number;
+        public _nextRouteID: number;
+
+        public _prevRouteTileImage : Image;
+        public _nextRouteTileImage : Image;
+
+        constructor(map: tiles.TileMapData, wildIDs: number[], name: string, routeID: number, prevRouteID: number, nextRouteID: number, prevRouteTileImage: Image, nextRouteTileImage: Image){
+            this._map = map;
+            this._wildIDs = wildIDs;
+            this._name = name;
+            this._routeID = routeID;
+            this._prevRouteID = prevRouteID;
+            this._nextRouteID = nextRouteID;
+            this._prevRouteTileImage = prevRouteTileImage;
+            this._nextRouteTileImage = nextRouteTileImage;
+
+        }
+
+        get map() : tiles.TileMapData {
+            return this._map;
+        }
+
+        set map(map : tiles.TileMapData) {
+            this._map = map;
+        }
+
+        get wildIDs() : number[] {
+            return this._wildIDs;
+        }
+        
+        set wildIDs(wildIDs : number[]) {
+            this._wildIDs = wildIDs;
+        }
+
+        //% group="Value" blockSetVariable="route"
+        //% block="name" callInDebugger
+        get name() : string {
+            return this._name;
+        }
+
+        set name(name : string){
+            this._name = name;
+        }
+
+        //% group="Value" blockSetVariable="route"
+        //% blockCombine block="routeID" callInDebugger
+        get routeID() : number {
+            return this._routeID;
+        }
+
+        set routeID(routeID : number) {
+            this._routeID = routeID;
+        }
+
+        //% group="Value" blockSetVariable="route"
+        //% blockCombine block="prevRouteID" callInDebugger
+        get prevRouteID(): number {
+            return this._prevRouteID;
+        }
+
+        set prevRouteID(prevRouteID: number) {
+            this._prevRouteID = prevRouteID;
+        }
+
+        //% group="Value" blockSetVariable="route"
+        //% blockCombine block="nextRouteID" callInDebugger
+        get nextRouteID(): number {
+            return this._nextRouteID;
+        }
+
+        set nextRouteID(nextRouteID: number) {
+            this._nextRouteID = nextRouteID;
+        }
+
+        get prevRouteTileImage(): Image {
+            return this._prevRouteTileImage;
+        }
+
+        set prevRouteTileImage(prevRouteTileImage: Image) {
+            this._prevRouteTileImage = prevRouteTileImage;
+        }
+
+        get nextRouteTileImage(): Image {
+            return this._nextRouteTileImage;
+        }
+
+        set nextRouteTileImage(nextRouteTileImage: Image) {
+            this._nextRouteTileImage = nextRouteTileImage;
+        }
+
+
+    }
+
+    function getMoveFromType(creatureType: CreatureType): string {
+        switch (creatureType) {
+            case CreatureType.Bug:
+                return "Bug Bite";
+                break;
+            case CreatureType.Dark:
+                return "Bite";
+                break;
+            case CreatureType.Dragon:
+                return "Dragon Claw";
+                break;
+            case CreatureType.Electric:
+                return "Thunderbolt";
+                break;
+            case CreatureType.Fairy:
+                return "Moonblast";
+                break;
+            case CreatureType.Fighting:
+                return "Brick Break";
+                break;
+            case CreatureType.Fire:
+                return "Flame Thrower";
+                break;
+            case CreatureType.Flying:
+                return "Wing Attack";
+                break;
+            case CreatureType.Ghost:
+                return "Hex";
+                break;
+            case CreatureType.Grass:
+                return "Razor Leaf";
+                break;
+            case CreatureType.Ground:
+                return "Earthquake";
+                break;
+            case CreatureType.Ice:
+                return "Ice Beam";
+                break;
+            case CreatureType.Normal:
+                return "Swift";
+                break;
+            case CreatureType.Poison:
+                return "Sludge Bomb";
+                break;
+            case CreatureType.Psychic:
+                return "Psychic";
+                break;
+            case CreatureType.Rock:
+                return "Rock Tomb";
+                break;
+            case CreatureType.Steel:
+                return "Flash Cannon";
+                break;
+            case CreatureType.Water:
+                return "Surf";
+                break;
+            case CreatureType.None:
+                return "Tackle";
+                break;
+        }
+        return "";
+    }
+
+    function getTypeFromMove(move: string): CreatureType {
+        switch (move) {
+            case "Bug Bite":
+                return CreatureType.Bug;
+                break;
+            case "Bite":
+                return CreatureType.Dark;
+                break;
+            case "Dragon Claw":
+                return CreatureType.Dragon;
+                break;
+            case "Thunderbolt":
+                return CreatureType.Electric;
+                break;
+            case "Moonblast":
+                return CreatureType.Fairy;
+                break;
+            case "Brick Break":
+                return CreatureType.Fighting;
+                break;
+            case "Flame Thrower":
+                return CreatureType.Fire;
+                break;
+            case "Wing Attack":
+                return CreatureType.Flying;
+                break;
+            case "Hex":
+                return CreatureType.Ghost;
+                break;
+            case "Razor Leaf":
+                return CreatureType.Grass;
+                break;
+            case "Earthquake":
+                return CreatureType.Ground;
+                break;
+            case "Ice Beam":
+                return CreatureType.Ice;
+                break;
+            case "Swift":
+                return CreatureType.Normal;
+                break;
+            case "Sludge Bomb":
+                return CreatureType.Poison;
+                break;
+            case "Psychic":
+                return CreatureType.Psychic;
+                break;
+            case "Rock Tomb":
+                return CreatureType.Rock;
+                break;
+            case "Flash Cannon":
+                return CreatureType.Steel;
+                break;
+            case "Surf":
+                return CreatureType.Water;
+                break;
+            case "Tackle":
+                return CreatureType.Normal;
+                break;
+        }
+        return CreatureType.None;
+    }
+
+    //% blockId=makeCreatureFromID 
+    //% block="make creature from id $id || with\n level $level xp $xp hp $hp attackValue $attackValue"
+    //% expandableArgumentMode=toggle
+    //% blockSetVariable=myCreature
+    //% group="Create"
+    //% weight=99
+    export function makeCreatureFromID(id: number, level: number = 5, xp: number = 50): Creature {
+        //return null;
+        let sprite = makeCreatureImageDex(id);
+        if (id > 151) {
+            return null;
+        }
+
+        switch (id) {
+            case 0:
+                return new Creature(sprite, CreatureType.None, CreatureType.None, "Missingno", level, 0, 0, xp, 100, 100);
+                break;
+            case 1:
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Bulbasaur", level, 16, 2, xp, 25, 5);
+                break;
+            case 2:
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Ivysaur", level, 32, 3, xp, 42, 12);
+                break;
+            case 3:
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Venosaur", level, 0, 0, xp, 70, 18);
+                break;
+            case 4:
+                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Charmander", level, 16, 5, xp, 25, 5);
+                break;
+            case 5:
+                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Charmeleon", level, 32, 6, xp, 42, 12);
+                break;
+            case 6:
+                return new Creature(sprite, CreatureType.Fire, CreatureType.Flying, "Charizard", level, 0, 0, xp, 70, 18);
+                break;
+            case 7:
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Squirtle", level, 16, 8, xp, 25, 5);
+                break;
+            case 8:
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Wartortle", level, 32, 9, xp, 42, 12);
+                break;
+            case 9:
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Blastoise", level, 0, 0, xp, 70, 18);
+                break;
+            case 10:
+                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Caterpie", level, 7, 11, xp, 20, 3);
+                break;
+            case 11:
+                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Metapod", level, 10, 12, xp, 22, 5);
+                break;
+            case 12:
+                return new Creature(sprite, CreatureType.Bug, CreatureType.Flying, "Butterfree", level, 0, 0, xp, 40, 8);
+                break;
+            case 13:
+                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Weedle", level, 7, 14, xp, 20, 3);
+                break;
+            case 14:
+                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Kakuna", level, 10, 15, xp, 24, 4);
+                break;
+            case 15:
+                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Beedrill", level, 0, 0, xp, 36, 9);
+                break;
+            case 16:
+                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Pidgey", level, 18, 17, xp, 20, 4);
+                break;
+            case 17:
+                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Pidgeotto", level, 36, 18, xp, 40, 8);
+                break;
+            case 18:
+                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Pidgeot", level, 0, 0, xp, 58, 13);
+                break;
+            case 19:
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Rattata", level, 20, 20, xp, 18, 5);
+                break;
+            case 20:
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Raticate", level, 0, 0, xp, 44, 12);
+                break;
+            case 21:
+                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Spearow", level, 20, 22, xp, 20, 5);
+
+                break;
+            case 22:
+                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Fearow", level, 0, 0, xp, 50, 11);
+
+                break;
+            case 23:
+                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Ekans", level, 22, 24, xp, 25, 5);
+
+                break;
+            case 24:
+                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Arbok", level, 0, 0, xp, 50, 12);
+
+                break;
+            case 25:
+                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Pikachu", level, 20, 26, xp, 25, 5);
+
+                break;
+            case 26:
+                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Raichu", level, 0, 0, xp, 48, 13.5);
+
+                break;
+            case 27:
+                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Sandshrew", level, 22, 28, xp, 34, 8);
+
+                break;
+            case 28:
+                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Sandslash", level, 0, 0, xp, 60, 13);
+
+                break;
+            case 29:
+                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Nidoran (f)", level, 16, 30, xp, 24, 6);
+
+                break;
+            case 30:
+                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Nidorina", level, 32, 31, xp, 40, 10);
+
+                break;
+            case 31:
+                return new Creature(sprite, CreatureType.Poison, CreatureType.Ground, "Nidoqueen", level, 0, 0, xp, 64, 13);
+
+                break;
+            case 32:
+                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Nidoran (m)", level, 16, 33, xp, 24, 6);
+
+                break;
+            case 33:
+                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Nidorino", level, 32, 34, xp, 40, 10);
+
+                break;
+            case 34:
+                return new Creature(sprite, CreatureType.Poison, CreatureType.Ground, "Nidoking", level, 0, 0, xp, 64, 13);
+
+                break;
+            case 35:
+                return new Creature(sprite, CreatureType.Fairy, CreatureType.None, "Clefairy", level, 20, 36, xp, 25, 5);
+
+                break;
+            case 36:
+                return new Creature(sprite, CreatureType.Fairy, CreatureType.None, "Clefable", level, 0, 0, xp, 58, 10);
+
+                break;
+            case 37:
+                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Vulpix", level, 20, 38, xp, 22, 6);
+
+                break;
+            case 38:
+                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Ninetales", level, 0, 0, xp, 66, 17);
+
+                break;
+            case 39:
+                return new Creature(sprite, CreatureType.Normal, CreatureType.Fairy, "Jigglypuff", level, 20, 40, xp, 30, 4);
+
+                break;
+            case 40:
+                return new Creature(sprite, CreatureType.Normal, CreatureType.Fairy, "Wigglytuff", level, 0, 0, xp, 52, 10);
+
+                break;
+            case 41:
+                return new Creature(sprite, CreatureType.Poison, CreatureType.Flying, "Zubat", level, 22, 42, xp, 20, 5);
+
+                break;
+            case 42:
+                return new Creature(sprite, CreatureType.Poison, CreatureType.Flying, "Golbat", level, 0, 0, xp, 52, 13);
+
+                break;
+            case 43:
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Oddish", level, 21, 44, xp, 25, 5);
+
+                break;
+            case 44:
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Gloom", level, 34, 45, xp, 42, 10);
+
+                break;
+            case 45:
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Vileplume", level, 0, 0, xp, 55, 14);
+
+                break;
+            case 46:
+                return new Creature(sprite, CreatureType.Bug, CreatureType.Grass, "Paras", level, 24, 47, xp, 20, 7);
+
+                break;
+            case 47:
+                return new Creature(sprite, CreatureType.Bug, CreatureType.Grass, "Parasect", level, 0, 0, xp, 48, 9);
+
+                break;
+            case 48:
+                return new Creature(sprite, CreatureType.Bug, CreatureType.Poison, "Venonat", level, 31, 49, xp, 26, 5.5);
+
+                break;
+            case 49:
+                return new Creature(sprite, CreatureType.Bug, CreatureType.Poison, "Venomoth", level, 0, 0, xp, 50, 11);
+
+                break;
+            case 50:
+                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Diglett", level, 26, 51, xp, 16, 6);
+
+                break;
+            case 51:
+                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Dugtrio", level, 0, 0, xp, 44, 15.5);
+
+                break;
+            case 52:
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Meowth", level, 28, 53, xp, 24, 6);
+
+                break;
+            case 53:
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Persian", level, 0, 0, xp, 50, 11);
+
+                break;
+            case 54:
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Psyduck", level, 33, 55, xp, 25, 5);
+
+                break;
+            case 55:
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Golduck", level, 0, 0, xp, 60, 11.5);
+
+                break;
+            case 56:
+                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Mankey", level, 28, 57, xp, 25, 7);
+
+                break;
+            case 57:
+                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Primeape", level, 0, 0, xp, 54, 14);
+
+                break;
+            case 58:
+                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Growlithe", level, 20, 59, xp, 34, 8);
+
+                break;
+            case 59:
+                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Arcanine", level, 0, 0, xp, 75, 13.5);
+
+                break;
+            case 60:
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Poliwag", level, 25, 61, xp, 28, 6);
+
+                break;
+            case 61:
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Poliwhirl", level, 34, 62, xp, 42, 9);
+
+                break;
+            case 62:
+                return new Creature(sprite, CreatureType.Water, CreatureType.Fighting, "Poliwrath", level, 0, 0, xp, 64, 13);
+
+                break;
+            case 63:
+                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Abra", level, 16, 64, xp, 25, 7);
+
+                break;
+            case 64:
+                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Kadabra", level, 32, 65, xp, 40, 12);
+
+                break;
+            case 65:
+                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Alakazam", level, 0, 0, xp, 65, 16);
+
+                break;
+            case 66:
+                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Machop", level, 28, 67, xp, 26, 7);
+
+                break;
+            case 67:
+                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Machoke", level, 38, 68, xp, 44, 10);
+
+                break;
+            case 68:
+                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Machamp", level, 0, 0, xp, 64, 14);
+
+                break;
+            case 69:
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Bellsprout", level, 21, 70, xp, 28, 6);
+
+                break;
+            case 70:
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Weepinbell", level, 34, 71, xp, 46, 9.5);
+
+                break;
+            case 71:
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Victreebel", level, 0, 0, xp, 60, 13);
+
+                break;
+            case 72:
+                return new Creature(sprite, CreatureType.Water, CreatureType.Poison, "Tentacool", level, 30, 73, xp, 38, 8);
+
+                break;
+            case 73:
+                return new Creature(sprite, CreatureType.Water, CreatureType.Poison, "Tentacruel", level, 0, 0, xp, 70, 12);
+
+                break;
+            case 74:
+                return new Creature(sprite, CreatureType.Rock, CreatureType.Ground, "Geodude", level, 25, 75, xp, 28, 6);
+
+                break;
+            case 75:
+                return new Creature(sprite, CreatureType.Rock, CreatureType.Ground, "Graveler", level, 35, 76, xp, 44, 10);
+
+                break;
+            case 76:
+                return new Creature(sprite, CreatureType.Rock, CreatureType.Ground, "Golem", level, 0, 0, xp, 65, 18);
+
+                break;
+            case 77:
+                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Ponyta", level, 40, 78, xp, 42, 10);
+
+                break;
+            case 78:
+                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Rapidash", level, 0, 0, xp, 62, 19);
+
+                break;
+            case 79:
+                return new Creature(sprite, CreatureType.Water, CreatureType.Psychic, "Slowpoke", level, 37, 80, xp, 34, 6);
+
+                break;
+            case 80:
+                return new Creature(sprite, CreatureType.Water, CreatureType.Psychic, "Slowbro", level, 0, 0, xp, 58, 10);
+
+                break;
+            case 81:
+                return new Creature(sprite, CreatureType.Electric, CreatureType.Steel, "Magnemite", level, 30, 82, xp, 28, 6);
+
+                break;
+            case 82:
+                return new Creature(sprite, CreatureType.Electric, CreatureType.Steel, "Magneton", level, 0, 0, xp, 55, 12);
+
+                break;
+            case 83:
+                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Farfetchd", level, 0, 0, xp, 37, 9);
+
+                break;
+            case 84:
+                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Doduo", level, 31, 85, xp, 32, 8);
+
+                break;
+            case 85:
+                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Dodrio", level, 0, 0, xp, 58, 13);
+
+                break;
+            case 86:
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Seel", level, 34, 87, xp, 35, 7);
+
+                break;
+            case 87:
+                return new Creature(sprite, CreatureType.Water, CreatureType.Ice, "Dewgong", level, 0, 0, xp, 60, 13);
+
+                break;
+            case 88:
+                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Grimer", level, 38, 89, xp, 34, 7);
+
+                break;
+            case 89:
+                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Muk", level, 0, 0, xp, 60, 12.5);
+
+                break;
+            case 90:
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Shelder", level, 26, 91, xp, 36, 7);
+
+                break;
+            case 91:
+                return new Creature(sprite, CreatureType.Water, CreatureType.Ice, "Cloyster", level, 0, 0, xp, 70, 12);
+
+                break;
+            case 92:
+                return new Creature(sprite, CreatureType.Ghost, CreatureType.Poison, "Gastly", level, 25, 93, xp, 33, 8);
+
+                break;
+            case 93:
+                return new Creature(sprite, CreatureType.Ghost, CreatureType.Poison, "Haunter", level, 35, 94, xp, 48, 13);
+
+                break;
+            case 94:
+                return new Creature(sprite, CreatureType.Ghost, CreatureType.Poison, "Gengar", level, 0, 0, xp, 68, 19);
+
+                break;
+            case 95:
+                return new Creature(sprite, CreatureType.Rock, CreatureType.Ground, "Onix", level, 0, 0, xp, 44, 10);
+
+                break;
+            case 96:
+                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Drowsee", level, 26, 97, xp, 38, 8);
+
+                break;
+            case 97:
+                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Hypno", level, 0, 0, xp, 60, 13.5);
+
+                break;
+            case 98:
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Krabby", level, 28, 99, xp, 40, 8);
+
+                break;
+            case 99:
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Kingler", level, 0, 0, xp, 75, 16);
+
+                break;
+            case 100:
+                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Voltorb", level, 30, 101, xp, 33, 8);
+
+                break;
+            case 101:
+                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Electrode", level, 0, 0, xp, 55, 15);
+
+                break;
+            case 102:
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Psychic, "Exeggcute", level, 30, 103, xp, 36, 7);
+
+                break;
+            case 103:
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Psychic, "Exeggutor", level, 0, 0, xp, 75, 13);
+
+                break;
+            case 104:
+                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Cubone", level, 28, 105, xp, 30, 7);
+
+                break;
+            case 105:
+                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Marowak", level, 0, 0, xp, 42, 12);
+
+                break;
+            case 106:
+                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Hitmonlee", level, 0, 0, xp, 41, 13);
+
+                break;
+            case 107:
+                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Hitmonchan", level, 0, 0, xp, 38, 13.5);
+
+                break;
+            case 108:
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Lickitung", level, 0, 0, xp, 42, 11);
+
+                break;
+            case 109:
+                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Koffing", level, 35, 110, xp, 36, 9);
+
+                break;
+            case 110:
+                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Weezing", level, 0, 0, xp, 64, 18);
+
+                break;
+            case 111:
+                return new Creature(sprite, CreatureType.Ground, CreatureType.Rock, "Rhyhorn", level, 42, 112, xp, 40, 11);
+
+                break;
+            case 112:
+                return new Creature(sprite, CreatureType.Ground, CreatureType.Rock, "Rhydon", level, 0, 0, xp, 70, 13);
+
+                break;
+            case 113:
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Chansey", level, 0, 0, xp, 76, 10);
+
+                break;
+            case 114:
+                return new Creature(sprite, CreatureType.Grass, CreatureType.None, "Tangela", level, 0, 0, xp, 55, 12);
+
+                break;
+            case 115:
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Kangaskhan", level, 0, 0, xp, 70, 12.5);
+
+                break;
+            case 116:
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Horsea", level, 32, 117, xp, 30, 7);
+
+                break;
+            case 117:
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Seadra", level, 0, 0, xp, 57, 13);
+
+                break;
+            case 118:
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Goldeen", level, 33, 119, xp, 38, 8);
+
+                break;
+            case 119:
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Seaking", level, 0, 0, xp, 52, 13);
+
+                break;
+            case 120:
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Staryu", level, 30, 121, xp, 37, 9);
+
+                break;
+            case 121:
+                return new Creature(sprite, CreatureType.Water, CreatureType.Psychic, "Starmie", level, 0, 0, xp, 65, 14);
+
+                break;
+            case 122:
+                return new Creature(sprite, CreatureType.Psychic, CreatureType.Fairy, "Mr. Mime", level, 0, 0, xp, 40, 12);
+
+                break;
+            case 123:
+                return new Creature(sprite, CreatureType.Bug, CreatureType.Flying, "Scyther", level, 0, 0, xp, 62, 16.5);
+
+                break;
+            case 124:
+                return new Creature(sprite, CreatureType.Ice, CreatureType.Psychic, "Jynx", level, 0, 0, xp, 44, 11);
+
+                break;
+            case 125:
+                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Electabuzz", level, 0, 0, xp, 55, 13);
+
+                break;
+            case 126:
+                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Magmar", level, 0, 0, xp, 55, 13);
+
+                break;
+            case 127:
+                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Pinsir", level, 0, 0, xp, 52, 14);
+
+                break;
+            case 128:
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Tauros", level, 0, 0, xp, 60, 15.5);
+
+                break;
+            case 129:
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Magikarp", level, 20, 130, xp, 18, 5);
+
+                break;
+            case 130:
+                return new Creature(sprite, CreatureType.Water, CreatureType.Flying, "Gyarados", level, 0, 0, xp, 68, 14);
+
+                break;
+            case 131:
+                return new Creature(sprite, CreatureType.Water, CreatureType.Ice, "Lapras", level, 0, 0, xp, 63, 13.5);
+
+                break;
+            case 132:
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Ditto", level, 0, 0, xp, 22, 5);
+
+                break;
+            case 133:
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Eevee", level, 10, 134, xp, 24, 5);
+
+                break;
+            case 134:
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Vaporeon", level, 20, 135, xp, 44, 10);
+
+                break;
+            case 135:
+                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Jolteon", level, 30, 136, xp, 52, 13);
+
+                break;
+            case 136:
+                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Flareon", level, 0, 0, xp, 65, 17);
+
+                break;
+            case 137:
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Porygon", level, 0, 0, xp, 42, 11);
+
+                break;
+            case 138:
+                return new Creature(sprite, CreatureType.Rock, CreatureType.Water, "Omanyte", level, 40, 139, xp, 42, 8);
+
+                break;
+            case 139:
+                return new Creature(sprite, CreatureType.Rock, CreatureType.Water, "Omastar", level, 0, 0, xp, 75, 16.5);
+
+                break;
+            case 140:
+                return new Creature(sprite, CreatureType.Rock, CreatureType.Water, "Kabuto", level, 40, 141, xp, 36, 10);
+
+                break;
+            case 141:
+                return new Creature(sprite, CreatureType.Rock, CreatureType.Water, "Kabutops", level, 0, 0, xp, 72, 17);
+
+                break;
+            case 142:
+                return new Creature(sprite, CreatureType.Rock, CreatureType.Flying, "Aerodactyl", level, 0, 0, xp, 75, 17.5);
+
+                break;
+            case 143:
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Snorlax", level, 0, 0, xp, 80, 15);
+
+                break;
+            case 144:
+                return new Creature(sprite, CreatureType.Ice, CreatureType.Flying, "Articuno", level, 0, 0, xp, 100, 22);
+
+                break;
+            case 145:
+                return new Creature(sprite, CreatureType.Electric, CreatureType.Flying, "Zapdos", level, 0, 0, xp, 100, 22);
+
+                break;
+            case 146:
+                return new Creature(sprite, CreatureType.Fire, CreatureType.Flying, "Moltres", level, 0, 0, xp, 100, 22);
+
+                break;
+            case 147:
+                return new Creature(sprite, CreatureType.Dragon, CreatureType.None, "Dratini", level, 30, 148, xp, 25, 7);
+
+                break;
+            case 148:
+                return new Creature(sprite, CreatureType.Dragon, CreatureType.None, "Dragonair", level, 55, 149, xp, 50, 14);
+
+                break;
+            case 149:
+                return new Creature(sprite, CreatureType.Dragon, CreatureType.Flying, "Dragonite", level, 0, 0, xp, 105, 23);
+
+                break;
+            case 150:
+                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Mewtwo", level, 0, 0, xp, 120, 25);
+
+                break;
+            case 151:
+                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Mew", level, 0, 0, xp, 120, 25);
+
+                break;
+            default:
+                return null;
+                break;
+        }
+    }
+
+
+
+
+    //% blockId=makeCreatureFromSprite 
+    //% block="make creature from $sprite=variables_get of type %creatureType1 %creatureType2 with name $name || with\n xp $xp hp $hp attackValue $attackValue"
+    //% expandableArgumentMode=toggle
+    //% blockSetVariable=myCreature
+    //% group="Create"
+    //% weight=100
+    export function makeCreatureFromSprite(sprite: Sprite, creatureType1: CreatureType, creatureType2: CreatureType, name: string, xp: number = 0, hp: number = 20, attackValue: number = 5, xpReward: number = 10): Creature {
+        return new Creature(sprite, creatureType1, creatureType2, name);
+    }
+
+    //% group="Value"
+    //% blockId="creatures_getCreatureType"
+    //% expandableArgumentMode=toggle
+    //% block="$creature=variables_get(myCreature) CreatureType1" callInDebugger
+    export function getCreatureType1(creature: Creature): CreatureType {
+        return creature.creatureType1;
+    }
+
+
+    //% group="Value"
+    //% blockId="creatures_setCreatureType"
+    //% expandableArgumentMode=toggle
+    //% block="set $creature=variables_get(myCreature) CreatureType1 to %creatureType1" callInDebugger
+    export function setCreatureType1(creature: Creature, creatureType1: CreatureType) {
+        creature.creatureType1 = creatureType1;
+    }
+
+    //% group="Value"
+    //% blockId="creatures_getCreatureTypeTwo"
+    //% expandableArgumentMode=toggle
+    //% block="$creature=variables_get(myCreature) CreatureType2" callInDebugger
+    export function getCreatureType2(creature: Creature): CreatureType {
+        return creature.creatureType2;
+    }
+
+
+    //% group="Value"
+    //% blockId="creatures_setCreatureTypeTwo"
+    //% expandableArgumentMode=toggle
+    //% block="set $creature=variables_get(myCreature) CreatureType2 to %creatureType2" callInDebugger
+    export function setCreatureType2(creature: Creature, creatureType2: CreatureType) {
+        creature.creatureType2 = creatureType2;
+    }
+
+
+    //% group="Value"
+    //% blockId="creatures_getSprite"
+    //% expandableArgumentMode=toggle
+    //% block="$creature=variables_get(myCreature) Sprite" callInDebugger
+    export function getCreatureSprite(creature: Creature): Sprite {
+        return creature.sprite;
+    }
+
+    //% group="Value"
+    //% blockId="creatures_setSprite"
+    //% expandableArgumentMode=toggle
+    //% block="set $creature=variables_get(myCreature) Sprite to $sprite=variables_get(mySprite)" callInDebugger
+    export function setCreatureSprite(creature: Creature, sprite: Sprite) {
+        creature.sprite = sprite;
+    }
+
+    //% group="Value"
+    //% blockId="creatures_getTrainerSprite"
+    //% expandableArgumentMode=toggle
+    //% block="$trainer=variables_get(myTrainer) Sprite" callInDebugger
+    export function getTrainerSprite(trainer: Trainer): Sprite {
+        return trainer.sprite;
+    }
+
+    //% group="Value"
+    //% blockId="creatures_setTrainerSprite"
+    //% expandableArgumentMode=toggle
+    //% block="set $trainer=variables_get(myTrainer) Sprite to $sprite=variables_get(mySprite)" callInDebugger
+    export function setTrainerSprite(trainer: Trainer, sprite: Sprite) {
+        trainer.sprite = sprite;
+    }
+
+
+
+
+
+
+    export function creatureBattleCreature(creature1: Creature, creature2: Creature): boolean {
+        let turn: number = 0;
+
+        creature1.sprite.setPosition(45, 52)
+        creature2.sprite.setPosition(115, 52)
+        creature1.setSayHP(true);
+        creature2.setSayHP(true);
+        creature1.sprite.setFlag(SpriteFlag.Invisible, false);
+        creature2.sprite.setFlag(SpriteFlag.Invisible, false);
+        creature1.healthbar.attachToSprite(null);
+        creature2.healthbar.attachToSprite(null);
+        creature1.healthbar.setPosition(40, 25)
+        creature2.healthbar.setPosition(120, 25)
+        creature1.healthbar.setFlag(SpriteFlag.Invisible, false);
+        creature2.healthbar.setFlag(SpriteFlag.Invisible, false);
+        creature1.healthbar.setStatusBarFlag(StatusBarFlag.SmoothTransition, true);
+        creature2.healthbar.setStatusBarFlag(StatusBarFlag.SmoothTransition, true);
+
+        //game.splash(creature1.level.toString())
+        let creature1LevelTextSprite = textsprite.create("Lvl. " + creature1.level.toString(), 1, 15)
+        let creature2LevelTextSprite = textsprite.create("Lvl. " + creature2.level.toString(), 1, 15)
+        creature1LevelTextSprite.setPosition(30, 18);
+        creature2LevelTextSprite.setPosition(130, 18);
+
+        let creature1HealthTextSprite = textsprite.create(Math.round(creature1.hp).toString(), 1, 15)
+        let creature2HealthTextSprite = textsprite.create(Math.round(creature2.hp).toString(), 1, 15)
+        creature1HealthTextSprite.setPosition(20, 25);
+        creature2HealthTextSprite.setPosition(140, 25);
+
+        //picture.fillRect(0, 0, 0, 0, 0)
+        while (creature1.hp > 0 && creature2.hp > 0) {
+            pause(200)
+            if (turn == 0) {
+                let attackType: CreatureType = null;
+                story.printDialog("Pick a move.", 80, 90, 50, 150, 15, 1, story.TextSpeed.VeryFast)
+                const move1Type = getMoveFromType(getCreatureType1(creature1));
+                const move2Type = getMoveFromType(getCreatureType2(creature1));
+                //game.splash(getCreatureType1(creature1));
+                //game.splash(getCreatureType2(creature1));
+                story.showPlayerChoices(move1Type, move2Type);
+
+                pauseUntil(() => !story.isMenuOpen());
+                attackType = getTypeFromMove(story.getLastAnswer());
+
+                animation.runMovementAnimation(creature1.sprite, animation.animationPresets(animation.easeRight), 5000, false)
+                pause(500)
+                animation.stopAnimation(animation.AnimationTypes.All, creature1.sprite)
+                //animation.runMovementAnimation(creature1.sprite, animation.animationPresets(animation.bobbing), 5000, true)
+                animation.runMovementAnimation(creature1.sprite, animation.animationPresets(animation.easeLeft), 2000, false)
+                pause(200)
+                animation.stopAnimation(animation.AnimationTypes.All, creature1.sprite)
+                let mult = calculateAttackMult(attackType, [creature2.creatureType1, creature2.creatureType2]);
+
+                if (Math.percentChance(6.25)) {
+                    creature2.hp -= Math.round(creature1.attackValue * mult * 1.5);
+                    pause(50)
+                    game.showLongText("Critical Hit", DialogLayout.Bottom)
+                    creature2HealthTextSprite.setText(Math.round(creature2.hp).toString());
+                } else {
+                    creature2.hp -= Math.round(creature1.attackValue * mult);
+                    creature2HealthTextSprite.setText(Math.round(creature2.hp).toString());
+                }
+                if (mult > 1) {
+                    game.showLongText("Super Effective", DialogLayout.Bottom);
+                } else if (mult == 0) {
+                    game.showLongText("Does not effect " + creature2.name, DialogLayout.Bottom);
+                } else if (mult < 1) {
+                    game.showLongText("Not very Effective", DialogLayout.Bottom);
+                }
+                turn = 1;
+            } else {
+                const move1Type = getMoveFromType(getCreatureType1(creature2));
+                const move2Type = getMoveFromType(getCreatureType2(creature2));
+                let enemyMove = "";
+                if (Math.percentChance(50)) {
+                    enemyMove = move1Type;
+                } else {
+                    enemyMove = move2Type;
+                }
+                game.showLongText("Enemy " + creature2.name + " used " + enemyMove, DialogLayout.Bottom);
+                animation.runMovementAnimation(creature2.sprite, animation.animationPresets(animation.easeLeft), 5000, false)
+                pause(500)
+                animation.stopAnimation(animation.AnimationTypes.All, creature2.sprite)
+                //animation.runMovementAnimation(creature2.sprite, animation.animationPresets(animation.bobbing), 5000, true)
+                animation.runMovementAnimation(creature2.sprite, animation.animationPresets(animation.easeRight), 2000, false)
+                pause(200)
+                animation.stopAnimation(animation.AnimationTypes.All, creature2.sprite)
+                let mult = calculateAttackMult(getTypeFromMove(enemyMove), [creature1.creatureType1, creature1.creatureType2]);
+                if (mult > 1) {
+                    game.showLongText("Super Effective", DialogLayout.Bottom);
+                } else if (mult == 0) {
+                    game.showLongText("Does not effect " + creature1.name, DialogLayout.Bottom);
+                } else if (mult <1){
+                    game.showLongText("Not very Effective", DialogLayout.Bottom);
+                }
+                if (Math.percentChance(6.25)) {
+                    creature1.hp -= Math.round(creature2.attackValue * mult * 1.5);
+                    pause(50)
+                    game.showLongText("Critical Hit", DialogLayout.Bottom)
+                    creature1HealthTextSprite.setText(Math.round(creature1.hp).toString());
+                } else {
+                    creature1.hp -= Math.round(creature2.attackValue * mult);
+                    creature1HealthTextSprite.setText(Math.round(creature1.hp).toString());
+                }
+                turn = 0;
+            }
+        }
+
+        if (creature1.hp > 0) {
+            //game.showLongText(creature1.name + " knocked out " + creature2.name + " and earned " + creature2.xpReward + " xp.", DialogLayout.Bottom)
+            creature1.xp += creature2.xpReward;
+        } else {
+            //game.showLongText(creature2.name + " knocked out " + creature1.name + " and earned " + creature2.xpReward + " xp.", DialogLayout.Bottom)
+            creature2.xp += creature1.xpReward;
+        }
+        pause(1000)
+
+        creature1LevelTextSprite.setText("")
+        creature2LevelTextSprite.setText("")
+        creature1HealthTextSprite.setText("")
+        creature2HealthTextSprite.setText("")
+        
+        creature1.sprite.setPosition(0, 0)
+        creature2.sprite.setPosition(0, 0)
+        creature1.setSayHP(false);
+        creature2.setSayHP(false);
+        creature1.sprite.setFlag(SpriteFlag.Invisible, true);
+        creature2.sprite.setFlag(SpriteFlag.Invisible, true);
+        creature1.healthbar.setFlag(SpriteFlag.Invisible, true);
+        creature2.healthbar.setFlag(SpriteFlag.Invisible, true);
+
+        pause(100)
+        creature1LevelTextSprite.destroy();
+        creature2LevelTextSprite.destroy();
+        creature1HealthTextSprite.destroy();
+        creature2HealthTextSprite.destroy();
+        if (creature1.hp > 0) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+
+    //% blockId=creatures_trainerBattleTrainer
+    //%block="make $player=variables_get(myTrainer) battle $opponent=variables_get(opponent)"
+    //% expandableArgumentMode=toggle
+    //% group="Battle"
+    //% weight=80
+    export function trainerBattleTrainer(player: Trainer, opponent: Trainer) : boolean {
+        let battleResult = false;
+        let playerCurrentCreature = player.partyPokemon[0];
+        let opponentCurrentCreature = opponent.partyPokemon[0];
+        let playerCurrentIndex = 0;
+        let opponentCurrentIndex = 0;
+
+        let playerRemainingPokemon = player.partyPokemon.length;
+        for (let creature of player.partyPokemon) {
+            if (creature.hp <= 0) {
+                playerRemainingPokemon--;
+            }
+        }
+        let opponentRemainingPokemon = opponent.partyPokemon.length;
+
+        let map: tiles.TileMapData = game.currentScene().tileMap.data;
+        tiles.setCurrentTilemap(tilemap` `)
+        scene.setBackgroundImage(img`
+            ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777ceeebec7777cecccebbbbbbbe77777cee77b77b7cebbbebeeec777cee77777777cbbbeebebe
+            777777777777777777777777777777777777777777777777777777777777777777777777777777777777ceebbbeb7777cecceebebbbbbe777777bebcee7b77ebbbebeeeec77cee77777777beebeebbbe
+            777777777777777777777777777777777777777777777777777777777777777777777777777777777777cebbbbeb7777ebcceebebbbbbe7777777ee7ee777bebbbebeeeec7ceee77777777bebbeebbbe
+            777777777777777777c77777777777777777777777777777777777777777777777777777777777777777eebbbe777777ebeeeebebbbbbb77777777ebee77777bbbbeebeee7eeec777777777ceeeebbbe
+            777777777777777777c77777777777777777777777777777777777777777777777777777777777777777eebbbe777777ebeeeebebbbbb7777777777ebbe7777bbbbebbeeeebee77777777777eeeebbee
+            777777777777777777c777777cc777777777777777777777777777777777777777777777777777777777eebbbe777777eebbeebebbbbb77777777b77eebbbb7ebbbebbeeebbee77777777777ebeebbee
+            77777777777777777cc7777ccc777777777777777777777777777777777777777777777777c777777777eebbbe7777777ebbeebebbbbe7777777777777ebb77ebbbebbbeeebe7777777777777beebbee
+            777777777777cc77cccc77cccc7777777b77777777777777777777777777777777777c7777c77777777cebbbbe7777777eebeebbbbbbe7777777777777ebbe7ebbbbbbbbeeec7777777777777bbebbbe
+            777777777777cc77cccc77ccc777c77777cc77777777c77777777777777777777777cc777cc7777777bcebebbb7777777eeeeeebbbbbeb777777777777bebbeeebbbbbebeee77777777777777ebebbbe
+            7777777cc777cc77cccc7cccc77cc7777cc777777777c77c77777b77777777777c77cc7777c7777777beebbbe77777777ceeeeebbbbbe777777777777777ebbbebbbbbeeeeec777777777c77cceebbbe
+            777c7777c7777cc7cccccccccb7cc7c77cc77777777cc7cc77777777777777777c77cc77cc777c77777eebebe77b77777ceeeeebbbbe7777777777777777bbbbbbbbbbebeeec7777777777c7ccbebbbb
+            7777cc77cc7777c7ccccccccc7ccc7c7ccc77777c77cc7cc7c77c777c77777777cc7ccc7ccc77cc7c7cebeebe77b77b77ceeeeebbbbe7777777777777777cbebbeebbbebeeee777b7c77c7ccc7debbbb
+            7c77ccc7ccc77ccccccccccccccc7cc7cc77cc77c7cccccccc7cc777c77cc7777cccccccccccccccccceeeeec77777b77ceeeebbbbbeb777777777777777777beeebbbebbeeecc7b7ccbcccccbbebbbb
+            77c7ccc7ccc77cccccccccccccccccccccc7cc7cccccccccccccc777c7cc77cc7cccccc7ccccccccccceeeee77cb77777eeeeebbbbbe777777777777777777bbeeebbbebbeeec7c77c77cccccbbebebb
+            7cc7ccc7ccc7ccccccccccccccccccccccc7cc7cccccc77ccccccc7cccccc7cccccccccccccccccccceeeeee77cb77777eeeeebbbbb777777777777777777777bebbbbebbeeeebccbcccccc77b7eebbb
+            cccccc7cccc7cccccccccccccccccccccc77cc7cccccccccc77ccc7cccccc7cccccccccc77777ccccc77ccee7c777777ceeeeebbbbb777777777777777777777bebbbbbbbeeeeccc7ccccccc777ebbbb
+            ccccccccccccccccccccccccccccccccccccccccccccc7ccccccccccccccccccccccccc7bdb7b7bbe77777cccc777777ceeeeebbbbbb777777777777777777777ebbbbbbebeeeccc7ccccb77777ebbbb
+            ccccc7777cccccccccccccccccccccccccc7cc777ccc77cccccccccccc777ccccccccccdbbbbbbbbb7bb7777cc77c7ccceeeeebbbbbb7777777777777777777777bbbbbbeeeeeecccccbdb77777ebbbb
+            77c777777cccccccccccccccccccccccc7c7c7777ccccc77cccccc777777777777cccc7bbdbbdddbbbbdb777ccc7c7cceeeeeebbbbe7c77777777777777777777bbbbbebeeeeeecccccddb77777ebbbe
+            7777777777ccccccccc7cc7c7cccccc7cc7c77ccc7cc77777777c777777777777bccb7c7dbdbdbddbb7bdb77ccccccceeeceeebebbccc777777777777c77777ccbbbbbb7ccceeecccccbdbb7777ebbbe
+            7777777777777ccccccccccccccccc77ccccccccccc77777777777777777777777bddb77bbdbbbbb77bbbdb77cccccccccceec7ebbccc777c77777777cc7777cc7bbbec7bbbceecccc7bbbb7777ebbee
+            777777777777777cccccccccccc7cc777ccccccccc77777777777777777777777ddddd7bbdbbbbb777dbbdb777c7ccc77ceeccccbbccccc7c77777777cc7777ccccbbc777bbbeccccc777b77777ebbee
+            777777777777777c7ccbccccc777c777cccc7ccc7777777777777777777777777bdddddbbddbbbbbbbdbbb7777777c777ccc77cbbccc7c7777777c7777ccccc7cccbc7777bbddccccc777b77777ebbeb
+            777777777777777ccc77cccc777cc777ccc77cc77777777777777777777777db77dddbdbbbbb77bdbbb77777777776777cc777cccc77cc7cc777ccc777ccccccccccc777bbb777c7777bbbb7777ebbeb
+            777777777777777ccc777cc7777c7777c777ccc77777777777777777777777ddb7bdb7bddbb777bdbb77777777777c777777cccc777ccc7cc7c777c77ccccccc7bddb777bb77777bb7bdbbb7777ebbeb
+            7777777777777777c777cc77777c77777777cc77777777777777777777777bddbdddb7bdddbb7bbbbb77777777c77c7c77777cc7777ccccccc7c77777ccc7ccc77dbd777bb7777db77bbbb77777ebbeb
+            77777777777777777777ccc7777c777777777777777777777777777777777dddddddddddddbb7bbbbb77777777cc777777c7cc7777cccccccccc777c77ccc7c777b7777777777777777b7777777ebbbb
+            777777777777777777777777777777c77777c7777777777777777777777cbdddddbbddddddbb77777777777777cc77777cc777777ccccccccc7ccccc7cccc77c777777777777777777777777777ebebb
+            777777777777777777c77777777777c7777c77777777777777777777777cdbdbddddddddddb777777777777777c777c77d7c777777ccccccccc7cccc7cccc77777777c777777777777777777777eebbb
+            777777777777777777777777777777777ccc7777777777777777777777777bb7bddbbbddddb777777777777777cc777bbdb7777777c7ccccccccccccccccc777777777777777777777777777777ebbbb
+            77777777777777777c7777cc777c77777ccc777777777777777777777bbbbb77bbbb77bddb777777777777777777777bbddbb7777777ccc77ccc7cccccccc777777777777777777777777777777eeebb
+            77777777777777777cccc777777cc7c77ccc777777777777777777777dddddb777777777b777777777777777bbb7777777bbbbc77777cc77cc77ccccccccc777b77777b77777777777777777777eebbb
+            7777777777777777777777777777c77c7c7777777777777777777777bddbbdb777777777777777777777777bb777777777bb777777777cc76777ccccccccc77777777777c77777777c77777777cebbeb
+            77777777777777777777777777777777c7777777777777777777777bddd7bbb7777777777777777777777777b77777777777777777777cccc777cccccc7cc777777c7777777777777c777777777ebbeb
+            7777777777777777777777cc77777777777777777777777777777c7bbbb7777777777777777777777777777777777777777777777c777777777cc7ccc777c777777cc7777c7777777c777777777ebeeb
+            777777777777777777c7777777777777777777777777777777777c777b777777777777777777777bb77777777777777777777777777777777777777cc777c7777777c7777c7777777c77c777777ebeeb
+            77777777777777777777777c77777777777777777777777777777777777777777777777bbb77777777777777777777777777777bb777cc7777777777c7777c777777c777767777777c777777777ebeee
+            777777777777777777c7777c77c7c777777777777777777777777c777777777777777bddb777777777777777777777777777777b77777c77777777ccc777bc77777777777777777c7c777777777ebeee
+            c77777777777777777c77c7c777cc777777777777777777bb777777777777777777bbddddb77777777777777777777777777777777777cc777777777c77777777777777767777c77cc7777777ccebebe
+            cc7777777777777777c777cc777cc7777c77777777cbbdbddbb7cc777777777777777dbbdb7777777777777777777777777777777777777777777777777777777777777ccc777777cc77777777cebebe
+            c7c7777777777777777cb7cc7777c7777c777777777ddbddddbb77777777777777777b77b77777777777777777777777777777777777777777777c777c7777777777777777c77777cc7777c7c7cebbbe
+            77c7c77777777777777c777c7777c7777777777777ddddddddb77c777777777777777777777777777777777777777777777777777777777c777777c77777777777777777c777c7777c7777c7c7cebbbe
+            7777c77777777777777c777777777777777c777c7bbbdddbbbb777777777777777777777777777777777c77777777777777777777777777cc777cccc7777777777777777c77cc77c777777c777cebbbe
+            777cc77777777777777c77777ccc777777777777bdbdbb77bdb777777777777777cc7777777777777777777777777777777777777c777777777c7ccc77c77777777777777c77c7c7c777777c77cbbbbe
+            7777777777777777c777777777d7777777cc777bdbd777777bb77777777777777777777777777777777777777777c7777777777777c7c7c777777c7c7c77c777c777777c77c77c77cc7cc77c77cbbbee
+            7777777777777777c7777777bdb77bbddd77c77bbbb7777777777777777777c77cc7777777777777777c77777777c777777c7ccc7777c7777cc777cc7c777cc7c77c7ccc77c77777c77c77777cebbbee
+            777c77777777777cc7777777b77777b77b77777bb7b7777777777777777777777777777c777777777777c7777777c7c7777777777777777777777777777777777777777c777c777777777c777cbbbbee
+            777777cc77777777c777bbb777777777777777777777777777777777777777777c77777cc77777777c7777777777777777777777777777777777777777777777777777777777777777cc7c777cbbbbee
+            7777777c7777c77c77cdb777777777777b77777777777777777777c7777c7777c77c77cc7777c7c777777777777777777777777777777777777777777777777777777777777777777777bc7ccebbbbee
+            7777777c7ccc777c77cbb777777777777c77777777777777777777c777c77777c7c777ccc7777cc7777777777777777777777777777777777777777777777777777777777777777777777cc7cebbbeee
+            77c777777ccc77cc7777777777777777777777c777777777777777c777c77777c77777ccc77777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbeee
+            777777777cc777c7c7777777777777777777c77777777777777c77cc77cc777c77777cc7777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbebe
+            77777777777777cc777777777777777c7c77c777c7777777777c77777cc777cc77777cc7777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbebb
+            7777777777777c7777777777777777777c7777777777777777c777777777777c7777c777777777777777777777777777777777777777777777777777777777777777777777777777777777777eebbbbb
+            777777777777777777777777777777c77c7777777777c77777c77777777777777777ccc7777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbb
+            777777777777777777777777777777777cc77777c7777777c7c77c7777777777777cc7cc777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbb
+            77777777777777777777777777777777777777777cc7777777767c7cc7777777777cccc7777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbb
+            77777777777777777777777777777777c777777777c777777776cc777777777777ccc77c777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbb
+            777777777777777777777777777777777777777777777777777cc7777777777777ccc77c777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbb
+            777777777777777777777777777777777777777777777777777c7777777777777c7777c7777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbe
+            77777777777777777777777777777777777777777777777777cc7777777c777777777cc777777777777777777777777777777777777777777777777777777777777777777777777777777777eebeebbe
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbebbee
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbee
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbeebee
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbebee
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbeebe
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbeeeee
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbeeeee
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777eebeeeeb
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbeeeeb
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbeeeeb
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbeeebb
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbebb
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbebb
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbebe
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbeeebe
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbeebbe
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777bebbbebbe
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbebbe
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbebbe
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbbbe
+            77777777777777777777777777777777777777777777777777777777777777b7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbeebbe
+            77777777777777777777777777777777777777777777777777777777777777b7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbeebbe
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbeebbe
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbeebbe
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777bbbbeeebe
+            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbeeee
+            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbeeee
+            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777cbebbbeeee
+            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777cbeebbeeee
+            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777cbebeee777
+            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ceeeec7777
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777cc777ee77777
+            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777c7777777c7777
+            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777c777777777777
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777779977777777777777777777777777777777777777777777777777777777777777777777
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
+            7777777777777777777777777b77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
+            7777777777777777777777777777777777777777777777777777777777b77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
+            7777777777777777777777777777777777777777777777777777777777b77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777cccc77777777777777777
+            77777777777777777777777777777777777777777777777777b77777777777777777777777777777777777777777777777777777777777777777777777777777777777777c77777c7777777777777777
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777c7777
+            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777c777777777777777777777777
+            7777777777777777777777777777777777777777777777ccc777777777777777777777777777777777777777777777777777777777777777777777777777777777777777c77777777777777777777777
+            777cccc77777777777777777777777777777777777777c7777c7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777cc7777
+            7cccc7777777777777777b7777777777777777777777c7bb777777777777777777777777777777777777777777777777777777777777777777777777777c777777777777777777777777777777777777
+            c77c77777777777777777777777777777777777777cbb7bddb777bb77777777777777777777777777777777777777777777777777777777777777777777777c777777c77777777777777777777777777
+            777c777777777777777777777777777777777cccc7cbdbbddb7777b7777c7777777777777777777777777777777777777777777777777777777777777777777c77ccc7c7777777777777777777777777
+            77c7777777777777777777777777777777777bd7777bb77b77777777777777777777777777777777ccc77777777777777777777777777777777777777777777777777777777777777777777777777777
+            7777777cccc777777777777777777777777bdddbb777777777777777777767777777777777777777777777777777777777777777777777cc77c77c777777777777777777777777777777777777777777
+            7c77cc77777777777777777777777777c7cdddddb7777777777777777777c76cc7777777777777777c77c77c777777777777777777777777777cc7777777777777777777777777777777777777777777
+            7ccc77777777777777776777777777b7777b777b777777777777777777777777777777777777c777777776ccc77777777777777777777777777777777777777777777777777777777777777777777777
+            777777777ccccc777777777777777dd77777bbb77777b7777777777777777777777cc7777777c7c777c777c77c7cc7777777777777777777777777777777777777777777777777777777777777777777
+            c7cc7777ccc77677c7c777c7ccc777777777bbb7777777777777777777777777777777777777c77c77c777c77c7ccc777767777777777777777777777777777777777777777777777777777777777777
+            77ccc77cbb7dbcceecbbbb6bbbbbbbb777d9b77db7e7c77bbbb7b777e7bc7777777777777777777777e777bbb777b7bbbb77bb77777b77777777777777777b77b777777777e77777b7bb7777777e7777
+            777777cb999999999bcc999999999bbeee99bececbbcebeb9999ccceb99bc7777777777777eeeeeebbbebbbbbbebbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbebebbeeeeebbbbbbeebbbbbbbbeebbe
+        `)
+        scene.centerCameraAt(80, 60);
+        scene.backgroundImage().fillRect(5, 8, 150, 100, 1)
+        scene.backgroundImage().drawRect(5, 8, 150, 100, 15)
+        let enemySprite = sprites.create(opponent.sprite.image,SpriteKind.Enemy);
+        enemySprite.setPosition(80,45);
+        enemySprite.z=100;
+        enemySprite.setFlag(SpriteFlag.Invisible, false);
+        game.setDialogFrame(img`
+            ..99999999999999999999..
+            .9966666666666666666699.
+            996661111111111111166699
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            996661111111111111166699
+            .9966666666666666666699.
+            ..99999999999999999999..
+        `)
+        game.showLongText("You challenged " + opponent.name + " to a battle.", DialogLayout.Bottom)
+
+        
+        game.showLongText("You sent out " + playerCurrentCreature.name + " to battle!", DialogLayout.Bottom)
+        game.showLongText("They sent out " + opponentCurrentCreature.name + " to battle!", DialogLayout.Bottom)
+        enemySprite.setFlag(SpriteFlag.Invisible, true);
+        enemySprite.destroy();
+
+        while (playerRemainingPokemon > 0 && opponentRemainingPokemon > 0) {
+            let win = creatureBattleCreature(playerCurrentCreature, opponentCurrentCreature)
+            if (win) {
+                game.showLongText("You knocked out " + opponentCurrentCreature.name + " and earned " + opponentCurrentCreature.xpReward + " xp.", DialogLayout.Bottom)
+                opponentRemainingPokemon--;
+                if (opponentRemainingPokemon > 0) {
+                    opponentCurrentIndex++;
+                    opponentCurrentCreature = opponent.partyPokemon[opponentCurrentIndex];
+                    game.showLongText(opponent.name + " sent out " + opponentCurrentCreature.name, DialogLayout.Bottom);
+                } else {
+                    game.showLongText("You won the battle and defeated " + opponent.name +"!", DialogLayout.Bottom);
+                    battleResult = true;
+                }
+            } else {
+                game.showLongText("They knocked out " + playerCurrentCreature.name, DialogLayout.Bottom)
+                playerRemainingPokemon--;
+                if (playerRemainingPokemon > 0) {
+
+                    let choices = [];
+                    for (let creature of player.partyPokemon) {
+                        if (creature.hp > 0) {
+                            choices.push(creature.name);
+                        }
+                    }
+                    switch (choices.length) {
+                        case 0:
+                            //you lose 
+                            break;
+                        case 1:
+                            game.showLongText("You only have " + choices[0] + " remaining. You sent out " + choices[0] + ".", DialogLayout.Bottom);
+                            break;
+                        case 2:
+                            story.printDialog("Pick a Pokemon to send out:", 80, 90, 50, 150, 15, 1, story.TextSpeed.VeryFast);
+                            story.showPlayerChoices(choices[0], choices[1]);
+                            break;
+                        case 3:
+                            story.printDialog("Pick a Pokemon to send out:", 80, 90, 50, 150, 15, 1, story.TextSpeed.VeryFast);
+                            story.showPlayerChoices(choices[0], choices[1], choices[2]);
+                            break;
+                        case 4:
+                            story.printDialog("Pick a Pokemon to send out:", 80, 90, 50, 150, 15, 1, story.TextSpeed.VeryFast);
+                            story.showPlayerChoices(choices[0], choices[1], choices[2], choices[3]);
+                            break;
+                        case 5:
+                            story.printDialog("Pick a Pokemon to send out:", 80, 90, 50, 150, 15, 1, story.TextSpeed.VeryFast);
+                            story.showPlayerChoices(choices[0], choices[1], choices[2], choices[3], choices[4]);
+                            break;
+                    }
+                    pauseUntil(() => !story.isMenuOpen());
+                    if (choices.length >= 2) {
+                        for (let creature of player.partyPokemon) {
+                            if (creature.name == story.getLastAnswer()) {
+                                playerCurrentCreature = creature;
+                                game.showLongText("You sent out " + playerCurrentCreature.name + " to battle.", DialogLayout.Bottom);
+                                break;
+                            }
+                        }
+                    } else if (choices.length == 1) {
+                        for (let creature of player.partyPokemon) {
+                            if (creature.name == choices[0]) {
+                                playerCurrentCreature = creature;
+                                game.showLongText("You sent out " + playerCurrentCreature.name + " to battle.", DialogLayout.Bottom);
+                                break;
+                            }
+                        }
+                    } else {
+                        game.showLongText("You lost the battle!.", DialogLayout.Bottom);
+                        battleResult = false;
+                    }
+
+                }
+            }
+        }
+
+
+        scene.setBackgroundImage(img`
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+        `);
+        tiles.setCurrentTilemap(map)
+        scene.centerCameraAt(player.sprite.x, player.sprite.y);
+        scene.cameraFollowSprite(player.sprite);
+        pause(100);
+        for (let creature of player.partyPokemon) {
+            checkLevelUp(creature);
+            checkEvolve(creature);
+        }
+
+        return battleResult;
+
+    }
+
+    //% blockId=creatures_trainerBattleWild
+    //% block="make $player=variables_get(myTrainer) battle wild $wildCreature=variables_get(wildCreature)"
+    //% expandableArgumentMode=toggle
+    //% group="Battle"
+    //% weight=80
+    export function trainerBattleWild(player: Trainer, wildCreature: Creature) {
+        let battleResult = false;
+        let playerCurrentCreature = player.partyPokemon[0];
+        let playerCurrentIndex = 0;
+
+        let playerRemainingPokemon = player.partyPokemon.length;
+        for (let creature of player.partyPokemon) {
+            if (creature.hp <= 0) {
+                playerRemainingPokemon--;
+            }
+        }
+
+        let map: tiles.TileMapData = game.currentScene().tileMap.data;
+        tiles.setCurrentTilemap(tilemap` `)
+        scene.setBackgroundImage(img`
+            ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777ceeebec7777cecccebbbbbbbe77777cee77b77b7cebbbebeeec777cee77777777cbbbeebebe
+            777777777777777777777777777777777777777777777777777777777777777777777777777777777777ceebbbeb7777cecceebebbbbbe777777bebcee7b77ebbbebeeeec77cee77777777beebeebbbe
+            777777777777777777777777777777777777777777777777777777777777777777777777777777777777cebbbbeb7777ebcceebebbbbbe7777777ee7ee777bebbbebeeeec7ceee77777777bebbeebbbe
+            777777777777777777c77777777777777777777777777777777777777777777777777777777777777777eebbbe777777ebeeeebebbbbbb77777777ebee77777bbbbeebeee7eeec777777777ceeeebbbe
+            777777777777777777c77777777777777777777777777777777777777777777777777777777777777777eebbbe777777ebeeeebebbbbb7777777777ebbe7777bbbbebbeeeebee77777777777eeeebbee
+            777777777777777777c777777cc777777777777777777777777777777777777777777777777777777777eebbbe777777eebbeebebbbbb77777777b77eebbbb7ebbbebbeeebbee77777777777ebeebbee
+            77777777777777777cc7777ccc777777777777777777777777777777777777777777777777c777777777eebbbe7777777ebbeebebbbbe7777777777777ebb77ebbbebbbeeebe7777777777777beebbee
+            777777777777cc77cccc77cccc7777777b77777777777777777777777777777777777c7777c77777777cebbbbe7777777eebeebbbbbbe7777777777777ebbe7ebbbbbbbbeeec7777777777777bbebbbe
+            777777777777cc77cccc77ccc777c77777cc77777777c77777777777777777777777cc777cc7777777bcebebbb7777777eeeeeebbbbbeb777777777777bebbeeebbbbbebeee77777777777777ebebbbe
+            7777777cc777cc77cccc7cccc77cc7777cc777777777c77c77777b77777777777c77cc7777c7777777beebbbe77777777ceeeeebbbbbe777777777777777ebbbebbbbbeeeeec777777777c77cceebbbe
+            777c7777c7777cc7cccccccccb7cc7c77cc77777777cc7cc77777777777777777c77cc77cc777c77777eebebe77b77777ceeeeebbbbe7777777777777777bbbbbbbbbbebeeec7777777777c7ccbebbbb
+            7777cc77cc7777c7ccccccccc7ccc7c7ccc77777c77cc7cc7c77c777c77777777cc7ccc7ccc77cc7c7cebeebe77b77b77ceeeeebbbbe7777777777777777cbebbeebbbebeeee777b7c77c7ccc7debbbb
+            7c77ccc7ccc77ccccccccccccccc7cc7cc77cc77c7cccccccc7cc777c77cc7777cccccccccccccccccceeeeec77777b77ceeeebbbbbeb777777777777777777beeebbbebbeeecc7b7ccbcccccbbebbbb
+            77c7ccc7ccc77cccccccccccccccccccccc7cc7cccccccccccccc777c7cc77cc7cccccc7ccccccccccceeeee77cb77777eeeeebbbbbe777777777777777777bbeeebbbebbeeec7c77c77cccccbbebebb
+            7cc7ccc7ccc7ccccccccccccccccccccccc7cc7cccccc77ccccccc7cccccc7cccccccccccccccccccceeeeee77cb77777eeeeebbbbb777777777777777777777bebbbbebbeeeebccbcccccc77b7eebbb
+            cccccc7cccc7cccccccccccccccccccccc77cc7cccccccccc77ccc7cccccc7cccccccccc77777ccccc77ccee7c777777ceeeeebbbbb777777777777777777777bebbbbbbbeeeeccc7ccccccc777ebbbb
+            ccccccccccccccccccccccccccccccccccccccccccccc7ccccccccccccccccccccccccc7bdb7b7bbe77777cccc777777ceeeeebbbbbb777777777777777777777ebbbbbbebeeeccc7ccccb77777ebbbb
+            ccccc7777cccccccccccccccccccccccccc7cc777ccc77cccccccccccc777ccccccccccdbbbbbbbbb7bb7777cc77c7ccceeeeebbbbbb7777777777777777777777bbbbbbeeeeeecccccbdb77777ebbbb
+            77c777777cccccccccccccccccccccccc7c7c7777ccccc77cccccc777777777777cccc7bbdbbdddbbbbdb777ccc7c7cceeeeeebbbbe7c77777777777777777777bbbbbebeeeeeecccccddb77777ebbbe
+            7777777777ccccccccc7cc7c7cccccc7cc7c77ccc7cc77777777c777777777777bccb7c7dbdbdbddbb7bdb77ccccccceeeceeebebbccc777777777777c77777ccbbbbbb7ccceeecccccbdbb7777ebbbe
+            7777777777777ccccccccccccccccc77ccccccccccc77777777777777777777777bddb77bbdbbbbb77bbbdb77cccccccccceec7ebbccc777c77777777cc7777cc7bbbec7bbbceecccc7bbbb7777ebbee
+            777777777777777cccccccccccc7cc777ccccccccc77777777777777777777777ddddd7bbdbbbbb777dbbdb777c7ccc77ceeccccbbccccc7c77777777cc7777ccccbbc777bbbeccccc777b77777ebbee
+            777777777777777c7ccbccccc777c777cccc7ccc7777777777777777777777777bdddddbbddbbbbbbbdbbb7777777c777ccc77cbbccc7c7777777c7777ccccc7cccbc7777bbddccccc777b77777ebbeb
+            777777777777777ccc77cccc777cc777ccc77cc77777777777777777777777db77dddbdbbbbb77bdbbb77777777776777cc777cccc77cc7cc777ccc777ccccccccccc777bbb777c7777bbbb7777ebbeb
+            777777777777777ccc777cc7777c7777c777ccc77777777777777777777777ddb7bdb7bddbb777bdbb77777777777c777777cccc777ccc7cc7c777c77ccccccc7bddb777bb77777bb7bdbbb7777ebbeb
+            7777777777777777c777cc77777c77777777cc77777777777777777777777bddbdddb7bdddbb7bbbbb77777777c77c7c77777cc7777ccccccc7c77777ccc7ccc77dbd777bb7777db77bbbb77777ebbeb
+            77777777777777777777ccc7777c777777777777777777777777777777777dddddddddddddbb7bbbbb77777777cc777777c7cc7777cccccccccc777c77ccc7c777b7777777777777777b7777777ebbbb
+            777777777777777777777777777777c77777c7777777777777777777777cbdddddbbddddddbb77777777777777cc77777cc777777ccccccccc7ccccc7cccc77c777777777777777777777777777ebebb
+            777777777777777777c77777777777c7777c77777777777777777777777cdbdbddddddddddb777777777777777c777c77d7c777777ccccccccc7cccc7cccc77777777c777777777777777777777eebbb
+            777777777777777777777777777777777ccc7777777777777777777777777bb7bddbbbddddb777777777777777cc777bbdb7777777c7ccccccccccccccccc777777777777777777777777777777ebbbb
+            77777777777777777c7777cc777c77777ccc777777777777777777777bbbbb77bbbb77bddb777777777777777777777bbddbb7777777ccc77ccc7cccccccc777777777777777777777777777777eeebb
+            77777777777777777cccc777777cc7c77ccc777777777777777777777dddddb777777777b777777777777777bbb7777777bbbbc77777cc77cc77ccccccccc777b77777b77777777777777777777eebbb
+            7777777777777777777777777777c77c7c7777777777777777777777bddbbdb777777777777777777777777bb777777777bb777777777cc76777ccccccccc77777777777c77777777c77777777cebbeb
+            77777777777777777777777777777777c7777777777777777777777bddd7bbb7777777777777777777777777b77777777777777777777cccc777cccccc7cc777777c7777777777777c777777777ebbeb
+            7777777777777777777777cc77777777777777777777777777777c7bbbb7777777777777777777777777777777777777777777777c777777777cc7ccc777c777777cc7777c7777777c777777777ebeeb
+            777777777777777777c7777777777777777777777777777777777c777b777777777777777777777bb77777777777777777777777777777777777777cc777c7777777c7777c7777777c77c777777ebeeb
+            77777777777777777777777c77777777777777777777777777777777777777777777777bbb77777777777777777777777777777bb777cc7777777777c7777c777777c777767777777c777777777ebeee
+            777777777777777777c7777c77c7c777777777777777777777777c777777777777777bddb777777777777777777777777777777b77777c77777777ccc777bc77777777777777777c7c777777777ebeee
+            c77777777777777777c77c7c777cc777777777777777777bb777777777777777777bbddddb77777777777777777777777777777777777cc777777777c77777777777777767777c77cc7777777ccebebe
+            cc7777777777777777c777cc777cc7777c77777777cbbdbddbb7cc777777777777777dbbdb7777777777777777777777777777777777777777777777777777777777777ccc777777cc77777777cebebe
+            c7c7777777777777777cb7cc7777c7777c777777777ddbddddbb77777777777777777b77b77777777777777777777777777777777777777777777c777c7777777777777777c77777cc7777c7c7cebbbe
+            77c7c77777777777777c777c7777c7777777777777ddddddddb77c777777777777777777777777777777777777777777777777777777777c777777c77777777777777777c777c7777c7777c7c7cebbbe
+            7777c77777777777777c777777777777777c777c7bbbdddbbbb777777777777777777777777777777777c77777777777777777777777777cc777cccc7777777777777777c77cc77c777777c777cebbbe
+            777cc77777777777777c77777ccc777777777777bdbdbb77bdb777777777777777cc7777777777777777777777777777777777777c777777777c7ccc77c77777777777777c77c7c7c777777c77cbbbbe
+            7777777777777777c777777777d7777777cc777bdbd777777bb77777777777777777777777777777777777777777c7777777777777c7c7c777777c7c7c77c777c777777c77c77c77cc7cc77c77cbbbee
+            7777777777777777c7777777bdb77bbddd77c77bbbb7777777777777777777c77cc7777777777777777c77777777c777777c7ccc7777c7777cc777cc7c777cc7c77c7ccc77c77777c77c77777cebbbee
+            777c77777777777cc7777777b77777b77b77777bb7b7777777777777777777777777777c777777777777c7777777c7c7777777777777777777777777777777777777777c777c777777777c777cbbbbee
+            777777cc77777777c777bbb777777777777777777777777777777777777777777c77777cc77777777c7777777777777777777777777777777777777777777777777777777777777777cc7c777cbbbbee
+            7777777c7777c77c77cdb777777777777b77777777777777777777c7777c7777c77c77cc7777c7c777777777777777777777777777777777777777777777777777777777777777777777bc7ccebbbbee
+            7777777c7ccc777c77cbb777777777777c77777777777777777777c777c77777c7c777ccc7777cc7777777777777777777777777777777777777777777777777777777777777777777777cc7cebbbeee
+            77c777777ccc77cc7777777777777777777777c777777777777777c777c77777c77777ccc77777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbeee
+            777777777cc777c7c7777777777777777777c77777777777777c77cc77cc777c77777cc7777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbebe
+            77777777777777cc777777777777777c7c77c777c7777777777c77777cc777cc77777cc7777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbebb
+            7777777777777c7777777777777777777c7777777777777777c777777777777c7777c777777777777777777777777777777777777777777777777777777777777777777777777777777777777eebbbbb
+            777777777777777777777777777777c77c7777777777c77777c77777777777777777ccc7777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbb
+            777777777777777777777777777777777cc77777c7777777c7c77c7777777777777cc7cc777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbb
+            77777777777777777777777777777777777777777cc7777777767c7cc7777777777cccc7777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbb
+            77777777777777777777777777777777c777777777c777777776cc777777777777ccc77c777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbb
+            777777777777777777777777777777777777777777777777777cc7777777777777ccc77c777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbb
+            777777777777777777777777777777777777777777777777777c7777777777777c7777c7777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbe
+            77777777777777777777777777777777777777777777777777cc7777777c777777777cc777777777777777777777777777777777777777777777777777777777777777777777777777777777eebeebbe
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbebbee
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbee
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbeebee
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbebee
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbeebe
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbeeeee
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbeeeee
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777eebeeeeb
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbeeeeb
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbeeeeb
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbeeebb
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbebb
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbebb
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbebe
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbeeebe
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbeebbe
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777bebbbebbe
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbebbe
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbebbe
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbbbe
+            77777777777777777777777777777777777777777777777777777777777777b7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbeebbe
+            77777777777777777777777777777777777777777777777777777777777777b7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbeebbe
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbeebbe
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbeebbe
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777bbbbeeebe
+            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbeeee
+            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbeeee
+            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777cbebbbeeee
+            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777cbeebbeeee
+            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777cbebeee777
+            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ceeeec7777
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777cc777ee77777
+            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777c7777777c7777
+            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777c777777777777
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777779977777777777777777777777777777777777777777777777777777777777777777777
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
+            7777777777777777777777777b77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
+            7777777777777777777777777777777777777777777777777777777777b77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
+            7777777777777777777777777777777777777777777777777777777777b77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777cccc77777777777777777
+            77777777777777777777777777777777777777777777777777b77777777777777777777777777777777777777777777777777777777777777777777777777777777777777c77777c7777777777777777
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777c7777
+            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777c777777777777777777777777
+            7777777777777777777777777777777777777777777777ccc777777777777777777777777777777777777777777777777777777777777777777777777777777777777777c77777777777777777777777
+            777cccc77777777777777777777777777777777777777c7777c7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777cc7777
+            7cccc7777777777777777b7777777777777777777777c7bb777777777777777777777777777777777777777777777777777777777777777777777777777c777777777777777777777777777777777777
+            c77c77777777777777777777777777777777777777cbb7bddb777bb77777777777777777777777777777777777777777777777777777777777777777777777c777777c77777777777777777777777777
+            777c777777777777777777777777777777777cccc7cbdbbddb7777b7777c7777777777777777777777777777777777777777777777777777777777777777777c77ccc7c7777777777777777777777777
+            77c7777777777777777777777777777777777bd7777bb77b77777777777777777777777777777777ccc77777777777777777777777777777777777777777777777777777777777777777777777777777
+            7777777cccc777777777777777777777777bdddbb777777777777777777767777777777777777777777777777777777777777777777777cc77c77c777777777777777777777777777777777777777777
+            7c77cc77777777777777777777777777c7cdddddb7777777777777777777c76cc7777777777777777c77c77c777777777777777777777777777cc7777777777777777777777777777777777777777777
+            7ccc77777777777777776777777777b7777b777b777777777777777777777777777777777777c777777776ccc77777777777777777777777777777777777777777777777777777777777777777777777
+            777777777ccccc777777777777777dd77777bbb77777b7777777777777777777777cc7777777c7c777c777c77c7cc7777777777777777777777777777777777777777777777777777777777777777777
+            c7cc7777ccc77677c7c777c7ccc777777777bbb7777777777777777777777777777777777777c77c77c777c77c7ccc777767777777777777777777777777777777777777777777777777777777777777
+            77ccc77cbb7dbcceecbbbb6bbbbbbbb777d9b77db7e7c77bbbb7b777e7bc7777777777777777777777e777bbb777b7bbbb77bb77777b77777777777777777b77b777777777e77777b7bb7777777e7777
+            777777cb999999999bcc999999999bbeee99bececbbcebeb9999ccceb99bc7777777777777eeeeeebbbebbbbbbebbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbebebbeeeeebbbbbbeebbbbbbbbeebbe
+        `)
+        scene.centerCameraAt(80, 60);
+        scene.backgroundImage().fillRect(5, 8, 150, 100, 1)
+        scene.backgroundImage().drawRect(5, 8, 150, 100, 15)
+
+        game.setDialogFrame(img`
+            ..99999999999999999999..
+            .9966666666666666666699.
+            996661111111111111166699
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            996661111111111111166699
+            .9966666666666666666699.
+            ..99999999999999999999..
+        `)
+        game.showLongText("A wild " + wildCreature.name + " appeared.", DialogLayout.Bottom)
+        game.showLongText("You sent out " + playerCurrentCreature.name + " to battle!", DialogLayout.Bottom)
+
+        while (playerRemainingPokemon > 0 && wildCreature.hp > 0) {
+            let win = creatureBattleCreature(playerCurrentCreature, wildCreature);
+            if (win) {
+                game.showLongText("You knocked out " + wildCreature.name + " and earned " + wildCreature.xpReward + " xp.", DialogLayout.Bottom)
+                game.showLongText("You won the battle", DialogLayout.Bottom)
+            } else {
+                game.showLongText("The wild pokemon knocked out " + playerCurrentCreature.name, DialogLayout.Bottom)
+                playerRemainingPokemon--;
+                if (playerRemainingPokemon > 0) {
+
+                    let choices = [];
+                    for (let creature of player.partyPokemon) {
+                        if (creature.hp > 0) {
+                            choices.push(creature.name);
+                        }
+                    }
+                    switch (choices.length) {
+                        case 0:
+                            //you lose 
+                            break;
+                        case 1:
+                            game.showLongText("You only have " + choices[0] + " remaining. You sent out " + choices[0] + ".", DialogLayout.Bottom);
+                            break;
+                        case 2:
+                            story.printDialog("Pick a Pokemon to sent out:", 80, 90, 50, 150, 15, 1, story.TextSpeed.VeryFast);
+                            story.showPlayerChoices(choices[0], choices[1]);
+                            break;
+                        case 3:
+                            story.printDialog("Pick a Pokemon to sent out:", 80, 90, 50, 150, 15, 1, story.TextSpeed.VeryFast);
+                            story.showPlayerChoices(choices[0], choices[1], choices[2]);
+                            break;
+                        case 4:
+                            story.printDialog("Pick a Pokemon to sent out:", 80, 90, 50, 150, 15, 1, story.TextSpeed.VeryFast);
+                            story.showPlayerChoices(choices[0], choices[1], choices[2], choices[3]);
+                            break;
+                        case 5:
+                            story.printDialog("Pick a Pokemon to sent out:", 80, 90, 50, 150, 15, 1, story.TextSpeed.VeryFast);
+                            story.showPlayerChoices(choices[0], choices[1], choices[2], choices[3], choices[4]);
+                            break;
+                    }
+                    pauseUntil(() => !story.isMenuOpen());
+                    if (choices.length >= 2) {
+                        for (let creature of player.partyPokemon) {
+                            if (creature.name == story.getLastAnswer()) {
+                                playerCurrentCreature = creature;
+                                game.showLongText("You sent out " + playerCurrentCreature.name + " to battle.", DialogLayout.Bottom);
+                                break;
+                            }
+                        }
+                    } else if (choices.length == 1) {
+                        for (let creature of player.partyPokemon) {
+                            if (creature.name == choices[0]) {
+                                playerCurrentCreature = creature;
+                                game.showLongText("You sent out " + playerCurrentCreature.name + " to battle.", DialogLayout.Bottom);
+                                break;
+                            }
+                        }
+                    } else {
+                        game.showLongText("You lost the battle!.", DialogLayout.Bottom);
+                        battleResult = false;
+                    }
+                } else {
+                    game.showLongText("You lost the battle!.", DialogLayout.Bottom);
+                    battleResult = false;
+                }
+            }
+
+        }
+        scene.setBackgroundImage(img`
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+        `);
+        tiles.setCurrentTilemap(map)
+        wildCreature.sprite.destroy();
+
+        scene.centerCameraAt(player.sprite.x, player.sprite.y);
+        pause(100);
+        for (let creature of player.partyPokemon) {
+            checkLevelUp(creature);
+            checkEvolve(creature);
+        }
+
+
+    }
+
+    //% blockId=creatures_trainerHealAll
+    //% block="$player=variables_get(myTrainer) heal all pokemon"
+    //% group="Other"
+    //% weight=75
+    export function trainerHealAll(player: Trainer){
+        for(let creature of player.partyPokemon){
+            creature.hp = creature.maxHP;
+        }
+    }
+
+
+    export function checkEvolve(creature: Creature) {
+        if (creature.evolutionLevel == 0) {
+            return;
+        }
+        if (creature.level >= creature.evolutionLevel) {
+            if (creature._evolutionID != 0) {
+                const oldSprite = creature.sprite;
+                controller.moveSprite(myTrainer.sprite, 0, 0);
+                creature.sprite.setFlag(SpriteFlag.Invisible, false);
+                creature.sprite.setPosition(scene.cameraLeft() + 80, scene.cameraTop() + 30)
+                creature.sprite.z = 100;
+                story.printDialog(creature._name + " is evolving...", 80, 90, 50, 150, 15, 1, story.TextSpeed.VeryFast);
+                pause(200)
+                creature.sprite.startEffect(effects.warmRadial, 1500)
+                pause(500)
+
+                animation.runMovementAnimation(creature.sprite, animation.animationPresets(animation.bobbing), 500, false)
+                pause(500);
+
+                animation.runMovementAnimation(creature.sprite, animation.animationPresets(animation.bobbing), 500, false)
+                pause(500);
+                creature.sprite.startEffect(effects.warmRadial, 1500)
+                animation.runMovementAnimation(creature.sprite, animation.animationPresets(animation.bobbing), 500, false)
+                pause(500);
+
+                animation.runMovementAnimation(creature.sprite, animation.animationPresets(animation.bobbing), 500, false)
+                pause(500);
+
+                animation.runMovementAnimation(creature.sprite, animation.animationPresets(animation.bobbing), 500, false)
+                pause(500);
+                creature.sprite.startEffect(effects.warmRadial, 1500)
+                pause(500)
+
+                const evId = creature._evolutionID;
+                let evolution = makeCreatureFromID(evId);
+                creature.sprite = evolution.sprite;
+                oldSprite.setImage(creature._sprite.image);
+                oldSprite.setPosition(scene.cameraLeft() + 80, scene.cameraTop() + 30)
+                creature.healthbar.destroy();
+                creature.creatureType1 = evolution.creatureType1;
+                creature.creatureType2 = evolution.creatureType2;
+                creature.name = evolution.name;
+                creature.evolutionID = evolution.evolutionID;
+                creature.xp = 0;
+                creature.hp = evolution.hp;
+                creature.maxHP = evolution.maxHP;
+                creature.attackValue = evolution.attackValue;
+                for(let i = 0; i < creature.level-5; i++) {
+                    creature.maxHP *= 1.05;
+                    creature.hp *= 1.05;
+                    creature.attackValue *= 1.05;
+                }
+                creature.xpReward = evolution.xpReward;
+                creature._sayHP = false;
+                creature._sayXP = false;
+                creature.sprite.setFlag(SpriteFlag.Invisible, true);
+                creature.healthbar = statusbars.create(20, 4, StatusBarKind.Health)
+                creature.healthbar.attachToSprite(creature.sprite) 
+                creature.healthbar.max = creature.maxHP;
+                creature.healthbar.value = creature.hp;
+                creature.healthbar.setFlag(SpriteFlag.Invisible, true);
+                pause(500);
+                game.showLongText("Your Pokemon evolved into " + creature.name + ".", DialogLayout.Bottom);
+                oldSprite.destroy();
+                controller.moveSprite(myTrainer.sprite, 80, 80);
+            }
+        }
+    }
+
+
+
+    export function checkLevelUp(creature: Creature) {
+        let levelUpThresholds = [5, 6, 7, 8, 9, 10, 12, 14, 18, 25]
+        for (let i = 0; i < 90; i++) {
+            levelUpThresholds.push(levelUpThresholds[9 + i] + (i * 5) + 3)
+        }
+        let xpForLevel: number[] = []
+        for (let i = 0; i < 100; i++) {
+            xpForLevel.push(levelUpThresholds[i])
+            for (let j = 0; j < 100; j++) {
+                if (j <= i) {
+                    xpForLevel[i] += levelUpThresholds[j];
+                }
+            }
+        }
+
+
+        if (creature.xp > xpForLevel[creature.level]) {
+            creature.level++;
+            game.showLongText(creature.name + " leveled up to level " + creature.level, DialogLayout.Bottom);
+            creature.maxHP *= 1.05;
+            creature.attackValue *= 1.05;
+            checkLevelUp(creature);
+        }
+        //throw "test"
+
+    }
+
+    export function getXpForLevel(level: number) {
+        let levelUpThresholds = [5, 6, 7, 8, 9, 10, 12, 14, 18, 25]
+        for (let i = 0; i < 90; i++) {
+            levelUpThresholds.push(levelUpThresholds[9 + i] + (i * 5) + 3)
+        }
+        let xpForLevel: number[] = []
+        for (let i = 0; i < 100; i++) {
+            xpForLevel.push(levelUpThresholds[i])
+            for (let j = 0; j < 100; j++) {
+                if (j <= i) {
+                    xpForLevel[i] += levelUpThresholds[j];
+                }
+            }
+        }
+        return xpForLevel[level];
+    }
+
+    interface TypeChart {
+        [attackingType: number]: {
+            [defendingType: number]: number;
+        };
+    }
+
+    const typeChart: TypeChart = {
+        12: { 15: 0.5, 8: 0 },
+        6: { 15: 2, 17: 0.5, 9: 2, 11: 2, 0: 2 },
+        17: { 10: 2, 9: 0.5, 6: 2 },
+        9: { 10: 2, 15: 2, 17: 0.5, 6: 0.5, 11: 2 },
+        3: { 10: 0, 17: 2, 7: 2 },
+        11: { 9: 2, 10: 2, 16: 0.5, 6: 2, 2: 2 },
+        5: { 12: 2, 15: 2, 16: 2, 8: 0, 14: 0.5, 7: 0.5, 0: 0.5 },
+        13: { 9: 2, 10: 0.5, 16: 0.5, 14: 2 },
+        10: { 15: 0.5, 3: 2, 9: 0.5, 11: 2, 13: 2, 0: 0.5 },
+        7: { 15: 0.5, 3: 0.5, 16: 0.5, 9: 2, 0: 2 },
+        14: { 5: 2, 13: 2, 16: 0.5 },
+        0: { 9: 2, 14: 2, 1: 2, 6: 0.5, 7: 0.5, 16: 0.5 },
+        15: { 5: 0.5, 10: 0.5, 6: 2, 9: 2, 17: 2 },
+        8: { 12: 0, 5: 0, 8: 2, 16: 0.5, 14: 2, 1: 0.5 },
+        2: { 2: 2, 16: 0.5, 11: 2 },
+        1: { 8: 2, 14: 2, 5: 0.5 },
+    };
+
+
+    //% group="Value"
+    //% blockId="creatures_getAttackMultiplier"
+    //% expandableArgumentMode=toggle
+    //% block="Calculate Attack Multiplier %attackType vs %defenseTypes"
+    export function calculateAttackMult(attackType: CreatureType, defenseTypes: CreatureType[]): number {
+        let multiplier: number = 1.0;
+        //game.splash(attackType);
+        for(let defenseType of defenseTypes){
+            //game.splash("Starting defenseType " + defenseType);
+            if (typeChart[attackType]!=null) {
+                //game.splash("attack type exists in chart");
+                // Check if defense type exists in attack type's chart
+                if (typeChart[attackType][defenseType] != null) {
+                    //game.splash("defense type exists in chart of " + attackType);
+                    // Get effectiveness multiplier
+                    const effectiveness = typeChart[attackType][defenseType];
+
+                    // Update multiplier
+                    multiplier *= effectiveness;
+                }
+            }
+        }
+        //game.splash(multiplier);
+        return multiplier;
+
+    }
+
+
+    //% group="Events"
+    //% weight=98
+    //% blockId="creatures_setMap"
+    //% expandableArgumentMode=enabled
+    //% block="load Route $route=variables_get(route0) with grass $grass || house $door1 lab $door2 pokemon center $door3 gym $door4"
+    //% grass.shadow=tileset_tile_picker
+    //% grass.decompileIndirectFixedInstances=true
+    //% door1.shadow=tileset_tile_picker
+    //% door1.decompileIndirectFixedInstances=true
+    //% door2.shadow=tileset_tile_picker
+    //% door2.decompileIndirectFixedInstances=true
+    //% door3.shadow=tileset_tile_picker
+    //% door3.decompileIndirectFixedInstances=true
+    //% door4.shadow=tileset_tile_picker
+    //% door4.decompileIndirectFixedInstances=true
+    export function loadRoute(route: Route, grass: Image, door1?: Image, door2?: Image, door3?: Image, door4?: Image) {
+        for(let structure of sprites.allOfKind(SpriteKind.Structure)) {
+            structure.destroy();
+        }
+
+        for (let grassSprite of sprites.allOfKind(SpriteKind.Grass)) {
+            grassSprite.destroy();
+        }
+        
+        tiles.setCurrentTilemap(route.map)
+
+        if(grass && !grass.equals(img`
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+        `)){
+            tileUtil.createSpritesOnTiles(grass, img`
+        . . . . . . 6 6 6 6 . . . . . . 
+        . . . . . c 6 7 7 6 c . . . . . 
+        . . . . c 6 7 5 7 7 6 c . . . . 
+        . . 6 6 c c 6 5 5 6 c c 6 6 . . 
+        6 6 6 5 5 5 6 7 5 6 5 5 7 6 6 6 
+        6 6 7 7 7 5 7 6 7 5 5 7 7 7 7 6 
+        . c c c 6 6 7 6 6 5 7 6 c c 6 . 
+        6 c 6 6 6 6 6 c c 6 6 6 6 6 c 6 
+        6 6 7 7 7 c c c c c c 7 7 7 6 6 
+        6 7 7 7 6 6 c c c c 6 6 7 7 7 6 
+        c 6 c c 6 7 6 c c 6 7 6 c c 6 c 
+        . c c 5 5 7 6 7 7 6 7 5 5 c c . 
+        . c 6 7 5 5 6 7 7 6 5 5 7 6 c . 
+        . 6 6 7 7 6 6 5 5 6 6 7 7 6 6 . 
+        . . 6 6 6 6 c 6 7 6 c 6 6 6 . . 
+        . . . 6 6 c . 6 6 6 . c 6 . . . 
+        `, SpriteKind.Grass)
+        }
+        
+        if (door1 && !door1.equals(img`
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+        `)) {
+            for (let value of tiles.getTilesByType(door1)) {
+                let mySprite = sprites.create(img`
+                    ..............................................................................
+                    ..........bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..........
+                    ........bb44444444444444444444444444444444444444444444444444444444eecc........
+                    ......bbdd44444444444444444444444444444444444444444444444444444444eeeecc......
+                    ....bb4ddd44444444444444444444444444444444444444444444444444444444eeeeeecc....
+                    ..bbdd4ddd444eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee4eeeeeeeecc..
+                    bb4ddd4ddd444e4444444444444444444444444444444444444444444444444444eeeeeeeeeecc
+                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
+                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
+                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
+                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
+                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
+                    dd4ddd4ddd444eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee44eeeeeeeeeeee
+                    dd4ddd4ddd444e4444444444444444444444444444444444444444444444444e44eeeeeeeeeeee
+                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
+                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
+                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
+                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
+                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
+                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
+                    dd4ddd4ddd444eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee44eeeeeeeeeeee
+                    dd4ddd4ddd444e4444444444444444444444444444444444444444444444444e44eeeeeeeeeeee
+                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
+                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
+                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
+                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
+                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
+                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
+                    dd4ddd4ddd444eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee44eeeeeeeeeeee
+                    dd4ddd4ddd444e4444444444444444444444444444444444444444444444444e44eeeeeeeeeeee
+                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
+                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
+                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
+                    dd4ddd4deccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccceeeeeeee
+                    dd4dddcceeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeecceeeeee
+                    dd4dcceeecccccccccccccccccccccccccccccccccccccccccccccccccccccccccccceeecceeee
+                    ddcceeeccbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcceeeccee
+                    cceeeccbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcceeecc
+                    eeeccbcbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcbcceee
+                    eccbbbcbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcbbbcce
+                    ccbbbbcbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcbbbbcc
+                    bc1dddbdddddddddccccccccccccccccccccccddccccccccccccccccccccccdddddddddbdddbcb
+                    bc1dddbdddddddddc666666666cc666666666cddc666666666cc666666666cdddddddddbdddbcb
+                    bc1dddbdddddddddc666666666cc666666666cddc666666666cc666666666cdddddddddbdddbcb
+                    bc1dddbdddddddddc999999999cc999999999cddc999999999cc999999999cdddddddddbdddbcb
+                    bc1dddbdddddddddc999999999cc999999999cddc999999999cc999999999cdddddddddbdddbcb
+                    bc1dddbdddddddddc999999999cc999999999cddc999999999cc999999999cdddddddddbdddbcb
+                    bc1dddbdddddddddc999999999cc999999999cddc999999999cc999999999cdddddddddbdddbcb
+                    bc1dddbdddddddddcbbbbbbbbbccbbbbbbbbbcddcbbbbbbbbbccbbbbbbbbbcdddddddddbdddbcb
+                    bc1dddbdddddddddccccccccccccccccccccccddccccccccccccccccccccccdddddddddbdddbcb
+                    bc1dddbddddddddd1111111111111111111111dd1111111111111111111111dddddddddbdddbcb
+                    bc1dddbddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddbdddbcb
+                    bc1dddbddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddbdddbcb
+                    bc1dddbddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddbdddbcb
+                    bc1dddbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbdddbcb
+                    bc1dddbddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddbdddbcb
+                    bc1dddbddddddddccccccccccccccccddddddddddddddddddddddddddddddddddddddddbdddbcb
+                    bc1dddbddddddddcbbbbbbbbbbbbbbcdddddddddccccccccccccccccccccccdddddddddbdddbcb
+                    bc1dddbddddddddcbccccccccccccbcdddddddddc666666666cc666666666cdddddddddbdddbcb
+                    bc1dddbddddddddcec6666666666cecdddddddddc666666666cc666666666cdddddddddbdddbcb
+                    bc1dddbddddddddcec6666666666c3cdddddddddc999999999cc999999999cdddddddddbdddbcb
+                    bc1dddbddddddddcec6666666666c3cdddddddddc999999999cc999999999cdddddddddbdddbcb
+                    bc1dddbddddddddcec9999999999c3cdddddddddc999999999cc999999999cdddddddddbdddbcb
+                    bc1dddbddddddddcec9999999999c3cdddddddddc999999999cc999999999cdddddddddbdddbcb
+                    bc1dddbddddddddcecccccccccccc3cdddddddddcbbbbbbbbbccbbbbbbbbbcdddddddddbdddbcb
+                    bc1dddbddddddddccc333333333333cdddddddddccccccccccccccccccccccdddddddddbdddbcb
+                    bc1dddbddddddddc1dc44444444444cddddddddd1111111111111111111111dddddddddbdddbcb
+                    bcddddbddddddddcddceeeeeeeeeeecddddddddddddddddddddddddddddddddddddddddbdddbcb
+                    bcddddbddddddddccceeeeeeeeeeeecddddddddddddddddddddddddddddddddddddddddbdddbcb
+                    bcddddbddddddddceeeeeeeeeeeeeecddddddddddddddddddddddddddddddddddddddddbdddbcb
+                `, SpriteKind.Structure)
+                tiles.placeOnTile(mySprite, value)
+                mySprite.x += 16
+                mySprite.y += -32
+                for (let i = value.column-1; i < 4 + value.column; i++) {
+                    for (let j = value.row-4; j < value.row +1; j++) {
+                        tiles.setWallAt(new tiles.Location(i,j,game.currentScene().tileMap), true);
+                    }
+                }
+                tiles.setWallAt(value, false);
+            }
+        }
+        if (door2 && !door2.equals(img`
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+        `)) {
+            for (let value2 of tiles.getTilesByType(door2)) {
+                let mySprite = sprites.create(img`
+                    cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+                    bdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd111111111111111111111111ddddddb
+                    dbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbccccccccccccccbbbbbbbbbbbbb
+                    dbbccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccbbbbbbbbbbbbbeccccccccccbbb
+                    dbcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccbbbbbbbbbbbbbecccccccccccbb
+                    dbcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccbbeeeeeeeeeebecccccccccccbb
+                    dbcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccbbeeeeeeeeeebecccccccccccbb
+                    dbcbbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbccccbbeeeeeeeeeebeccccbbbbbbcbb
+                    dbcbbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbcbbcbbeeeeeeeeeebecbbcbbbbbbcbb
+                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddcebcbbccccccccccbecbecbbdddbcbb
+                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceecbbccccccccccbeceecbbdddbcbb
+                    dbcbbddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddceecbbccccccccccbeceecbbdddbcbb
+                    dbccccccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbccceecbbccccccccccbeceecbbcccbcbb
+                    dbcbbddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddceecbbccccccccccbeceecbbdddbcbb
+                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceecbbccccccccccbeceecbbdddbcbb
+                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceecbbbbbbbbbbbbbeceecbbdddbcbb
+                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceecbbbbbbbbbbbbbeceecbbdddbcbb
+                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceeceeeeeeeeeeeeeeceecbbdddbcbb
+                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceeceeeeeeeeeeeeeeceecbbdddbcbb
+                    dbcbbddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddceeceeeeeeeeeeeeeeceecbbdddbcbb
+                    dbccccccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbccceeceeeeeeeeeeeeeeceecbbcccbcbb
+                    dbcbbddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddceeceeeeeeeeeeeeeeceecbbdddbcbb
+                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceeceeeeeeeeeeeeeeceecbbdddbcbb
+                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceecccccccccccccccceecbbdddbcbb
+                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceeceeeeeeeeeeeeeeceecbbdddbcbb
+                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceceeeeeeeeeeeeeeeececbbdddbcbb
+                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceceeeeeeeeeeeeeeeececbbdddbcbb
+                    dbcbbddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddcceeeeeeeeeeeeeeeeeeccbbdddbcbb
+                    dbccccccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbccccccccccccccccccccccccbbcccbcbb
+                    dbcbbddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddbbbbbbbbbbbbbbbbbbbbbbbbdddbcbb
+                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcddddbbbbbbbbbbbbbbbbbbbbbbbdddbcbb
+                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcddddddbcbb
+                    dbbccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccbbb
+                    dbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+                    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+                    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+                    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+                    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+                    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+                    cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+                    cbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbc
+                    cbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbc
+                    cdbbbdddddd4d1111d4dddddddd4d1111d4dddddddddddddddddddddddddddddddddddddddd4d1111d4dddddddd4d1111d4ddddddbbbbc
+                    c1dddddddd411bccb114dddddd411bccb114dddddddddddddddddddddddddddddddddddddd411bccb114dddddd411bccb114dddddddbbc
+                    c1dddddddbd1c6666c1dbddddbd1c6666c1dbddddddddddddddddddddddddddddddddddddbd1c6666c1dbddddbd1c6666c1dbddddddbbc
+                    c1bbbdddd41b666666b14dddd41b666666b14dddddddddddddddddddddddddddddddddddd41b666666b14dddd41b666666b14ddddbbbbc
+                    c1bbbdddd41c666666c14dddd41c666666c14dddddddddddddddddddddddddddddddddddd41c666666c14dddd41c666666c14ddddbbbbc
+                    c1ddddddd41c999999c14dddd41c999999c14dddddddddddddddddddddddddddddddddddd41c999999c14dddd41c999999c14ddddddbbc
+                    c1ddddddd41b499994b14dddd41b499994b14dddddddddddddddddddddddddddddddddddd41b499994b14dddd41b499994b14ddddddbbc
+                    c1bbbddddbd1c4444c1dbddddbd1c4444c1dbddddddddddddddddddddddddddddddddddddbd1c4444c1dbddddbd1c4444c1dbddddbbbbc
+                    c1bbbddddd411bccb114dddddd411bccb114dddddddddddddddddddddddddddddddddddddd411bccb114dddddd411bccb114dddddbbbbc
+                    c1ddddddddd4d1111d4dddddddd4d1111d4dddddddddddddddddddddddddddddddddddddddd4d1111d4dddddddd4d1111d4ddddddddbbc
+                    c1ddddddddddb4444bddddddddddb4444bddddddddddddddddddddddddddddddddddddddddddb4444bddddddddddb4444bdddddddddbbc
+                    c1bbbddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddbbbbc
+                    c1bbbddddddddddccccccccccccccccccccccccddddddddddddddddddddddddddddddddccccccccccccccccccccccccddddddddddbbbbc
+                    c1dddddddddddddcbebbbbbbbbbbbbbbbbbbebcddddddddccccccccccccccccddddddddcbebbbbbbbbbbbbbbbbbbebcddddddddddddbbc
+                    c1dddddddddddddcbebbbbbbbbbbbbbbbbbbebcddddddddcbbbbbbbbbbbbbbcddddddddcbebbbbbbbbbbbbbbbbbbebcddddddddddddbbc
+                    c1bbbddddddddddceeeeeeeeeeeeeeeeeeeeeecddddddddcbbbbccccccbbbbcddddddddceeeeeeeeeeeeeeeeeeeeeecddddddddddbbbbc
+                    c1bbbddddddddddccccccccccccccccccccccccddddddddc666c666666c666cddddddddccccccccccccccccccccccccddddddddddbbbbc
+                    c1ddddddddddddddc666666666cc666666666cdddddddddc66c66666666c66cdddddddddc666666666cc666666666cdddddddddddddbbc
+                    c1ddddddddddddddc666666666cc666666666cdddddddddc66c66666666c66cdddddddddc666666666cc666666666cdddddddddddddbbc
+                    c1bbbdddddddddddc666666666cc666666666cdddddddddc66c66666666c66cdddddddddc666666666cc666666666cdddddddddddbbbbc
+                    c1bbbdddddddddddc999999999cc999999999cdddddddddc66c99999999c66cdddddddddc999999999cc999999999cdddddddddddbbbbc
+                    c1ddddddddddddddc999999999cc999999999cdddddddddc666c999999c666cdddddddddc999999999cc999999999cdddddddddddddbbc
+                    c1ddddddddddddddc444444444cc444444444cdddddddddccc66cccccc6666cdddddddddc444444444cc444444444cdddddddddddddbbc
+                    c1bbbdddddddddddccccccccccccccccccccccdddddddddc1dc66666666666cdddddddddccccccccccccccccccccccdddddddddddbbbbc
+                    c1bbbddddddddddd1111111111111111111111dddddddddcddc66666666666cddddddddd1111111111111111111111dddddddddddbbbbc
+                    c1dddddddddddddddddddddddddddddddddddddddddddddccc666666666666cdddddddddddddddddddddddddddddddddddddddddddddbc
+                    c1dddddddddddddddddddddddddddddddddddddddddddddc66666666666666cdddddddddddddddddddddddddddddddddddddddddddddbc
+                    c1dddddddddddddddddddddddddddddddddddddddddddddccccccccccccccccdddddddddddddddddddddddddddddddddddddddddddddbc
+                `, SpriteKind.Structure)
+                tiles.placeOnTile(mySprite, value2)
+                mySprite.x += 0
+                mySprite.y += -32
+                for (let i = value2.column - 3; i < 4 + value2.column; i++) {
+                    for (let j = value2.row - 4; j < value2.row+1; j++) {
+                        tiles.setWallAt(new tiles.Location(i, j, game.currentScene().tileMap), true);
+                    }
+                }
+                tiles.setWallAt(value2, false);
+            }
+        }
+        if (door3 && !door3.equals(img`
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+        `)) {
+            for (let value3 of tiles.getTilesByType(door3)) {
+                let mySprite = sprites.create(img`
+                    dd3444444444444444444444444444444444444444444444444444444444444444444444444444ddddbbd
+                    444444e44444444444444444444444444444444444444444444444444444e4444444444444e434443bdbb
+                    4ee444444444444444444444444444444444444444444444444444444444444444444444444434ee443db
+                    eee444444444444444444444444444444444444444444444444444444444444444444444444434eeee4bb
+                    eee444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
+                    eee444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
+                    ee4444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
+                    ee4444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
+                    ee4444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
+                    ee44444444444444444444444444444444444e4444444444444444444444444444e44444444444eeeeeee
+                    ee4444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
+                    ee4444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
+                    eee444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
+                    eee444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
+                    eee444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
+                    eee444444444444444444444444444444444444444444444444444444444444444e44444444444eeeeeee
+                    eee444444444444444444444444444444444444444444444444444444444444344444444344444eeeeeee
+                    eee444444444444444444444444444444444444444444444444444444444444444444444444434eeeeeee
+                    eee444444444444444444444443444444444444444444444444444444444444444444444444444eeeeeee
+                    eee444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
+                    eee444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
+                    eee444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
+                    eee444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
+                    eee444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
+                    eee4444444444444444e4444444444444444444444444444444444444444444444444444444444eeeeeee
+                    eee444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
+                    eee444444444444444444444444444444444444434444444444444444444444444444444444444eeeeeee
+                    eee444444444444444444444443444444444444444444444444444444444444444444444444444eeeeeee
+                    eee444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
+                    eee444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
+                    e4444444444444444444444444444444444444444444444444444444444444444444444444444444eeeee
+                    444444444444444444444444444444444444444444444444444444444444444444444444444444444eeee
+                    4344444444444444444444444444444444444444344444444444444444444444444444444444444444eee
+                    44ee4444444444444444444444444444444444444444444444444444444444444444444444444e44444ee
+                    4eeeeee4344434444344434444344433444444443344434444444434443344434444444434eeeeee444be
+                    4eeeeee444444444444444444444444444444444444444444444444444444444444444444eeeeeee444be
+                    eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee43b
+                    eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeebbbbbbeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeebe
+                    eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedd1111111dbeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+                    eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1111111111dbeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeec
+                    eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeebd11ddddddd11deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeec
+                    eeeeeeeeeeeeeeeeeeeeeeeeecccccccd11bdbbbbbbbdd1dbcccccceeeeeeeeeeeeeeeeeeeeeeeeeeeecc
+                    beeeeeeeeeeeeeeeeeeeeeeebddddddd11ddbbbbbbbbbdd1ddddddddeeeeeeeeeeeeeeeeeeeeeeeeeeccc
+                    cccccccccccccccccccccccb11111111dddbb44bbb444bddd11111111dcccccccccccccccccccccccdbcb
+                    bbcccccccccccccccccccccbddddddddddbeeb3333beebbddddddddd1dccccccccccccccccccccccb1bcb
+                    dbbbbbcc66666bbcc66666cbddddddddddeeebddddbeeeedddddddddddc66666ccbb66666ccbbbbb11bcb
+                    11ddbbbc66666bbcc66666bbddbdddddddbbbdbeeeddbbbdddddddbddb666666cbbb66666ccbbddd11bcb
+                    111dddbc66666bdbc66666cbdbb1ddddddddddeeeeddddddddddddbddbc66666cbdb66666cbddd1111bcb
+                    dd11ddb6999969dbc9999bcbdd1dddddddbb3deeeeddbbbddddddddddbc69999cd1969999cbd111d111cc
+                    1d11ddb6999969dbc9999bcbdddddddd1bceedbeee33eeeddddddddddbc6999bcd1969999cbd11dd111cc
+                    1dd1d1bc666669dbc66666cbdddddddd1beeeb3db3beeeeddddddddd1bc66666cd1966666cbd11dd111cc
+                    11ddddbd1ddddddbbdddd1bcdddddddddddeeeeeeeeeeeddddddddddbcd1ddddddddddd1dbbddd1111dcc
+                    111dddd111111ddd111111bbbbbbbbbbbd1eeeeeeeeeeb1bbbbbbbbbbbd111111ddd11111ddddd111dbcc
+                    d1111dddddddddddddddd1bbbbbbbbbbbbc1deeeeeebddcbbbbbbbbbbbd1dddddddddddddddd1111ddbcb
+                    dd11ddddddddddddddddddbbbbbbbbbbbbcbdbbbbbbddbcbbbbbbbbbbbbdddddddddddddddddd11dd1bcb
+                    1d11ddddddddddddddddddbbbbbbbbbbbbbcbdddddddbcbbbbbbbbbbbbbddddddddddddddddd11dd11bcb
+                    11ddddddddddddddddddddbbddddddbbbbbbbcccccccbbbbbbddddddddbdddddddbbbbdddddbddd111bcb
+                    111dddddddddddddddddddbdddddddbcccccccccccccccccccdddddd1dbbbbbbbbbbbbbbbbbbbd1111bcb
+                    111d111dddd11111dddd11bbddddddbc6666666666666666ccdddddd1dbddddddddddddddddddd1111bcc
+                    111d11d222222112222211bdddddddbc6666666666666666ccdddddd1dbddddddddddddddddddd1111dcc
+                    111d11d222222212222211bb1dddddbc6666666666666666ccdddddd1dbddddddddddddddddddd111ddcc
+                    b11d11d222dd2212222211bbddddddbcbb6666666666666bccdddddd1dbddddddddddddddddddd11bd1cc
+                    bd1d11d222dd22122dd111bb1dddddbcbb6666666666666bccd1ddd11dbddddddddddddddddddd1dd11cc
+                    1ddd11d222222d122ddd11bbbbbbbbbcbb66666666666666ccbbbbbbdbbddddddddddddddddddddd1ddcc
+                    d1bd11d22211dd12222211bbbbbbbbbc6b66666666666666ccbbbbbbbbd1ddddddddddddddddddd1dddcc
+                    dddb11d22211dd122222d1bbddddddbc6b6666666666666bccbddddd1dbddddddddddddddddddb1ddd1cc
+                    ddd1bbbbbbbbbbbbb222bbbbddddddbc6b6666666666666bccbdddddddbbbbbbbbbbbbbbbbbbd1ddd1dcc
+                    ddddddddddddddddddddddbbbbbbbbbc6b6666666666666bccbbbbbbbbbdddddddddddddddddddddddbcc
+                    ddddbbbbbbbbbbbbbbbdbbbd1dddddbcbb6666666666666bccdddddd1dbdbbbbbbbbbbbbbddbddddbccbc
+                    bddddbbbbbbbbdbbbbbdddbd1dddddbcb999999999999999ccdddddd1dbdbbbbbbbbbbbbbbbddd11cccc.
+                    cbddddddddddddbbddbdddbdddddddbc9999999999999999ccdddddd1dbdbbdddddddddddddddddbcc...
+                    ccbdddddddddddddddddddbbddddddbcc666666666666c6cccbdddddddbdddddddddddddddddddccbc...
+                    c.cbbbbbbbbbbbbbbbbbbbbbddddddbcccccccccccccccccccbdddddddbbbbbbbbbbbbbbbbbbbbcbc....
+                    ..ccccccccccccccccccccccccccccccc.cccccc.......cccccccccbccccccccccccccccccccccc.....
+                    ......................cccccccccc.................cccccccccc..........................
+                `, SpriteKind.Structure)
+                tiles.placeOnTile(mySprite, value3)
+                mySprite.x += 3
+                mySprite.y += -32
+                for (let i = value3.column - 3; i < 4 + value3.column; i++) {
+                    for (let j = value3.row - 4; j < value3.row + 1; j++) {
+                        tiles.setWallAt(new tiles.Location(i, j, game.currentScene().tileMap), true);
+                    }
+                }
+                tiles.setWallAt(value3,false);
+            }
+        }
+        if (door4 && !door4.equals(img`
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+        `)) {
+            for (let value4 of tiles.getTilesByType(door4)) {
+                let mySprite = sprites.create(img`
+                    ..dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd..
+                    .ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222ddd222.
+                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e
+                    ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddddd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddd22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
+                    ddd22e2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222eee22c
+                    22222eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeecee2c
+                    222cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccceec
+                    22ecccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccec
+                    22ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccec
+                    ccddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddec
+                    eeccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccec
+                    ccddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddec
+                    bbdcccccccccccccccccccccdddccccccccccccccccccccccddd8ccc44444444444444444444444444444444444ccc8dddccccccccccccccccccccccdcccccccccccccccccccccccdbec
+                    bbdcccccccccccccccccccccdddccccccccccccccccccccccdd88cc4444444444444444444444444444444444444cc88ddccccccccccccccccccccccdcccccccccccccccccccccccdbec
+                    bbdc666666666cc66666666cdddc666666666cc666666666cd888cc4444444444444444444444444444444444444cc888dc66666666ccc666666666cdc6666666666cc666666666cdbec
+                    bbdc666666666cc66666666cdddc666666666cc666666666cd888cc4444444444444444444444444444444444444cc888dc66666666ccc666666666cdc6666666666cc666666666cdbec
+                    bbdc666666666cc66666666cdddc666666666cc666666666cd888cc4444444444444441111111444444444444444cc888dc66666666ccc666666666cdc6666666666cc666666666cdbec
+                    bbdc666666666cc66666666cdddc666666666cc666666666cd888cc4444444444444111111111114444444444444cc888dc66666666ccc666666666cdc6666666666cc666666666cdbec
+                    bbdc999999999cc99999999cdddc999999999cc999999999cd888cc4444444444441111111111111444444444444cc888dc99999999ccc999999999cdc9999999999cc999999999cdbec
+                    bbdc999999999cc99999999cdddc999999999cc999999999cd888cc4444444444441111111111111444444444444cc888dc99999999ccc999999999cdc9999999999cc999999999cdbec
+                    bbdc999999999cc99999999cdddc999999999cc999999999cd888cc4444444444411111111111111144444444444cc888dc99999999ccc999999999cdc9999999999cc999999999cdbec
+                    bbdc999999999cc99999999cdddc999999999cc999999999cd888cc4444444444411111111111111144444444444cc888dc99999999ccc999999999cdc9999999999cc999999999cdbec
+                    bbdc999999999cc99999999cdddc999999999cc999999999cd888cc4444444444444444411144444444444444444cc888dc99999999ccc999999999cdc9999999999cc999999999cdbec
+                    bbdc999999999cc99999999cdddc999999999cc999999999cd888cc4444444444444444411144444444444444444cc888dc99999999ccc999999999cdc9999999999cc999999999cdbec
+                    bbdcbbbbbbbbbccbbbbbbbbcdddcbbbbbbbbbccbbbbbbbbbcd888cc4444444444411111111111111144444444444cc888dcbbbbbbbbcccbbbbbbbbbcdcbbbbbbbbbbccbbbbbbbbbcdbec
+                    bbdcbbbbbbbbbccbbbbbbbbcdddcbbbbbbbbbccbbbbbbbbbcd888cc4444444444411111111111111144444444444cc888dcbbbbbbbbcccbbbbbbbbbcdcbbbbbbbbbbccbbbbbbbbbcdbec
+                    bbdcccccccccccccccccccccdddccccccccccccccccccccccd888cc4444444444441111111111111444444444444cc888dccccccccccccccccccccccdcccccccccccccccccccccccdbec
+                    bbd111111111111111111111ddd1111111111111111111111d888cc4444444444441111111111111444444444444cc888d1111111111111111111111d11111111111111111111111dbec
+                    bbd88888888888888888888888888888888888888888888888888cc4444444444444111111111114444444444444cc8888888888888888888888888888888888888888888888888ddbec
+                    bbd88888888888888888881222222212112221211112218888888cc4444444444444441111111444444444444444cc8888888888888888888888888888888888888888888888888ddbec
+                    bbd88888888888888888881211111112112221222122218888888ccc44444444444444444444444444444444444ccc8888888888888888888888888888888888888888888888888ddbec
+                    bbd88888888888888888881211122212222221211212218888888ccccccccccccccccccccccccccccccccccccccccc8888888888888888888888888888888888888888888888888ddbec
+                    bbd88888888888888888881211111211112221211112218888888ccccccccccccccccccccccccccccccccccccccccc8888888888888888888888888888888888888888888888888ddbec
+                    bbd88888888888888888881222222212222221211112218888888cccdbbbccc666666666ccc666666666cccbbbdccc8888888888888888888888888888888888888888888888888ddbec
+                    bbd88888888888888888888888888888888888888888888888888cccddbbbbc666666666ccc666666666cbbbbddccc8888888888888888888888888888888888888888888888888ddbec
+                    bbddddddddddddddddd8888888888888888888888888888888888cccddddbbc666666666ccc666666666cbbddddccc8888888888888888888888888888888888dddddddddddddddddbec
+                    ccbddddddddddddddddddddddddddddddddddddddddddddddd888cccddddbbc666666666ccc666666666cbbddddccc888dddddddddddddddddddddddddddddddddddddddddddddddbbc.
+                    cccbdddddddddddddddddddddddddddddddddddddddddddddd888cccddddbbc666666666ccc666666666cbbddddccc888dddddddddddddddddddddddddddddddddddddddddddddddcc..
+                    ..ccccccccccccccccccccccccccccccccccccccccccccccccccccccddddbbc666666666ccc666666666cbbddddcccccccccccccccccccccccccccccccccccccccccccccccccccccc...
+                    ....ccccccccccccccccccccccccccccccccccccccccccccccccccccddddbbc666666666ccc666666666cbbddddccccccccccccccccccccccccccccccccccccccccccccccccccccc....
+                    .....................................................cccbdddbbc666666666ccc666666666cbbdddbccc......................................................
+                    ......................................................ccbdddbbc666666666ccc666666666cbbdddbcc.......................................................
+                `, SpriteKind.Structure)
+                tiles.placeOnTile(mySprite, value4)
+                mySprite.x += 0
+                mySprite.y += -32
+                for (let i = value4.column - 4; i < 5 + value4.column; i++) {
+                    for (let j = value4.row - 4; j < value4.row + 1; j++) {
+                        tiles.setWallAt(new tiles.Location(i, j, game.currentScene().tileMap), true);
+                    }
+                }
+                tiles.setWallAt(value4, false);
+            }
+        }
+
+    }
+
+    // Change above function to load a specific route, change name also
+
+
+
+
+
+    // Add function to create a new route from tile map and register its route id and connections
+    
+    //% group="Create"
+    //% blockId=creatures_makeRoute
+    //% expandableArgumentMode=toggle
+    //% block="make route with tilemap $tilemap wild pokemon ids $wildIDs name $name ||  previous route $prevRouteID next route $nextRouteID previous route tile $prevRouteTileImage next route tile $nextRouteTileImage"
+    //% tilemap.fieldEditor="tilemap"
+    //% tilemap.fieldOptions.decompileArgumentAsString="true"
+    //% tilemap.fieldOptions.filter="tile"
+    //% tilemap.fieldOptions.taggedTemplate="tilemap"
+    //% prevRouteTileImage.shadow=tileset_tile_picker
+    //% prevRouteTileImage.decompileIndirectFixedInstances=true
+    //% nextRouteTileImage.shadow=tileset_tile_picker
+    //% nextRouteTileImage.decompileIndirectFixedInstances=true
+    //% weight=97 
+    //% blockSetVariable=route
+    export function makeNewRoute(tilemap: tiles.TileMapData, wildIDs: number[], name: string, prevRouteID?: number, nextRouteID?: number, prevRouteTileImage?: Image, nextRouteTileImage?: Image) : Route{
+       
+        let newRoutePrevRouteID = -1;
+        
+        let newRouteNextRouteID = -1;
+
+        let newRoutePrevRouteTileImage = img`
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+        `;
+        let newRouteNextRouteTileImage = img`
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+            . . . . . . . . . . . . . . . .
+        `;
+
+        if(prevRouteID != null){
+            newRoutePrevRouteID = prevRouteID;
+        }
+
+        if (nextRouteID != null) {
+            newRouteNextRouteID = nextRouteID;
+        }
+
+        if (nextRouteTileImage != null) {
+            newRoutePrevRouteTileImage = prevRouteTileImage;
+        }
+
+        if (prevRouteTileImage != null) {
+            newRouteNextRouteTileImage = nextRouteTileImage;
+        }
+        let newRoute = new Route(tilemap, wildIDs, name, routes.length, newRoutePrevRouteID, newRouteNextRouteID, newRoutePrevRouteTileImage, newRouteNextRouteTileImage);
+        routes.push(newRoute);
+        return newRoute;
+    }
+
+
+
+    // Add a function to see what route i should go to based on the tile i stepped on and the route I am on.
+    //% group="Events"
+    //% blockId=creatures_gotoRouteFromOverlap
+    //% expandableArgumentMode=toggle
+    //% block="make player $player=variables_get(myTrainer) go to route based on overlap with $tileImage at location $location using grass $grass || house $door1 lab $door2 pokemon center $door3 gym $door4"
+    //% tileImage.shadow=tileset_tile_picker
+    //% tileImage.decompileIndirectFixedInstances=true
+    //% grass.shadow=tileset_tile_picker
+    //% grass.decompileIndirectFixedInstances=true
+    //% door1.shadow=tileset_tile_picker
+    //% door1.decompileIndirectFixedInstances=true
+    //% door2.shadow=tileset_tile_picker
+    //% door2.decompileIndirectFixedInstances=true
+    //% door3.shadow=tileset_tile_picker
+    //% door3.decompileIndirectFixedInstances=true
+    //% door4.shadow=tileset_tile_picker
+    //% door4.decompileIndirectFixedInstances=true
+    export function goToRouteFromOverlap(player: Trainer, tileImage: Image, location: tiles.Location, grass: Image, door1?: Image, door2?: Image, door3?: Image, door4?: Image){
+        timer.throttle("changeRoute", 200, function () {
+            if(characterAnimations.matchesRule(player.sprite, characterAnimations.rule(Predicate.NotMoving))){
+                return;
+            }
+
+
+            let currentRoute: Route = routes[player.currentRouteID];
+            let gotoRoute: Route;
+            let lastRouteID: number = currentRoute.routeID;
+            let gotoRouteID: number = -1;
+
+            if (tileImage.equals(currentRoute.nextRouteTileImage)) {
+                if (currentRoute.nextRouteID == -1) {
+                    return;
+                }
+                gotoRouteID = currentRoute.nextRouteID
+                gotoRoute = routes[currentRoute.nextRouteID];
+
+            } else if (tileImage.equals(currentRoute.prevRouteTileImage)) {
+                if (currentRoute.prevRouteID == -1) {
+                    return;
+                }
+                gotoRouteID = currentRoute.prevRouteID
+                gotoRoute = routes[currentRoute.prevRouteID];
+            }
+
+            if (gotoRoute != null) {
+                //load route gotoRoute
+                if (door1 && door2 && door3 && door4) {
+                    loadRoute(gotoRoute, grass, door1, door2, door3, door4)
+                } else {
+                    loadRoute(gotoRoute, grass)
+                }
+            }
+            let moved: boolean = false;
+
+            if (lastRouteID == gotoRoute.prevRouteID) {
+                for (let tile of tiles.getTilesByType(gotoRoute.prevRouteTileImage)) {
+                    if (tile.col == location.col || tile.row == location.row) {
+                        tiles.placeOnTile(player.sprite, tile)
+                        moved = true;
+                    }
+                }
+
+                if (!moved) {
+                    tiles.placeOnRandomTile(player.sprite, gotoRoute.prevRouteTileImage)
+                }
+            } else if (lastRouteID == gotoRoute.nextRouteID) {
+                for (let tile of tiles.getTilesByType(gotoRoute.nextRouteTileImage)) {
+                    if (tile.col == location.col || tile.row == location.row) {
+                        tiles.placeOnTile(player.sprite, tile)
+                        moved = true;
+                    }
+                }
+
+                if (!moved) {
+                    tiles.placeOnRandomTile(player.sprite, gotoRoute.nextRouteTileImage)
+                }
+            }
+            //game.splash(gotoRouteID);
+            //game.splash(gotoRoute.routeID);
+
+            player.currentRouteID = gotoRoute.routeID;
+
+        })
+    }
+
+
+    
+
+    let routes : Route[] = [];
+    //let myTrainer : Trainer = null;
+
+    //% group="Create"
+    //% blockId=creatures_setTrainer 
+    //% block="make player creature trainer with starter %starter || Sprite: %player=screen_image_picker Moving Up Animation %moveUp=animation_editor Moving Down Animation %moveDown=animation_editor Moving Left Animation %moveLeft=animation_editor Moving Right Animation %moveRight=animation_editor"
+    //% expandableArgumentMode=toggle
+    //% blockSetVariable=myTrainer
+    //% weight=97 
+    export function makeCreatureTrainer(starter: StarterPokemon, player?: Image, moveUp?: Image[], moveDown?: Image[], moveLeft?: Image[], moveRight?: Image[]): Trainer {
+        let myPlayer = null;
+        if (!player) {
+            myPlayer = sprites.create(img`
+                . . . . f f f f . . . . .
+                . . f f f f f f f f . . .
+                . f f f f f f c f f f . .
+                f f f f f f c c f f f c .
+                f f f c f f f f f f f c .
+                c c c f f f e e f f c c .
+                f f f f f e e f f c c f .
+                f f f b f e e f b f f f .
+                . f 4 1 f 4 4 f 1 4 f . .
+                . f e 4 4 4 4 4 4 e f . .
+                . f f f e e e e f f f . .
+                f e f b 7 7 7 7 b f e f .
+                e 4 f 7 7 7 7 7 7 f 4 e .
+                e e f 6 6 6 6 6 6 f e e .
+                . . . f f f f f f . . . .
+                . . . f f . . f f . . . .
+            `, SpriteKind.Player)
+        } else {
+            myPlayer = sprites.create(player, SpriteKind.Player)
+        }
+        if (!moveDown) {
+            characterAnimations.loopFrames(
+                myPlayer,
+                [img`
+        . . . . f f f f . . . . . 
+        . . f f f f f f f f . . . 
+        . f f f f f f c f f f . . 
+        f f f f f f c c f f f c . 
+        f f f c f f f f f f f c . 
+        c c c f f f e e f f c c . 
+        f f f f f e e f f c c f . 
+        f f f b f e e f b f f f . 
+        . f 4 1 f 4 4 f 1 4 f . . 
+        . f e 4 4 4 4 4 4 e f . . 
+        . f f f e e e e f f f . . 
+        f e f b 7 7 7 7 b f e f . 
+        e 4 f 7 7 7 7 7 7 f 4 e . 
+        e e f 6 6 6 6 6 6 f e e . 
+        . . . f f f f f f . . . . 
+        . . . f f . . f f . . . . 
+        `, img`
+        . . . . . . . . . . . . . 
+        . . . . . f f f f . . . . 
+        . . . f f f f f f f f . . 
+        . . f f f f f f c f f f . 
+        f f f f f f f c c f f f c 
+        f f f f c f f f f f f f c 
+        . c c c f f f e e f f c c 
+        . f f f f f e e f f c c f 
+        . f f f b f e e f b f f f 
+        . f f 4 1 f 4 4 f 1 4 f f 
+        . . f e 4 4 4 4 4 e e f e 
+        . f e f b 7 7 7 e 4 4 4 e 
+        . e 4 f 7 7 7 7 e 4 4 e . 
+        . . . f 6 6 6 6 6 e e . . 
+        . . . f f f f f f f . . . 
+        . . . f f f . . . . . . . 
+        `, img`
+        . . . . . . . . . . . . . 
+        . . . . f f f f . . . . . 
+        . . f f f f f f f f . . . 
+        . f f f c f f f f f f . . 
+        c f f f c c f f f f f f f 
+        c f f f f f f f c f f f f 
+        c c f f e e f f f c c c . 
+        f c c f f e e f f f f f . 
+        f f f b f e e f b f f f . 
+        f f 4 1 f 4 4 f 1 4 f f . 
+        e f e e 4 4 4 4 4 e f . . 
+        e 4 4 4 e 7 7 7 b f e f . 
+        . e 4 4 e 7 7 7 7 f 4 e . 
+        . . e e 6 6 6 6 6 f . . . 
+        . . . f f f f f f f . . . 
+        . . . . . . . f f f . . . 
+        `],
+                160,
+                characterAnimations.rule(Predicate.MovingDown)
+            )
+        } else {
+            characterAnimations.loopFrames(myPlayer, moveUp, 160, characterAnimations.rule(Predicate.MovingDown));
+        }
+
+        if (!moveUp) {
+            characterAnimations.loopFrames(
+                myPlayer,
+                [img`
+        . . . . f f f f . . . . . 
+        . . f f c c c c f f . . . 
+        . f f c c c c c c f f . . 
+        f f c c c c c c c c f f . 
+        f f c c f c c c c c c f . 
+        f f f f f c c c f c c f . 
+        f f f f c c c f c c f f . 
+        f f f f f f f f f f f f . 
+        f f f f f f f f f f f f . 
+        . f f f f f f f f f f . . 
+        . f f f f f f f f f f . . 
+        f e f f f f f f f f e f . 
+        e 4 f 7 7 7 7 7 7 c 4 e . 
+        e e f 6 6 6 6 6 6 f e e . 
+        . . . f f f f f f . . . . 
+        . . . f f . . f f . . . . 
+        `, img`
+        . . . . . . . . . . . . . 
+        . . . . . f f f f . . . . 
+        . . . f f c c c c f f . . 
+        . f f f c c c c c c f f . 
+        f f c c c c c c c c c f f 
+        f c c c c f c c c c c c f 
+        . f f f f c c c c f c c f 
+        . f f f f c c f c c c f f 
+        . f f f f f f f f f f f f 
+        . f f f f f f f f f f f f 
+        . . f f f f f f f f f f . 
+        . . e f f f f f f f f f . 
+        . . e f f f f f f f f e f 
+        . . 4 c 7 7 7 7 7 e 4 4 e 
+        . . e f f f f f f f e e . 
+        . . . f f f . . . . . . . 
+        `, img`
+        . . . . . . . . . . . . . 
+        . . . . . f f f f . . . . 
+        . . . f f c c c c f f . . 
+        . . f f c c c c c c f f . 
+        . f f f c c c c c c c f f 
+        f f f c c c c c c c c c f 
+        f f c c c f c c c c c c f 
+        . f f f f f c c c f c f f 
+        . f f f f c c f f c f f f 
+        . . f f f f f f f f f f f 
+        . . f f f f f f f f f f . 
+        . . f f f f f f f f f e . 
+        . f e f f f f f f f f e . 
+        . e 4 4 e 7 7 7 7 7 c 4 . 
+        . . e e f f f f f f f e . 
+        . . . . . . . . f f f . . 
+        `],
+                160,
+                characterAnimations.rule(Predicate.MovingUp)
+            )
+        } else {
+            characterAnimations.loopFrames(myPlayer, moveUp, 160, characterAnimations.rule(Predicate.MovingUp));
+        }
+
+        if (!moveRight) {
+            characterAnimations.loopFrames(
+                myPlayer,
+                [img`
+        . . . . . . . . . . . . . 
+        . . . f f f f f f . . . . 
+        . f f f f f f f f f . . . 
+        . f f f f f f c f f f . . 
+        f f f f c f f f c f f f . 
+        f c f f c c f f f c c f f 
+        f c c f f f f e f f f f f 
+        f f f f f f f e e f f f . 
+        f f e e f b f e e f f f . 
+        f f e 4 e 1 f 4 4 f f . . 
+        . f f f e 4 4 4 4 f . . . 
+        . 4 4 4 e e e e f f . . . 
+        . e 4 4 e 7 7 7 7 f . . . 
+        . f e e f 6 6 6 6 f f . . 
+        . f f f f f f f f f f . . 
+        . . f f . . . f f f . . . 
+        `, img`
+        . . . . . . . . . . . . . 
+        . . . f f f f f f . . . . 
+        . f f f f f f f f f . . . 
+        . f f f f f f c f f f . . 
+        f f f f c f f f c f f f . 
+        f c f f c c f f f c c f f 
+        f c c f f f f e f f f f f 
+        f f f f f f f e e f f f . 
+        f f e e f b f e e f f . . 
+        . f e 4 e 1 f 4 4 f f . . 
+        . f f f e e 4 4 4 f . . . 
+        . . f e 4 4 e e f f . . . 
+        . . f e 4 4 e 7 7 f . . . 
+        . f f f e e f 6 6 f f . . 
+        . f f f f f f f f f f . . 
+        . . f f . . . f f f . . . 
+        `, img`
+        . . . f f f f f . . . . . 
+        . f f f f f f f f f . . . 
+        . f f f f f f c f f f . . 
+        f f f f c f f f c f f . . 
+        f c f f c c f f f c c f f 
+        f c c f f f f e f f f f f 
+        f f f f f f f e e f f f . 
+        f f e e f b f e e f f . . 
+        . f e 4 e 1 f 4 4 f . . . 
+        . f f f e 4 4 4 4 f . . . 
+        . . f e e e e e f f . . . 
+        . . e 4 4 e 7 7 7 f . . . 
+        . . e 4 4 e 7 7 7 f . . . 
+        . . f e e f 6 6 6 f . . . 
+        . . . f f f f f f . . . . 
+        . . . . f f f . . . . . . 
+        `],
+                160,
+                characterAnimations.rule(Predicate.MovingRight)
+            )
+        } else {
+            characterAnimations.loopFrames(myPlayer, moveRight, 160, characterAnimations.rule(Predicate.MovingRight));
+        }
+
+
+        if (!moveLeft) {
+            characterAnimations.loopFrames(
+                myPlayer,
+                [img`
+        . . . . . f f f f f . . . 
+        . . . f f f f f f f f f . 
+        . . f f f c f f f f f f . 
+        . . f f c f f f c f f f f 
+        f f c c f f f c c f f c f 
+        f f f f f e f f f f c c f 
+        . f f f e e f f f f f f f 
+        . . f f e e f b f e e f f 
+        . . . f 4 4 f 1 e 4 e f . 
+        . . . f 4 4 4 4 e f f f . 
+        . . . f f e e e e e f . . 
+        . . . f 7 7 7 e 4 4 e . . 
+        . . . f 7 7 7 e 4 4 e . . 
+        . . . f 6 6 6 f e e f . . 
+        . . . . f f f f f f . . . 
+        . . . . . . f f f . . . . 
+        `, img`
+        . . . . . . . . . . . . . 
+        . . . . f f f f f f . . . 
+        . . . f f f f f f f f f . 
+        . . f f f c f f f f f f . 
+        . f f f c f f f c f f f f 
+        f f c c f f f c c f f c f 
+        f f f f f e f f f f c c f 
+        . f f f e e f f f f f f f 
+        . . f f e e f b f e e f f 
+        . . f f 4 4 f 1 e 4 e f . 
+        . . . f 4 4 4 e e f f f . 
+        . . . f f e e 4 4 e f . . 
+        . . . f 7 7 e 4 4 e f . . 
+        . . f f 6 6 f e e f f f . 
+        . . f f f f f f f f f f . 
+        . . . f f f . . . f f . . 
+        `, img`
+            . . . . . . . . . . . . .
+            . . . . f f f f f f . . .
+            . . . f f f f f f f f f .
+            . . f f f c f f f f f f .
+            . f f f c f f f c f f f f
+            f f c c f f f c c f f c f
+            f f f f f e f f f f c c f
+            . f f f e e f f f f f f f
+            . f f f e e f b f e e f f
+            . . f f 4 4 f 1 e 4 e f f
+            . . . f 4 4 4 4 e f f f .
+            . . . f f e e e e 4 4 4 .
+            . . . f 7 7 7 7 e 4 4 e .
+            . . f f 6 6 6 6 f e e f .
+            . . f f f f f f f f f f .
+            . . . f f f . . . f f . .
+        `],
+                160,
+                characterAnimations.rule(Predicate.MovingLeft)
+            )
+        } else {
+            characterAnimations.loopFrames(myPlayer, moveLeft, 160, characterAnimations.rule(Predicate.MovingLeft));
+        }
+        if (!moveUp) {
+            moveUp = [img`
+                . . . . f f f f . . . . .
+                . . f f c c c c f f . . .
+                . f f c c c c c c f f . .
+                f f c c c c c c c c f f .
+                f f c c f c c c c c c f .
+                f f f f f c c c f c c f .
+                f f f f c c c f c c f f .
+                f f f f f f f f f f f f .
+                f f f f f f f f f f f f .
+                . f f f f f f f f f f . .
+                . f f f f f f f f f f . .
+                f e f f f f f f f f e f .
+                e 4 f 7 7 7 7 7 7 c 4 e .
+                e e f 6 6 6 6 6 6 f e e .
+                . . . f f f f f f . . . .
+                . . . f f . . f f . . . .
+            `, img`
+        . . . . . . . . . . . . . 
+        . . . . . f f f f . . . . 
+        . . . f f c c c c f f . . 
+        . f f f c c c c c c f f . 
+        f f c c c c c c c c c f f 
+        f c c c c f c c c c c c f 
+        . f f f f c c c c f c c f 
+        . f f f f c c f c c c f f 
+        . f f f f f f f f f f f f 
+        . f f f f f f f f f f f f 
+        . . f f f f f f f f f f . 
+        . . e f f f f f f f f f . 
+        . . e f f f f f f f f e f 
+        . . 4 c 7 7 7 7 7 e 4 4 e 
+        . . e f f f f f f f e e . 
+        . . . f f f . . . . . . . 
+        `, img`
+        . . . . . . . . . . . . . 
+        . . . . . f f f f . . . . 
+        . . . f f c c c c f f . . 
+        . . f f c c c c c c f f . 
+        . f f f c c c c c c c f f 
+        f f f c c c c c c c c c f 
+        f f c c c f c c c c c c f 
+        . f f f f f c c c f c f f 
+        . f f f f c c f f c f f f 
+        . . f f f f f f f f f f f 
+        . . f f f f f f f f f f . 
+        . . f f f f f f f f f e . 
+        . f e f f f f f f f f e . 
+        . e 4 4 e 7 7 7 7 7 c 4 . 
+        . . e e f f f f f f f e . 
+        . . . . . . . . f f f . . 
+        `]
+        }
+        if (!moveDown) {
+            moveDown = [img`
+        . . . . f f f f . . . . . 
+        . . f f f f f f f f . . . 
+        . f f f f f f c f f f . . 
+        f f f f f f c c f f f c . 
+        f f f c f f f f f f f c . 
+        c c c f f f e e f f c c . 
+        f f f f f e e f f c c f . 
+        f f f b f e e f b f f f . 
+        . f 4 1 f 4 4 f 1 4 f . . 
+        . f e 4 4 4 4 4 4 e f . . 
+        . f f f e e e e f f f . . 
+        f e f b 7 7 7 7 b f e f . 
+        e 4 f 7 7 7 7 7 7 f 4 e . 
+        e e f 6 6 6 6 6 6 f e e . 
+        . . . f f f f f f . . . . 
+        . . . f f . . f f . . . . 
+        `, img`
+        . . . . . . . . . . . . . 
+        . . . . . f f f f . . . . 
+        . . . f f f f f f f f . . 
+        . . f f f f f f c f f f . 
+        f f f f f f f c c f f f c 
+        f f f f c f f f f f f f c 
+        . c c c f f f e e f f c c 
+        . f f f f f e e f f c c f 
+        . f f f b f e e f b f f f 
+        . f f 4 1 f 4 4 f 1 4 f f 
+        . . f e 4 4 4 4 4 e e f e 
+        . f e f b 7 7 7 e 4 4 4 e 
+        . e 4 f 7 7 7 7 e 4 4 e . 
+        . . . f 6 6 6 6 6 e e . . 
+        . . . f f f f f f f . . . 
+        . . . f f f . . . . . . . 
+        `, img`
+            . . . . . . . . . . . . .
+            . . . . f f f f . . . . .
+            . . f f f f f f f f . . .
+            . f f f c f f f f f f . .
+            c f f f c c f f f f f f f
+            c f f f f f f f c f f f f
+            c c f f e e f f f c c c .
+            f c c f f e e f f f f f .
+            f f f b f e e f b f f f .
+            f f 4 1 f 4 4 f 1 4 f f .
+            e f e e 4 4 4 4 4 e f . .
+            e 4 4 4 e 7 7 7 b f e f .
+            . e 4 4 e 7 7 7 7 f 4 e .
+            . . e e 6 6 6 6 6 f . . .
+            . . . f f f f f f f . . .
+            . . . . . . . f f f . . .
+        `]
+        }
+        if (!moveLeft) {
+            moveLeft = [img`
+        . . . . . f f f f f . . . 
+        . . . f f f f f f f f f . 
+        . . f f f c f f f f f f . 
+        . . f f c f f f c f f f f 
+        f f c c f f f c c f f c f 
+        f f f f f e f f f f c c f 
+        . f f f e e f f f f f f f 
+        . . f f e e f b f e e f f 
+        . . . f 4 4 f 1 e 4 e f . 
+        . . . f 4 4 4 4 e f f f . 
+        . . . f f e e e e e f . . 
+        . . . f 7 7 7 e 4 4 e . . 
+        . . . f 7 7 7 e 4 4 e . . 
+        . . . f 6 6 6 f e e f . . 
+        . . . . f f f f f f . . . 
+        . . . . . . f f f . . . . 
+        `, img`
+        . . . . . . . . . . . . . 
+        . . . . f f f f f f . . . 
+        . . . f f f f f f f f f . 
+        . . f f f c f f f f f f . 
+        . f f f c f f f c f f f f 
+        f f c c f f f c c f f c f 
+        f f f f f e f f f f c c f 
+        . f f f e e f f f f f f f 
+        . . f f e e f b f e e f f 
+        . . f f 4 4 f 1 e 4 e f . 
+        . . . f 4 4 4 e e f f f . 
+        . . . f f e e 4 4 e f . . 
+        . . . f 7 7 e 4 4 e f . . 
+        . . f f 6 6 f e e f f f . 
+        . . f f f f f f f f f f . 
+        . . . f f f . . . f f . . 
+        `, img`
+            . . . . . . . . . . . . .
+            . . . . f f f f f f . . .
+            . . . f f f f f f f f f .
+            . . f f f c f f f f f f .
+            . f f f c f f f c f f f f
+            f f c c f f f c c f f c f
+            f f f f f e f f f f c c f
+            . f f f e e f f f f f f f
+            . f f f e e f b f e e f f
+            . . f f 4 4 f 1 e 4 e f f
+            . . . f 4 4 4 4 e f f f .
+            . . . f f e e e e 4 4 4 .
+            . . . f 7 7 7 7 e 4 4 e .
+            . . f f 6 6 6 6 f e e f .
+            . . f f f f f f f f f f .
+            . . . f f f . . . f f . .
+        `]
+        }
+        if (!moveRight) {
+            moveRight = [img`
+        . . . . . . . . . . . . . 
+        . . . f f f f f f . . . . 
+        . f f f f f f f f f . . . 
+        . f f f f f f c f f f . . 
+        f f f f c f f f c f f f . 
+        f c f f c c f f f c c f f 
+        f c c f f f f e f f f f f 
+        f f f f f f f e e f f f . 
+        f f e e f b f e e f f f . 
+        f f e 4 e 1 f 4 4 f f . . 
+        . f f f e 4 4 4 4 f . . . 
+        . 4 4 4 e e e e f f . . . 
+        . e 4 4 e 7 7 7 7 f . . . 
+        . f e e f 6 6 6 6 f f . . 
+        . f f f f f f f f f f . . 
+        . . f f . . . f f f . . . 
+        `, img`
+        . . . . . . . . . . . . . 
+        . . . f f f f f f . . . . 
+        . f f f f f f f f f . . . 
+        . f f f f f f c f f f . . 
+        f f f f c f f f c f f f . 
+        f c f f c c f f f c c f f 
+        f c c f f f f e f f f f f 
+        f f f f f f f e e f f f . 
+        f f e e f b f e e f f . . 
+        . f e 4 e 1 f 4 4 f f . . 
+        . f f f e e 4 4 4 f . . . 
+        . . f e 4 4 e e f f . . . 
+        . . f e 4 4 e 7 7 f . . . 
+        . f f f e e f 6 6 f f . . 
+        . f f f f f f f f f f . . 
+        . . f f . . . f f f . . . 
+        `, img`
+            . . . f f f f f . . . . .
+            . f f f f f f f f f . . .
+            . f f f f f f c f f f . .
+            f f f f c f f f c f f . .
+            f c f f c c f f f c c f f
+            f c c f f f f e f f f f f
+            f f f f f f f e e f f f .
+            f f e e f b f e e f f . .
+            . f e 4 e 1 f 4 4 f . . .
+            . f f f e 4 4 4 4 f . . .
+            . . f e e e e e f f . . .
+            . . e 4 4 e 7 7 7 f . . .
+            . . e 4 4 e 7 7 7 f . . .
+            . . f e e f 6 6 6 f . . .
+            . . . f f f f f f . . . .
+            . . . . f f f . . . . . .
+        `]
+        }
+        let myTrainer = new Trainer("Ash", 0, myPlayer, moveUp, moveDown, moveLeft, moveRight,0);
+        //game.splash(starter)
+        myTrainer.addPartyPokemon(makeCreatureFromID(starter, 5, 12000));
+        //myTrainer.addPartyPokemon(makeCreatureFromID(150));
+        //myTrainer.addPartyPokemon(makeCreatureFromID(1));
+        //myTrainer.addPartyPokemon(makeCreatureFromID(4));
+        //myTrainer.addPartyPokemon(makeCreatureFromID(7));
+        //myTrainer.addPartyPokemon(makeCreatureFromID(88));
+
+
+        controller.moveSprite(myPlayer, 80, 80)
+        myPlayer.z = 90
+        tiles.placeOnTile(myPlayer, tiles.getTileLocation(32, 32))
+        scene.cameraFollowSprite(myPlayer)
+        return myTrainer;
+    }
+
+    //% group="Create"
+    //% blockId=creatures_setEnemyTrainer 
+    //% block="make enemy creature trainer with ids $ids levels $levels || $sprite and name"
+    //% expandableArgumentMode=toggle
+    //% blockSetVariable=opponent
+    //% weight=96 
+    export function makeEnemyTrainer(ids: number[], levels: number[], sprite?: Image, name?: string){
+        let enemySprite = null;
+        if (!sprite){
+            enemySprite = sprites.create(img`
+                . . . . f f f f . . . .
+                . . f f e e e e f f . .
+                . f f e e e e e e f f .
+                f f f f 4 e e e f f f f
+                f f f 4 4 4 e e f f f f
+                f f f 4 4 4 4 e e f f f
+                f 4 e 4 4 4 4 4 4 e 4 f
+                f 4 4 f f 4 4 f f 4 4 f
+                f e 4 4 4 4 4 4 4 4 e f
+                . f e 4 4 b b 4 4 e f .
+                . f f e 4 4 4 4 e f f .
+                e 4 f b 1 1 1 1 b f 4 e
+                4 d f 1 1 1 1 1 1 f d 4
+                4 4 f 6 6 6 6 6 6 f 4 4
+                . . . f f f f f f . . .
+                . . . f f . . f f . . .
+            `, SpriteKind.Enemy);
+        } else {
+            enemySprite = sprites.create(sprite, SpriteKind.Enemy);
+        }
+        let trainerName = "Brock";
+        if(name){
+            trainerName=name;
+        }
+        enemySprite.setFlag(SpriteFlag.Invisible, true);
+        let enemyTrainer = new Trainer(trainerName, 0, enemySprite, [enemySprite.image], [enemySprite.image], [enemySprite.image], [enemySprite.image]);
+        //game.splash(starter)
+        for(let i = 0; i < ids.length && levels.length; i++) {
+            enemyTrainer.addPartyPokemon(makeCreatureFromID(ids[i], levels[i], getXpForLevel(levels[i])));
+        }
+
+        return enemyTrainer;
+        
+    }
+    
+    //% group="Battle"
+    //% blockId=creatures_battleGym
+    //% block="make $player=variables_get(myTrainer) battle gym at location $location=variables_get(location)"
+    //% weight=70
+    export function battleGym(player: Trainer, location: tiles.Location) {
+
+        timer.throttle("gym", 500, function () {
+            tiles.setTileAt(location, assets.tile`transparency16`)
+            player.sprite.setFlag(SpriteFlag.GhostThroughTiles, true)
+            game.showLongText("Welcome to the Gym. Do you wish to battle?", DialogLayout.Bottom)
+            story.startCutscene(function () {
+                controller.moveSprite(player.sprite, 0, 0)
+                pause(200)
+                story.showPlayerChoices("Yes", "No")
+                
+                pauseUntil(() => !(story.isMenuOpen()))
+                if (story.checkLastAnswer("Yes")) {
+                    scene.centerCameraAt(80, 60)
+                    pause(200)
+                    tiles.placeOnTile(player.sprite, tiles.getTileLocation(location.column, location.row + 1))
+                    let gym = player.badges + 1;
+                    let gymLeader = null;
+                    switch (gym) {
+                        case 1:
+                            gymLeader = makeEnemyTrainer([74, 95], [12, 14], img`
+                    . . . . f f f f . . . .
+                    . . f f e e e e f f . .
+                    . f f e e e e e e f f .
+                    f f f f 4 e e e f f f f
+                    f f f 4 4 4 e e f f f f
+                    f f f 4 4 4 4 e e f f f
+                    f 4 e 4 4 4 4 4 4 e 4 f
+                    f 4 4 f f 4 4 f f 4 4 f
+                    f e 4 4 4 4 4 4 4 4 e f
+                    . f e 4 4 b b 4 4 e f .
+                    . f f e 4 4 4 4 e f f .
+                    e 4 f b 1 1 1 1 b f 4 e
+                    4 d f 1 1 1 1 1 1 f d 4
+                    4 4 f 6 6 6 6 6 6 f 4 4
+                    . . . f f f f f f . . .
+                    . . . f f . . f f . . .
+                `, "Brock");
+                            break;
+                        case 2:
+                            gymLeader = makeEnemyTrainer([120, 121], [18, 21], img`
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                `, "Misty");
+                            break;
+                        case 3:
+                            gymLeader = makeEnemyTrainer([100, 25, 26], [21, 18, 24], img`
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                `, "Lt. Surge");
+                            break;
+                        case 4:
+                            gymLeader = makeEnemyTrainer([71, 114, 45], [29, 24, 29], img`
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                `, "Erika");
+                            break;
+                        case 5:
+                            gymLeader = makeEnemyTrainer([109, 89, 109, 110], [37, 39, 37, 43], img`
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                `, "Koga");
+                            break;
+                        case 6:
+                            gymLeader = makeEnemyTrainer([64, 122, 49, 65], [38, 37, 38, 43], img`
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                `, "Sabrina");
+                            break;
+                        case 7:
+                            gymLeader = makeEnemyTrainer([58, 77, 78, 59], [42, 40, 42, 47], img`
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                `, "Blaine");
+                            break;
+                        case 8:
+                            gymLeader = makeEnemyTrainer([111, 51, 31, 34, 112], [45, 42, 44, 45, 50], img`
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                `, "Giovanni");
+                            break;
+                        case 9:
+                            gymLeader = makeEnemyTrainer([87, 91, 80, 124, 131], [54, 53, 54, 56, 56], img`
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                `, "Lorelei");
+                            break;
+                        case 10:
+                            gymLeader = makeEnemyTrainer([95, 106, 107, 95, 68], [53, 55, 55, 56, 58], img`
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                `, "Bruno");
+                            break;
+                        case 11:
+                            gymLeader = makeEnemyTrainer([94, 42, 93, 24, 94], [56, 56, 55, 58, 60], img`
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                `, "Agatha");
+                            break;
+                        case 12:
+                            gymLeader = makeEnemyTrainer([130, 148, 148, 142, 149], [58, 56, 56, 60, 62], img`
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                    . . . . . . . . . . . . . . . .
+                `, "Lance");
+                            break;
+                        case 13:
+                            gymLeader = makeEnemyTrainer([18, 65, 112, 59, 130, 9], [61, 59, 61, 63, 61, 65], img`
+                                . . . . . . . . . . . . . . . .
+                                . . . . . . . . . . . . . . . .
+                                . . . . . . . . . . . . . . . .
+                                . . . . . . . . . . . . . . . .
+                                . . . . . . . . . . . . . . . .
+                                . . . . . . . . . . . . . . . .
+                                . . . . . . . . . . . . . . . .
+                                . . . . . . . . . . . . . . . .
+                                . . . . . . . . . . . . . . . .
+                                . . . . . . . . . . . . . . . .
+                                . . . . . . . . . . . . . . . .
+                                . . . . . . . . . . . . . . . .
+                                . . . . . . . . . . . . . . . .
+                                . . . . . . . . . . . . . . . .
+                                . . . . . . . . . . . . . . . .
+                                . . . . . . . . . . . . . . . .
+                            `, "Gary");
+                            break;
+                    }
+                    if (!gymLeader) {
+                        return;
+                    }
+
+                    let win = trainerBattleTrainer(player, gymLeader);
+
+
+                    if (win) {
+                        game.showLongText("You defeated the gym! Now battle the next.", DialogLayout.Bottom)
+                        controller.moveSprite(player.sprite, 80, 80)
+                        player.badges += 1
+                        tiles.setTileAt(location, assets.tile`myTile11`)
+                        if (player.badges == 14) {
+                            game.gameOver(true)
+                        }
+                    } else {
+                        game.showLongText("You lost. Get stronger and try again!", DialogLayout.Bottom)
+                        controller.moveSprite(player.sprite, 80, 80)
+                        tiles.setTileAt(location, assets.tile`myTile11`)
+                    }
+                } else {
+                    tiles.placeOnTile(player.sprite, tiles.getTileLocation(location.column, location.row + 1))
+                    scene.cameraFollowSprite(player.sprite);
+                    game.showLongText("Not feeling strong enough yet?", DialogLayout.Bottom)
+                    controller.moveSprite(player.sprite, 80, 80)
+                    tiles.setTileAt(location, assets.tile`myTile11`)
+                }
+                player.sprite.setFlag(SpriteFlag.GhostThroughTiles, false)
+            })
+        })
+
+    }
+
+    //% group="Events"
+    //% blockId=creatures_overlapGrass
+    //% block="Player $player=variables_get(myTrainer) with $sprite=variables_get(sprite) overlap Grass with otherSprite $otherSprite=variables_get(otherSprite)"
+    export function overlapGrass(player : Trainer, sprite: Sprite, otherSprite: Sprite) {
+        if (characterAnimations.matchesRule(sprite, characterAnimations.rule(Predicate.Moving))) {
+            timer.throttle("battleChance", 200, function () {
+                if (Math.percentChance(15)) {
+                    sprite.setFlag(SpriteFlag.GhostThroughSprites, true)
+                    controller.moveSprite(sprite, 0, 0)
+                    const wildCreature = creatures.makeCreatureFromID(
+                        routes[player.currentRouteID].wildIDs._pickRandom(), 5, 0
+                    )
+                    creatures.trainerBattleWild(player, wildCreature);
+                    scene.cameraFollowSprite(sprite)
+                    timer.after(500, function () {
+                        controller.moveSprite(sprite, 80, 80)
+                        //heal pokemon in first slot;
+                        //myTrainer.partyPokemon[0].hp = myTrainer.partyPokemon[0].maxHP;
+                    })
+                    timer.after(7000, function () {
+                        sprite.setFlag(SpriteFlag.GhostThroughSprites, false)
+                    })
+                }
+            })
+            timer.throttle("animateGrass", 160, function () {
+                animation.runImageAnimation(
+                    otherSprite,
+                    [img`
+                5 7 5 7 7 7 6 6 6 6 7 7 7 7 7 7 
+                7 7 7 7 7 c 6 7 7 6 c 7 7 1 7 7 
+                7 7 7 1 c 6 7 5 7 7 6 c 1 7 1 7 
+                7 7 6 6 c c 6 5 5 6 c c 6 6 6 7 
+                6 6 6 5 5 5 6 7 5 6 5 5 7 6 6 6 
+                6 6 7 7 7 5 7 6 7 5 5 7 7 7 7 6 
+                7 c c c 6 6 7 6 6 5 7 6 c c 6 7 
+                6 c 6 6 6 6 6 c c 6 6 6 6 6 c 6 
+                6 6 7 7 7 c c c c c c 7 7 7 6 6 
+                6 7 7 7 6 6 c c c c 6 6 7 7 7 6 
+                c 6 c c 6 7 6 c c 6 7 6 c c 6 c 
+                7 c c 5 5 7 6 7 7 6 7 5 5 c c 1 
+                7 c 6 7 5 5 6 7 7 6 5 5 7 6 c d 
+                7 6 6 7 7 6 6 5 5 6 6 7 7 6 6 6 
+                7 7 6 6 6 6 c 6 7 6 c 6 6 6 6 7 
+                7 7 5 6 6 c 7 6 6 6 7 c 6 7 7 7 
+                `, img`
+                7 7 7 7 6 6 7 6 6 6 c 1 d 6 7 7 
+                7 7 1 6 6 7 6 c 6 7 6 c c 6 6 7 
+                7 1 7 6 6 7 c 6 7 7 c c 6 6 6 7 
+                7 7 1 6 7 7 c 6 7 7 c 5 7 7 6 6 
+                7 7 c c 5 7 6 6 7 6 6 5 5 7 6 c 
+                7 c 6 c 5 5 7 6 c 6 7 7 5 6 c 7 
+                6 6 7 6 6 5 5 6 c c 6 6 6 6 6 6 
+                6 7 7 5 5 7 6 c c c c 7 7 5 7 6 
+                6 7 5 5 7 6 6 c c c c 7 7 5 6 6 
+                6 6 7 6 6 7 7 6 c c 6 6 6 6 c 7 
+                7 c 6 c 5 5 6 6 c 6 7 7 5 6 6 c 
+                7 7 c c 5 7 6 6 7 6 6 5 5 7 6 6 
+                7 7 1 6 5 7 c 6 7 7 c 5 7 7 6 6 
+                5 7 7 6 6 7 c 6 7 7 c c 6 6 6 5 
+                7 7 7 7 6 6 c c 6 7 6 c c 6 7 7 
+                5 7 7 7 6 6 7 6 6 6 c 7 7 7 7 7 
+                `, img`
+                7 7 7 6 c 7 6 6 6 7 c 6 6 5 7 7 
+                7 6 6 6 6 c 6 7 6 c 6 6 6 6 7 7 
+                6 6 6 7 7 6 6 5 5 6 6 7 7 6 6 7 
+                d c 6 7 5 5 6 7 7 6 5 5 7 6 c 7 
+                1 c c 5 5 7 6 7 7 6 7 5 5 c c 7 
+                c 6 c c 6 7 6 c c 6 7 6 c c 6 c 
+                6 7 7 7 6 6 c c c c 6 6 7 7 7 6 
+                6 6 7 7 7 c c c c c c 7 7 7 6 6 
+                6 c 6 6 6 6 6 c c 6 6 6 6 6 c 6 
+                7 6 c c 6 7 5 6 6 7 6 6 c c c 7 
+                6 7 7 7 7 5 5 7 6 7 5 7 7 7 6 6 
+                6 6 6 7 5 5 6 5 7 6 5 5 5 6 6 6 
+                7 6 6 6 c c 6 5 5 6 c c 6 6 7 7 
+                7 1 7 1 c 6 7 7 5 7 6 c 1 7 7 7 
+                7 7 1 7 7 c 6 7 7 6 c 7 7 7 7 7 
+                7 7 7 7 7 7 6 6 6 6 7 7 7 5 7 5 
+                `, img`
+                    7 7 7 7 7 c 6 6 6 7 6 6 7 7 7 5
+                    7 7 6 c c 6 7 6 c c 6 6 7 7 7 7
+                    5 6 6 6 c c 7 7 6 c 7 6 6 7 7 5
+                    6 6 7 7 5 c 7 7 6 c 7 5 6 1 7 7
+                    6 6 7 5 5 6 6 7 6 6 7 5 c c 7 7
+                    c 6 6 5 7 7 6 c 6 6 5 5 c 6 c 7
+                    7 c 6 6 6 6 c c 6 7 7 6 6 7 6 6
+                    6 6 5 7 7 c c c c 6 6 7 5 5 7 6
+                    6 7 5 7 7 c c c c 6 7 5 5 7 7 6
+                    6 6 6 6 6 6 c c 6 5 5 6 6 7 6 6
+                    7 c 6 5 7 7 6 c 6 7 5 5 c 6 c 7
+                    c 6 7 5 5 6 6 7 6 6 7 5 c c 7 7
+                    6 6 7 7 5 c 7 7 6 c 7 7 6 1 7 7
+                    7 6 6 6 c c 7 7 6 c 7 6 6 7 1 7
+                    7 6 6 c c 6 7 6 c 6 7 6 6 1 7 7
+                    7 7 6 d 1 c 6 6 6 7 6 6 7 7 7 7
+                `],
+                    100,
+                    false
+                )
+            })
+        }
+    }
+
+
+
 
     function makeCreatureImageDex(id: number): Sprite {
         switch (id) {
@@ -8066,63 +11743,63 @@ namespace creatures {
                         `, SpriteKind.Creature)
             case 150:
                 return sprites.create(img`
-                            111111ff111111111111bff111111111111111111111111111111111
-                            11111b11f1111111111b111f11111111111111111111111111111111
-                            11111f111f111111111f111df1111111111111111111111111111111
-                            11111f1111f11bffb1f111ddf1111111111111111111111111111111
-                            11111f11ddfbf111fff111ddb1111111111111111111111111111111
-                            11111f11ddd1111111b11ddb11111111111111111111111111111111
-                            11111b1dddd11111df111ddf11111111111111111111111111111111
-                            1111b11ddd11111ddb111ddb11111111111111111111111111111111
-                            1111f111d111111db1111dddf1111111111111111111111111111111
-                            111d11111111111111111dddb1111111111111111111111111111111
-                            111b11111111111111111dddbfb11111111111111111dbff11111111
-                            11f111111111111111111dddbddff1111111111111db1111ff111111
-                            1f1111111111111111111ddddbdddf11111111111b11111111ff1111
-                            b11111111dd1111111111ddddbdd1ff111111111b111111111ddf111
-                            f1111111d11111bbd111dddddbd111ff1111111b1111111ffddddf11
-                            f111111d1111bfbddddddddddff1111f1111111f111111f11fdddf11
-                            ff11111b111fd1bddddddddddf1f1111b11111b111111b1111fdddf1
-                            bf1d11b11dff111dd1ddddddf111f111f11111f111111f11111fddf1
-                            1f1b11d1dfbf111d111dddddf111f11ddf1111f111111f11111fddf1
-                            1bbd111dbfbf11b111ddddddf11fffdddf111b1111111f111111bddf
-                            11f111ddf1f1db1111dddddbdffddfffff111f11111111f11111fddf
-                            11f111ddfd1d11111ddddddbdddddd111df11f11111111b11111fddf
-                            11f1111d1111111ddfffbdddbdddd1111fff1f11111111df1111fddf
-                            11b11111111fb1dff1ffffdddddbd1111f11f1f1111111db1111bddf
-                            111b11111bf11ff11fb1fdf1ddbbddd1f111b1f111111d1df11fddbf
-                            1111ff1bf11ffd11b1f1f1b111bdddd1f1111ff1111111ddb11bddbf
-                            111111ffffb11111b1f1f11b1111dd11f1111ff111111d1db1fdddbf
-                            11111111111111b11df1111111dd1111df11df1f1111d1ddbfddddb1
-                            11111111111111f1ddff111dffbdd11dff11df1f11111d1ddfdddbf1
-                            1111111111111b1ddff1fddbdddfbddff1f11dff11d1d1dddfdddbf1
-                            1111111111111f1df1111ff111dddffdfff11dff1d1d1ddddbddbf11
-                            1111111111111fddf11111f11111dddddfff11fdffd1ddddddfbbf11
-                            111111111111bddf111111b111111dddddbdf1dfddfdddddddfff111
-                            111111111111fbdf11111b11111111dddbddf11dfddfddddddf11111
-                            11111111111bddf111111f11bbd1111ddb1ddf1dfdd1fdddddf11111
-                            11111111111fddf111111f1ddddb111db111dfbdfdd1bdddddf11111
-                            1111111111b11dd11111bfbdddddb111b111df1dfdd11fddddf11111
-                            1111111111b11ddf1111f1b11dddbb11b11ddb111b111bddddf11111
-                            1111111111f111df111b11f11dddbb11b11df1111f1111fddbf11111
-                            1111111111f111df111b11fddddbbbb1bdddb111df1111fddbf11111
-                            1111111111f111dfff1f111bdddbdbbddbdf111ddf111dfddbf11111
-                            1111111111f111f111ff111fddbdbdbbdbbb111ddf11ddfdbb111111
-                            1111111111b111f11df1f111fbdbdbbbbdf1111dbdddddfbbf111111
-                            11111111111b11f1ddf1f111dfbbbbffffb111ddfddddbbbbf111111
-                            11111111111f11dfffdf1f1d1dfbbf1ddf1111ddfddddfbbf1111111
-                            11111111111fbbdddddf11f1dddbffddb1111dddfdddbbbbf1111111
-                            11111111111ff1bdddbbf11fddddd1fb11111ddfddddfbbf11111111
-                            11111111111b111fdb111f111fddf1ff1111dddf1ddddff111111111
-                            11111111111b11dffb111f111ffbbffb111dddfbf1ddd1f111111111
-                            111111111111fddfffddff11ffbbbf1db1ddddfbf111111bf1111111
-                            1111111111111bffbfffffff1ddbbfdddfbbdfbbf11111111bf11111
-                            1111111111111111ffbbbb1111ddbbffff1dfbbff1bbf111111f1111
-                            111111111111111f11b1111111ddddbbbfff1ff1fb11df111111f111
-                            111111111111111f11f11111ddddbffff11111111f11dfdd111df111
-                            1111111111111111fffddddbffff1111111111111fdddfffdddf1111
-                            1111111111111111111ffff1111111111111111111fff111fff11111
-                        `, SpriteKind.Creature)
+                    111111ff111111111111bff111111111111111111111111111111111
+                    11111b11f1111111111b111f11111111111111111111111111111111
+                    11111f111f111111111f111df1111111111111111111111111111111
+                    11111f1111f11bffb1f111ddf1111111111111111111111111111111
+                    11111f11ddfbf111fff111ddb1111111111111111111111111111111
+                    11111f11ddd1111111b11ddb11111111111111111111111111111111
+                    11111b1dddd11111df111ddf11111111111111111111111111111111
+                    1111b11ddd11111ddb111ddb11111111111111111111111111111111
+                    1111f111d111111db1111dddf1111111111111111111111111111111
+                    111d11111111111111111dddb1111111111111111111111111111111
+                    111b11111111111111111dddbfb11111111111111111dbff11111111
+                    11f111111111111111111dddbddff1111111111111db1111ff111111
+                    1f1111111111111111111ddddbdddf11111111111b11111111ff1111
+                    b11111111dd1111111111ddddbdd1ff111111111b111111111ddf111
+                    f1111111d11111bbd111dddddbd111ff1111111b1111111ffddddf11
+                    f111111d1111bfbddddddddddff1111f1111111f111111f11fdddf11
+                    ff11111b111fd1bddddddddddf1f1111b11111b111111b1111fdddf1
+                    bf1d11b11dff111dd1ddddddf111f111f11111f111111f11111fddf1
+                    1f1b11d1dfbf111d111dddddf111f11ddf1111f111111f11111fddf1
+                    1bbd111dbfbf11b111ddddddf11fffdddf111b1111111f111111bddf
+                    11f111ddf1f1db1111dddddbdffddfffff111f11111111f11111fddf
+                    11f111ddfd1d11111ddddddbdddddd111df11f11111111b11111fddf
+                    11f1111d1111111ddfffbdddbdddd1111fff1f11111111df1111fddf
+                    11b11111111fb1dff1ffffdddddbd1111f11f1f1111111db1111bddf
+                    111b11111bf11ff11fb1fdf1ddbbddd1f111b1f111111d1df11fddbf
+                    1111ff1bf11ffd11b1f1f1b111bdddd1f1111ff1111111ddb11bddbf
+                    111111ffffb11111b1f1f11b1111dd11f1111ff111111d1db1fdddbf
+                    11111111111111b11df1111111dd1111df11df1f1111d1ddbfddddb1
+                    11111111111111f1ddff111dffbdd11dff11df1f11111d1ddfdddbf1
+                    1111111111111b1ddff1fddbdddfbddff1f11dff11d1d1dddfdddbf1
+                    1111111111111f1df1111ff111dddffdfff11dff1d1d1ddddbddbf11
+                    1111111111111fddf11111f11111dddddfff11fdffd1ddddddfbbf11
+                    111111111111bddf111111b111111dddddbdf1dfddfdddddddfff111
+                    111111111111fbdf11111b11111111dddbddf11dfddfddddddf11111
+                    11111111111bddf111111f11bbd1111ddb1ddf1dfdd1fdddddf11111
+                    11111111111fddf111111f1ddddb111db111dfbdfdd1bdddddf11111
+                    1111111111b11dd11111bfbdddddb111b111df1dfdd11fddddf11111
+                    1111111111b11ddf1111f1b11dddbb11b11ddb111b111bddddf11111
+                    1111111111f111df111b11f11dddbb11b11df1111f1111fddbf11111
+                    1111111111f111df111b11fddddbbbb1bdddb111df1111fddbf11111
+                    1111111111f111dfff1f111bdddbdbbddbdf111ddf111dfddbf11111
+                    1111111111f111f111ff111fddbdbdbbdbbb111ddf11ddfdbb111111
+                    1111111111b111f11df1f111fbdbdbbbbdf1111dbdddddfbbf111111
+                    11111111111b11f1ddf1f111dfbbbbffffb111ddfddddbbbbf111111
+                    11111111111f11dfffdf1f1d1dfbbf1ddf1111ddfddddfbbf1111111
+                    11111111111fbbdddddf11f1dddbffddb1111dddfdddbbbbf1111111
+                    11111111111ff1bdddbbf11fddddd1fb11111ddfddddfbbf11111111
+                    11111111111b111fdb111f111fddf1ff1111dddf1ddddff111111111
+                    11111111111b11dffb111f111ffbbffb111dddfbf1ddd1f111111111
+                    111111111111fddfffddff11ffbbbf1db1ddddfbf111111bf1111111
+                    1111111111111bffbfffffff1ddbbfdddfbbdfbbf11111111bf11111
+                    1111111111111111ffbbbb1111ddbbffff1dfbbff1bbf111111f1111
+                    111111111111111f11b1111111ddddbbbfff1ff1fb11df111111f111
+                    111111111111111f11f11111ddddbffff11111111f11dfdd111df111
+                    1111111111111111fffddddbffff1111111111111fdddfffdddf1111
+                    1111111111111111111ffff1111111111111111111fff111fff11111
+                `, SpriteKind.Creature)
             case 151:
                 return sprites.create(img`
                             1111111111111111111111111111111bfb111111
@@ -8168,3383 +11845,6 @@ namespace creatures {
                         `, SpriteKind.Creature)
         }
 
-    }
-
-    function getMoveFromType(creatureType: CreatureType): string {
-        switch (creatureType) {
-            case CreatureType.Bug:
-                return "Bug Bite";
-                break;
-            case CreatureType.Dark:
-                return "Bite";
-                break;
-            case CreatureType.Dragon:
-                return "Dragon Claw";
-                break;
-            case CreatureType.Electric:
-                return "Thunderbolt";
-                break;
-            case CreatureType.Fairy:
-                return "Moonblast";
-                break;
-            case CreatureType.Fighting:
-                return "Brick Break";
-                break;
-            case CreatureType.Fire:
-                return "Flame Thrower";
-                break;
-            case CreatureType.Flying:
-                return "Wing Attack";
-                break;
-            case CreatureType.Ghost:
-                return "Hex";
-                break;
-            case CreatureType.Grass:
-                return "Razor Leaf";
-                break;
-            case CreatureType.Ground:
-                return "Earthquake";
-                break;
-            case CreatureType.Ice:
-                return "Ice Beam";
-                break;
-            case CreatureType.Normal:
-                return "Swift";
-                break;
-            case CreatureType.Poison:
-                return "Sludge Bomb";
-                break;
-            case CreatureType.Psychic:
-                return "Psychic";
-                break;
-            case CreatureType.Rock:
-                return "Rock Tomb";
-                break;
-            case CreatureType.Steel:
-                return "Flash Cannon";
-                break;
-            case CreatureType.Water:
-                return "Surf";
-                break;
-            case CreatureType.None:
-                return "Tackle";
-                break;
-        }
-        return "";
-    }
-
-    function getTypeFromMove(move: string): CreatureType {
-        switch (move) {
-            case "Bug Bite":
-                return CreatureType.Bug;
-                break;
-            case "Bite":
-                return CreatureType.Dark;
-                break;
-            case "Dragon Claw":
-                return CreatureType.Dragon;
-                break;
-            case "Thunderbolt":
-                return CreatureType.Electric;
-                break;
-            case "Moonblast":
-                return CreatureType.Fairy;
-                break;
-            case "Brick Break":
-                return CreatureType.Fighting;
-                break;
-            case "Flame Thrower":
-                return CreatureType.Fire;
-                break;
-            case "Wing Attack":
-                return CreatureType.Flying;
-                break;
-            case "Hex":
-                return CreatureType.Ghost;
-                break;
-            case "Razor Leaf":
-                return CreatureType.Grass;
-                break;
-            case "Earthquake":
-                return CreatureType.Ground;
-                break;
-            case "Ice Beam":
-                return CreatureType.Ice;
-                break;
-            case "Swift":
-                return CreatureType.Normal;
-                break;
-            case "Sludge Bomb":
-                return CreatureType.Poison;
-                break;
-            case "Psychic":
-                return CreatureType.Psychic;
-                break;
-            case "Rock Tomb":
-                return CreatureType.Rock;
-                break;
-            case "Flash Cannon":
-                return CreatureType.Steel;
-                break;
-            case "Surf":
-                return CreatureType.Water;
-                break;
-            case "Tackle":
-                return CreatureType.Normal;
-                break;
-        }
-        return CreatureType.None;
-    }
-
-    //% blockId=makeCreatureFromID 
-    //% block="make creature from id $id || with\n level $level xp $xp hp $hp attackValue $attackValue"
-    //% expandableArgumentMode=toggle
-    //% blockSetVariable=myCreature
-    //% group="Create"
-    //% weight=99
-    export function makeCreatureFromID(id: number, level: number = 5, xp: number = 50): Creature {
-        //return null;
-        let sprite = makeCreatureImageDex(id);
-        if (id > 151) {
-            return null;
-        }
-
-        switch (id) {
-            case 0:
-                return new Creature(sprite, CreatureType.None, CreatureType.None, "Missingno", level, 0, 0, xp, 100, 100);
-                break;
-            case 1:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Bulbasaur", level, 16, 2, xp, 25, 5);
-                break;
-            case 2:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Ivysaur", level, 32, 3, xp, 42, 12);
-                break;
-            case 3:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Venosaur", level, 0, 0, xp, 70, 18);
-                break;
-            case 4:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Charmander", level, 16, 5, xp, 25, 5);
-                break;
-            case 5:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Charmeleon", level, 32, 6, xp, 42, 12);
-                break;
-            case 6:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.Flying, "Charizard", level, 0, 0, xp, 70, 18);
-                break;
-            case 7:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Squirtle", level, 16, 8, xp, 25, 5);
-                break;
-            case 8:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Wartortle", level, 32, 9, xp, 42, 12);
-                break;
-            case 9:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Blastoise", level, 0, 0, xp, 70, 18);
-                break;
-            case 10:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Caterpie", level, 7, 11, xp, 20, 3);
-                break;
-            case 11:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Metapod", level, 10, 12, xp, 22, 5);
-                break;
-            case 12:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.Flying, "Butterfree", level, 0, 0, xp, 40, 8);
-                break;
-            case 13:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Weedle", level, 7, 14, xp, 20, 3);
-                break;
-            case 14:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Kakuna", level, 10, 15, xp, 24, 4);
-                break;
-            case 15:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Beedrill", level, 0, 0, xp, 36, 9);
-                break;
-            case 16:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Pidgey", level, 18, 17, xp, 20, 4);
-                break;
-            case 17:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Pidgeotto", level, 36, 18, xp, 40, 8);
-                break;
-            case 18:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Pidgeot", level, 0, 0, xp, 58, 13);
-                break;
-            case 19:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Rattata", level, 20, 20, xp, 18, 5);
-                break;
-            case 20:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Raticate", level, 0, 0, xp, 44, 12);
-                break;
-            case 21:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Spearow", level, 20, 22, xp, 20, 5);
-
-                break;
-            case 22:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Fearow", level, 0, 0, xp, 50, 11);
-
-                break;
-            case 23:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Ekans", level, 22, 24, xp, 25, 5);
-
-                break;
-            case 24:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Arbok", level, 0, 0, xp, 50, 12);
-
-                break;
-            case 25:
-                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Pikachu", level, 20, 26, xp, 25, 5);
-
-                break;
-            case 26:
-                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Raichu", level, 0, 0, xp, 48, 13.5);
-
-                break;
-            case 27:
-                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Sandshrew", level, 22, 28, xp, 34, 8);
-
-                break;
-            case 28:
-                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Sandslash", level, 0, 0, xp, 60, 13);
-
-                break;
-            case 29:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Nidoran (f)", level, 16, 30, xp, 24, 6);
-
-                break;
-            case 30:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Nidorina", level, 32, 31, xp, 40, 10);
-
-                break;
-            case 31:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.Ground, "Nidoqueen", level, 0, 0, xp, 64, 13);
-
-                break;
-            case 32:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Nidoran (m)", level, 16, 33, xp, 24, 6);
-
-                break;
-            case 33:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Nidorino", level, 32, 34, xp, 40, 10);
-
-                break;
-            case 34:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.Ground, "Nidoking", level, 0, 0, xp, 64, 13);
-
-                break;
-            case 35:
-                return new Creature(sprite, CreatureType.Fairy, CreatureType.None, "Clefairy", level, 20, 36, xp, 25, 5);
-
-                break;
-            case 36:
-                return new Creature(sprite, CreatureType.Fairy, CreatureType.None, "Clefable", level, 0, 0, xp, 58, 10);
-
-                break;
-            case 37:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Vulpix", level, 20, 38, xp, 22, 6);
-
-                break;
-            case 38:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Ninetales", level, 0, 0, xp, 66, 17);
-
-                break;
-            case 39:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.Fairy, "Jigglypuff", level, 20, 40, xp, 30, 4);
-
-                break;
-            case 40:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.Fairy, "Wigglytuff", level, 0, 0, xp, 52, 10);
-
-                break;
-            case 41:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.Flying, "Zubat", level, 22, 42, xp, 20, 5);
-
-                break;
-            case 42:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.Flying, "Golbat", level, 0, 0, xp, 52, 13);
-
-                break;
-            case 43:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Oddish", level, 21, 44, xp, 25, 5);
-
-                break;
-            case 44:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Gloom", level, 34, 45, xp, 42, 10);
-
-                break;
-            case 45:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Vileplume", level, 0, 0, xp, 55, 14);
-
-                break;
-            case 46:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.Grass, "Paras", level, 24, 47, xp, 20, 7);
-
-                break;
-            case 47:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.Grass, "Parasect", level, 0, 0, xp, 48, 9);
-
-                break;
-            case 48:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.Poison, "Venonat", level, 31, 49, xp, 26, 5.5);
-
-                break;
-            case 49:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.Poison, "Venomoth", level, 0, 0, xp, 50, 11);
-
-                break;
-            case 50:
-                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Diglett", level, 26, 51, xp, 16, 6);
-
-                break;
-            case 51:
-                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Dugtrio", level, 0, 0, xp, 44, 15.5);
-
-                break;
-            case 52:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Meowth", level, 28, 53, xp, 24, 6);
-
-                break;
-            case 53:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Persian", level, 0, 0, xp, 50, 11);
-
-                break;
-            case 54:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Psyduck", level, 33, 55, xp, 25, 5);
-
-                break;
-            case 55:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Golduck", level, 0, 0, xp, 60, 11.5);
-
-                break;
-            case 56:
-                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Mankey", level, 28, 57, xp, 25, 7);
-
-                break;
-            case 57:
-                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Primeape", level, 0, 0, xp, 54, 14);
-
-                break;
-            case 58:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Growlithe", level, 20, 59, xp, 34, 8);
-
-                break;
-            case 59:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Arcanine", level, 0, 0, xp, 75, 13.5);
-
-                break;
-            case 60:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Poliwag", level, 25, 61, xp, 28, 6);
-
-                break;
-            case 61:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Poliwhirl", level, 34, 62, xp, 42, 9);
-
-                break;
-            case 62:
-                return new Creature(sprite, CreatureType.Water, CreatureType.Fighting, "Poliwrath", level, 0, 0, xp, 64, 13);
-
-                break;
-            case 63:
-                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Abra", level, 16, 64, xp, 25, 7);
-
-                break;
-            case 64:
-                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Kadabra", level, 32, 65, xp, 40, 12);
-
-                break;
-            case 65:
-                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Alakazam", level, 0, 0, xp, 65, 16);
-
-                break;
-            case 66:
-                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Machop", level, 28, 67, xp, 26, 7);
-
-                break;
-            case 67:
-                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Machoke", level, 38, 68, xp, 44, 10);
-
-                break;
-            case 68:
-                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Machamp", level, 0, 0, xp, 64, 14);
-
-                break;
-            case 69:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Bellsprout", level, 21, 70, xp, 28, 6);
-
-                break;
-            case 70:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Weepinbell", level, 34, 71, xp, 46, 9.5);
-
-                break;
-            case 71:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Victreebel", level, 0, 0, xp, 60, 13);
-
-                break;
-            case 72:
-                return new Creature(sprite, CreatureType.Water, CreatureType.Poison, "Tentacool", level, 30, 73, xp, 38, 8);
-
-                break;
-            case 73:
-                return new Creature(sprite, CreatureType.Water, CreatureType.Poison, "Tentacruel", level, 0, 0, xp, 70, 12);
-
-                break;
-            case 74:
-                return new Creature(sprite, CreatureType.Rock, CreatureType.Ground, "Geodude", level, 25, 75, xp, 28, 6);
-
-                break;
-            case 75:
-                return new Creature(sprite, CreatureType.Rock, CreatureType.Ground, "Graveler", level, 35, 76, xp, 44, 10);
-
-                break;
-            case 76:
-                return new Creature(sprite, CreatureType.Rock, CreatureType.Ground, "Golem", level, 0, 0, xp, 65, 18);
-
-                break;
-            case 77:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Ponyta", level, 40, 78, xp, 42, 10);
-
-                break;
-            case 78:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Rapidash", level, 0, 0, xp, 62, 19);
-
-                break;
-            case 79:
-                return new Creature(sprite, CreatureType.Water, CreatureType.Psychic, "Slowpoke", level, 37, 80, xp, 34, 6);
-
-                break;
-            case 80:
-                return new Creature(sprite, CreatureType.Water, CreatureType.Psychic, "Slowbro", level, 0, 0, xp, 58, 10);
-
-                break;
-            case 81:
-                return new Creature(sprite, CreatureType.Electric, CreatureType.Steel, "Magnemite", level, 30, 82, xp, 28, 6);
-
-                break;
-            case 82:
-                return new Creature(sprite, CreatureType.Electric, CreatureType.Steel, "Magneton", level, 0, 0, xp, 55, 12);
-
-                break;
-            case 83:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Farfetchd", level, 0, 0, xp, 37, 9);
-
-                break;
-            case 84:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Doduo", level, 31, 85, xp, 32, 8);
-
-                break;
-            case 85:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Dodrio", level, 0, 0, xp, 58, 13);
-
-                break;
-            case 86:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Seel", level, 34, 87, xp, 35, 7);
-
-                break;
-            case 87:
-                return new Creature(sprite, CreatureType.Water, CreatureType.Ice, "Dewgong", level, 0, 0, xp, 60, 13);
-
-                break;
-            case 88:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Grimer", level, 38, 89, xp, 34, 7);
-
-                break;
-            case 89:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Muk", level, 0, 0, xp, 60, 12.5);
-
-                break;
-            case 90:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Shelder", level, 26, 91, xp, 36, 7);
-
-                break;
-            case 91:
-                return new Creature(sprite, CreatureType.Water, CreatureType.Ice, "Cloyster", level, 0, 0, xp, 70, 12);
-
-                break;
-            case 92:
-                return new Creature(sprite, CreatureType.Ghost, CreatureType.Poison, "Gastly", level, 25, 93, xp, 33, 8);
-
-                break;
-            case 93:
-                return new Creature(sprite, CreatureType.Ghost, CreatureType.Poison, "Haunter", level, 35, 94, xp, 48, 13);
-
-                break;
-            case 94:
-                return new Creature(sprite, CreatureType.Ghost, CreatureType.Poison, "Gengar", level, 0, 0, xp, 68, 19);
-
-                break;
-            case 95:
-                return new Creature(sprite, CreatureType.Rock, CreatureType.Ground, "Onix", level, 0, 0, xp, 44, 10);
-
-                break;
-            case 96:
-                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Drowsee", level, 26, 97, xp, 38, 8);
-
-                break;
-            case 97:
-                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Hypno", level, 0, 0, xp, 60, 13.5);
-
-                break;
-            case 98:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Krabby", level, 28, 99, xp, 40, 8);
-
-                break;
-            case 99:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Kingler", level, 0, 0, xp, 75, 16);
-
-                break;
-            case 100:
-                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Voltorb", level, 30, 101, xp, 33, 8);
-
-                break;
-            case 101:
-                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Electrode", level, 0, 0, xp, 55, 15);
-
-                break;
-            case 102:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Psychic, "Exeggcute", level, 30, 103, xp, 36, 7);
-
-                break;
-            case 103:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Psychic, "Exeggutor", level, 0, 0, xp, 75, 13);
-
-                break;
-            case 104:
-                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Cubone", level, 28, 105, xp, 30, 7);
-
-                break;
-            case 105:
-                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Marowak", level, 0, 0, xp, 42, 12);
-
-                break;
-            case 106:
-                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Hitmonlee", level, 0, 0, xp, 41, 13);
-
-                break;
-            case 107:
-                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Hitmonchan", level, 0, 0, xp, 38, 13.5);
-
-                break;
-            case 108:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Lickitung", level, 0, 0, xp, 42, 11);
-
-                break;
-            case 109:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Koffing", level, 35, 110, xp, 36, 9);
-
-                break;
-            case 110:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Weezing", level, 0, 0, xp, 64, 18);
-
-                break;
-            case 111:
-                return new Creature(sprite, CreatureType.Ground, CreatureType.Rock, "Rhyhorn", level, 42, 112, xp, 40, 11);
-
-                break;
-            case 112:
-                return new Creature(sprite, CreatureType.Ground, CreatureType.Rock, "Rhydon", level, 0, 0, xp, 70, 13);
-
-                break;
-            case 113:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Chansey", level, 0, 0, xp, 76, 10);
-
-                break;
-            case 114:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.None, "Tangela", level, 0, 0, xp, 55, 12);
-
-                break;
-            case 115:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Kangaskhan", level, 0, 0, xp, 70, 12.5);
-
-                break;
-            case 116:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Horsea", level, 32, 117, xp, 30, 7);
-
-                break;
-            case 117:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Seadra", level, 0, 0, xp, 57, 13);
-
-                break;
-            case 118:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Goldeen", level, 33, 119, xp, 38, 8);
-
-                break;
-            case 119:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Seaking", level, 0, 0, xp, 52, 13);
-
-                break;
-            case 120:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Staryu", level, 30, 121, xp, 37, 9);
-
-                break;
-            case 121:
-                return new Creature(sprite, CreatureType.Water, CreatureType.Psychic, "Starmie", level, 0, 0, xp, 65, 14);
-
-                break;
-            case 122:
-                return new Creature(sprite, CreatureType.Psychic, CreatureType.Fairy, "Mr. Mime", level, 0, 0, xp, 40, 12);
-
-                break;
-            case 123:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.Flying, "Scyther", level, 0, 0, xp, 62, 16.5);
-
-                break;
-            case 124:
-                return new Creature(sprite, CreatureType.Ice, CreatureType.Psychic, "Jynx", level, 0, 0, xp, 44, 11);
-
-                break;
-            case 125:
-                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Electabuzz", level, 0, 0, xp, 55, 13);
-
-                break;
-            case 126:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Magmar", level, 0, 0, xp, 55, 13);
-
-                break;
-            case 127:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Pinsir", level, 0, 0, xp, 52, 14);
-
-                break;
-            case 128:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Tauros", level, 0, 0, xp, 60, 15.5);
-
-                break;
-            case 129:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Magikarp", level, 20, 130, xp, 18, 5);
-
-                break;
-            case 130:
-                return new Creature(sprite, CreatureType.Water, CreatureType.Flying, "Gyarados", level, 0, 0, xp, 68, 14);
-
-                break;
-            case 131:
-                return new Creature(sprite, CreatureType.Water, CreatureType.Ice, "Lapras", level, 0, 0, xp, 63, 13.5);
-
-                break;
-            case 132:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Ditto", level, 0, 0, xp, 22, 5);
-
-                break;
-            case 133:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Eevee", level, 10, 134, xp, 24, 5);
-
-                break;
-            case 134:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Vaporeon", level, 20, 135, xp, 44, 10);
-
-                break;
-            case 135:
-                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Jolteon", level, 30, 136, xp, 52, 13);
-
-                break;
-            case 136:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Flareon", level, 0, 0, xp, 65, 17);
-
-                break;
-            case 137:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Porygon", level, 0, 0, xp, 42, 11);
-
-                break;
-            case 138:
-                return new Creature(sprite, CreatureType.Rock, CreatureType.Water, "Omanyte", level, 40, 139, xp, 42, 8);
-
-                break;
-            case 139:
-                return new Creature(sprite, CreatureType.Rock, CreatureType.Water, "Omastar", level, 0, 0, xp, 75, 16.5);
-
-                break;
-            case 140:
-                return new Creature(sprite, CreatureType.Rock, CreatureType.Water, "Kabuto", level, 40, 141, xp, 36, 10);
-
-                break;
-            case 141:
-                return new Creature(sprite, CreatureType.Rock, CreatureType.Water, "Kabutops", level, 0, 0, xp, 72, 17);
-
-                break;
-            case 142:
-                return new Creature(sprite, CreatureType.Rock, CreatureType.Flying, "Aerodactyl", level, 0, 0, xp, 75, 17.5);
-
-                break;
-            case 143:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Snorlax", level, 0, 0, xp, 80, 15);
-
-                break;
-            case 144:
-                return new Creature(sprite, CreatureType.Ice, CreatureType.Flying, "Articuno", level, 0, 0, xp, 100, 22);
-
-                break;
-            case 145:
-                return new Creature(sprite, CreatureType.Electric, CreatureType.Flying, "Zapdos", level, 0, 0, xp, 100, 22);
-
-                break;
-            case 146:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.Flying, "Moltres", level, 0, 0, xp, 100, 22);
-
-                break;
-            case 147:
-                return new Creature(sprite, CreatureType.Dragon, CreatureType.None, "Dratini", level, 30, 148, xp, 25, 7);
-
-                break;
-            case 148:
-                return new Creature(sprite, CreatureType.Dragon, CreatureType.None, "Dragonair", level, 55, 149, xp, 50, 14);
-
-                break;
-            case 149:
-                return new Creature(sprite, CreatureType.Dragon, CreatureType.Flying, "Dragonite", level, 0, 0, xp, 105, 23);
-
-                break;
-            case 150:
-                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Mewtwo", level, 0, 0, xp, 120, 25);
-
-                break;
-            case 151:
-                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Mew", level, 0, 0, xp, 120, 25);
-
-                break;
-            default:
-                return null;
-                break;
-        }
-    }
-
-
-
-
-    //% blockId=makeCreatureFromSprite 
-    //% block="make creature from $sprite=variables_get of type %creatureType1 %creatureType2 with name $name || with\n xp $xp hp $hp attackValue $attackValue"
-    //% expandableArgumentMode=toggle
-    //% blockSetVariable=myCreature
-    //% group="Create"
-    //% weight=100
-    export function makeCreatureFromSprite(sprite: Sprite, creatureType1: CreatureType, creatureType2: CreatureType, name: string, xp: number = 0, hp: number = 20, attackValue: number = 5, xpReward: number = 10): Creature {
-        return new Creature(sprite, creatureType1, creatureType2, name);
-    }
-
-    //% group="Value"
-    //% blockId="creatures_getCreatureType"
-    //% expandableArgumentMode=toggle
-    //% block="$creature=variables_get(myCreature) CreatureType1" callInDebugger
-    export function getCreatureType1(creature: Creature): CreatureType {
-        return creature.creatureType1;
-    }
-
-
-    //% group="Value"
-    //% blockId="creatures_setCreatureType"
-    //% expandableArgumentMode=toggle
-    //% block="set $creature=variables_get(myCreature) CreatureType1 to %creatureType1" callInDebugger
-    export function setCreatureType1(creature: Creature, creatureType1: CreatureType) {
-        creature.creatureType1 = creatureType1;
-    }
-
-    //% group="Value"
-    //% blockId="creatures_getCreatureTypeTwo"
-    //% expandableArgumentMode=toggle
-    //% block="$creature=variables_get(myCreature) CreatureType2" callInDebugger
-    export function getCreatureType2(creature: Creature): CreatureType {
-        return creature.creatureType2;
-    }
-
-
-    //% group="Value"
-    //% blockId="creatures_setCreatureTypeTwo"
-    //% expandableArgumentMode=toggle
-    //% block="set $creature=variables_get(myCreature) CreatureType2 to %creatureType2" callInDebugger
-    export function setCreatureType2(creature: Creature, creatureType2: CreatureType) {
-        creature.creatureType2 = creatureType2;
-    }
-
-
-    //% group="Value"
-    //% blockId="creatures_getSprite"
-    //% expandableArgumentMode=toggle
-    //% block="$creature=variables_get(myCreature) Sprite" callInDebugger
-    export function getCreatureSprite(creature: Creature): Sprite {
-        return creature.sprite;
-    }
-
-    //% group="Value"
-    //% blockId="creatures_setSprite"
-    //% expandableArgumentMode=toggle
-    //% block="set $creature=variables_get(myCreature) Sprite to $sprite=variables_get(mySprite)" callInDebugger
-    export function setCreatureSprite(creature: Creature, sprite: Sprite) {
-        creature.sprite = sprite;
-    }
-
-    //% group="Value"
-    //% blockId="creatures_getTrainerSprite"
-    //% expandableArgumentMode=toggle
-    //% block="$trainer=variables_get(myTrainer) Sprite" callInDebugger
-    export function getTrainerSprite(trainer: Trainer): Sprite {
-        return trainer.sprite;
-    }
-
-    //% group="Value"
-    //% blockId="creatures_setTrainerSprite"
-    //% expandableArgumentMode=toggle
-    //% block="set $trainer=variables_get(myTrainer) Sprite to $sprite=variables_get(mySprite)" callInDebugger
-    export function setTrainerSprite(trainer: Trainer, sprite: Sprite) {
-        trainer.sprite = sprite;
-    }
-
-
-
-
-
-
-    export function creatureBattleCreature(creature1: Creature, creature2: Creature): boolean {
-        let turn: number = 0;
-
-        creature1.sprite.setPosition(45, 52)
-        creature2.sprite.setPosition(115, 52)
-        creature1.setSayHP(true);
-        creature2.setSayHP(true);
-        creature1.sprite.setFlag(SpriteFlag.Invisible, false);
-        creature2.sprite.setFlag(SpriteFlag.Invisible, false);
-        creature1.healthbar.attachToSprite(null);
-        creature2.healthbar.attachToSprite(null);
-        creature1.healthbar.setPosition(40, 25)
-        creature2.healthbar.setPosition(120, 25)
-        creature1.healthbar.setFlag(SpriteFlag.Invisible, false);
-        creature2.healthbar.setFlag(SpriteFlag.Invisible, false);
-        creature1.healthbar.setStatusBarFlag(StatusBarFlag.SmoothTransition, true);
-        creature2.healthbar.setStatusBarFlag(StatusBarFlag.SmoothTransition, true);
-
-        //game.splash(creature1.level.toString())
-        let creature1LevelTextSprite = textsprite.create("Lvl. " + creature1.level.toString(), 1, 15)
-        let creature2LevelTextSprite = textsprite.create("Lvl. " + creature2.level.toString(), 1, 15)
-        creature1LevelTextSprite.setPosition(30, 18);
-        creature2LevelTextSprite.setPosition(130, 18);
-
-        let creature1HealthTextSprite = textsprite.create(Math.round(creature1.hp).toString(), 1, 15)
-        let creature2HealthTextSprite = textsprite.create(Math.round(creature2.hp).toString(), 1, 15)
-        creature1HealthTextSprite.setPosition(20, 25);
-        creature2HealthTextSprite.setPosition(140, 25);
-
-        //picture.fillRect(0, 0, 0, 0, 0)
-        while (creature1.hp > 0 && creature2.hp > 0) {
-            pause(200)
-            if (turn == 0) {
-                let attackType: CreatureType = null;
-                story.printDialog("Pick a move.", 80, 90, 50, 150, 15, 1, story.TextSpeed.VeryFast)
-                const move1Type = getMoveFromType(getCreatureType1(creature1));
-                const move2Type = getMoveFromType(getCreatureType2(creature1));
-                //game.splash(getCreatureType1(creature1));
-                //game.splash(getCreatureType2(creature1));
-                story.showPlayerChoices(move1Type, move2Type);
-
-                pauseUntil(() => !story.isMenuOpen());
-                attackType = getTypeFromMove(story.getLastAnswer());
-
-                animation.runMovementAnimation(creature1.sprite, animation.animationPresets(animation.easeRight), 5000, false)
-                pause(500)
-                animation.stopAnimation(animation.AnimationTypes.All, creature1.sprite)
-                //animation.runMovementAnimation(creature1.sprite, animation.animationPresets(animation.bobbing), 5000, true)
-                animation.runMovementAnimation(creature1.sprite, animation.animationPresets(animation.easeLeft), 2000, false)
-                pause(200)
-                animation.stopAnimation(animation.AnimationTypes.All, creature1.sprite)
-                let mult = calculateAttackMult(attackType, [creature2.creatureType1, creature2.creatureType2]);
-
-                if (Math.percentChance(6.25)) {
-                    creature2.hp -= Math.round(creature1.attackValue * mult * 1.5);
-                    pause(50)
-                    game.showLongText("Critical Hit", DialogLayout.Bottom)
-                    creature2HealthTextSprite.setText(Math.round(creature2.hp).toString());
-                } else {
-                    creature2.hp -= Math.round(creature1.attackValue * mult);
-                    creature2HealthTextSprite.setText(Math.round(creature2.hp).toString());
-                }
-                if (mult > 1) {
-                    game.showLongText("Super Effective", DialogLayout.Bottom);
-                } else if (mult == 0) {
-                    game.showLongText("Does not effect " + creature2.name, DialogLayout.Bottom);
-                } else if (mult < 1) {
-                    game.showLongText("Not very Effective", DialogLayout.Bottom);
-                }
-                turn = 1;
-            } else {
-                const move1Type = getMoveFromType(getCreatureType1(creature2));
-                const move2Type = getMoveFromType(getCreatureType2(creature2));
-                let enemyMove = "";
-                if (Math.percentChance(50)) {
-                    enemyMove = move1Type;
-                } else {
-                    enemyMove = move2Type;
-                }
-                game.showLongText("Enemy " + creature2.name + " used " + enemyMove, DialogLayout.Bottom);
-                animation.runMovementAnimation(creature2.sprite, animation.animationPresets(animation.easeLeft), 5000, false)
-                pause(500)
-                animation.stopAnimation(animation.AnimationTypes.All, creature2.sprite)
-                //animation.runMovementAnimation(creature2.sprite, animation.animationPresets(animation.bobbing), 5000, true)
-                animation.runMovementAnimation(creature2.sprite, animation.animationPresets(animation.easeRight), 2000, false)
-                pause(200)
-                animation.stopAnimation(animation.AnimationTypes.All, creature2.sprite)
-                let mult = calculateAttackMult(getTypeFromMove(enemyMove), [creature1.creatureType1, creature1.creatureType2]);
-                if (mult > 1) {
-                    game.showLongText("Super Effective", DialogLayout.Bottom);
-                } else if (mult == 0) {
-                    game.showLongText("Does not effect " + creature1.name, DialogLayout.Bottom);
-                } else if (mult <1){
-                    game.showLongText("Not very Effective", DialogLayout.Bottom);
-                }
-                if (Math.percentChance(6.25)) {
-                    creature1.hp -= Math.round(creature2.attackValue * mult * 1.5);
-                    pause(50)
-                    game.showLongText("Critical Hit", DialogLayout.Bottom)
-                    creature1HealthTextSprite.setText(Math.round(creature1.hp).toString());
-                } else {
-                    creature1.hp -= Math.round(creature2.attackValue * mult);
-                    creature1HealthTextSprite.setText(Math.round(creature1.hp).toString());
-                }
-                turn = 0;
-            }
-        }
-
-        if (creature1.hp > 0) {
-            //game.showLongText(creature1.name + " knocked out " + creature2.name + " and earned " + creature2.xpReward + " xp.", DialogLayout.Bottom)
-            creature1.xp += creature2.xpReward;
-        } else {
-            //game.showLongText(creature2.name + " knocked out " + creature1.name + " and earned " + creature2.xpReward + " xp.", DialogLayout.Bottom)
-            creature2.xp += creature1.xpReward;
-        }
-        pause(1000)
-
-        creature1LevelTextSprite.setText("")
-        creature2LevelTextSprite.setText("")
-        creature1HealthTextSprite.setText("")
-        creature2HealthTextSprite.setText("")
-        
-        creature1.sprite.setPosition(0, 0)
-        creature2.sprite.setPosition(0, 0)
-        creature1.setSayHP(false);
-        creature2.setSayHP(false);
-        creature1.sprite.setFlag(SpriteFlag.Invisible, true);
-        creature2.sprite.setFlag(SpriteFlag.Invisible, true);
-        creature1.healthbar.setFlag(SpriteFlag.Invisible, true);
-        creature2.healthbar.setFlag(SpriteFlag.Invisible, true);
-
-        pause(100)
-        creature1LevelTextSprite.destroy();
-        creature2LevelTextSprite.destroy();
-        creature1HealthTextSprite.destroy();
-        creature2HealthTextSprite.destroy();
-        if (creature1.hp > 0) {
-            return true;
-        } else {
-            return false;
-        }
-
-    }
-
-
-    //% blockId=creatures_trainerBattleTrainer
-    //%block="make $player=variables_get(myTrainer) battle $opponent=variables_get(opponent)"
-    //% expandableArgumentMode=toggle
-    //% group="Battle"
-    //% weight=80
-    export function trainerBattleTrainer(player: Trainer, opponent: Trainer) : boolean {
-        let battleResult = false;
-        let playerCurrentCreature = player.partyPokemon[0];
-        let opponentCurrentCreature = opponent.partyPokemon[0];
-        let playerCurrentIndex = 0;
-        let opponentCurrentIndex = 0;
-
-        let playerRemainingPokemon = player.partyPokemon.length;
-        for (let creature of player.partyPokemon) {
-            if (creature.hp <= 0) {
-                playerRemainingPokemon--;
-            }
-        }
-        let opponentRemainingPokemon = opponent.partyPokemon.length;
-
-        let map: tiles.TileMapData = game.currentScene().tileMap.data;
-        tiles.setCurrentTilemap(tilemap` `)
-        scene.setBackgroundImage(img`
-            ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
-            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777ceeebec7777cecccebbbbbbbe77777cee77b77b7cebbbebeeec777cee77777777cbbbeebebe
-            777777777777777777777777777777777777777777777777777777777777777777777777777777777777ceebbbeb7777cecceebebbbbbe777777bebcee7b77ebbbebeeeec77cee77777777beebeebbbe
-            777777777777777777777777777777777777777777777777777777777777777777777777777777777777cebbbbeb7777ebcceebebbbbbe7777777ee7ee777bebbbebeeeec7ceee77777777bebbeebbbe
-            777777777777777777c77777777777777777777777777777777777777777777777777777777777777777eebbbe777777ebeeeebebbbbbb77777777ebee77777bbbbeebeee7eeec777777777ceeeebbbe
-            777777777777777777c77777777777777777777777777777777777777777777777777777777777777777eebbbe777777ebeeeebebbbbb7777777777ebbe7777bbbbebbeeeebee77777777777eeeebbee
-            777777777777777777c777777cc777777777777777777777777777777777777777777777777777777777eebbbe777777eebbeebebbbbb77777777b77eebbbb7ebbbebbeeebbee77777777777ebeebbee
-            77777777777777777cc7777ccc777777777777777777777777777777777777777777777777c777777777eebbbe7777777ebbeebebbbbe7777777777777ebb77ebbbebbbeeebe7777777777777beebbee
-            777777777777cc77cccc77cccc7777777b77777777777777777777777777777777777c7777c77777777cebbbbe7777777eebeebbbbbbe7777777777777ebbe7ebbbbbbbbeeec7777777777777bbebbbe
-            777777777777cc77cccc77ccc777c77777cc77777777c77777777777777777777777cc777cc7777777bcebebbb7777777eeeeeebbbbbeb777777777777bebbeeebbbbbebeee77777777777777ebebbbe
-            7777777cc777cc77cccc7cccc77cc7777cc777777777c77c77777b77777777777c77cc7777c7777777beebbbe77777777ceeeeebbbbbe777777777777777ebbbebbbbbeeeeec777777777c77cceebbbe
-            777c7777c7777cc7cccccccccb7cc7c77cc77777777cc7cc77777777777777777c77cc77cc777c77777eebebe77b77777ceeeeebbbbe7777777777777777bbbbbbbbbbebeeec7777777777c7ccbebbbb
-            7777cc77cc7777c7ccccccccc7ccc7c7ccc77777c77cc7cc7c77c777c77777777cc7ccc7ccc77cc7c7cebeebe77b77b77ceeeeebbbbe7777777777777777cbebbeebbbebeeee777b7c77c7ccc7debbbb
-            7c77ccc7ccc77ccccccccccccccc7cc7cc77cc77c7cccccccc7cc777c77cc7777cccccccccccccccccceeeeec77777b77ceeeebbbbbeb777777777777777777beeebbbebbeeecc7b7ccbcccccbbebbbb
-            77c7ccc7ccc77cccccccccccccccccccccc7cc7cccccccccccccc777c7cc77cc7cccccc7ccccccccccceeeee77cb77777eeeeebbbbbe777777777777777777bbeeebbbebbeeec7c77c77cccccbbebebb
-            7cc7ccc7ccc7ccccccccccccccccccccccc7cc7cccccc77ccccccc7cccccc7cccccccccccccccccccceeeeee77cb77777eeeeebbbbb777777777777777777777bebbbbebbeeeebccbcccccc77b7eebbb
-            cccccc7cccc7cccccccccccccccccccccc77cc7cccccccccc77ccc7cccccc7cccccccccc77777ccccc77ccee7c777777ceeeeebbbbb777777777777777777777bebbbbbbbeeeeccc7ccccccc777ebbbb
-            ccccccccccccccccccccccccccccccccccccccccccccc7ccccccccccccccccccccccccc7bdb7b7bbe77777cccc777777ceeeeebbbbbb777777777777777777777ebbbbbbebeeeccc7ccccb77777ebbbb
-            ccccc7777cccccccccccccccccccccccccc7cc777ccc77cccccccccccc777ccccccccccdbbbbbbbbb7bb7777cc77c7ccceeeeebbbbbb7777777777777777777777bbbbbbeeeeeecccccbdb77777ebbbb
-            77c777777cccccccccccccccccccccccc7c7c7777ccccc77cccccc777777777777cccc7bbdbbdddbbbbdb777ccc7c7cceeeeeebbbbe7c77777777777777777777bbbbbebeeeeeecccccddb77777ebbbe
-            7777777777ccccccccc7cc7c7cccccc7cc7c77ccc7cc77777777c777777777777bccb7c7dbdbdbddbb7bdb77ccccccceeeceeebebbccc777777777777c77777ccbbbbbb7ccceeecccccbdbb7777ebbbe
-            7777777777777ccccccccccccccccc77ccccccccccc77777777777777777777777bddb77bbdbbbbb77bbbdb77cccccccccceec7ebbccc777c77777777cc7777cc7bbbec7bbbceecccc7bbbb7777ebbee
-            777777777777777cccccccccccc7cc777ccccccccc77777777777777777777777ddddd7bbdbbbbb777dbbdb777c7ccc77ceeccccbbccccc7c77777777cc7777ccccbbc777bbbeccccc777b77777ebbee
-            777777777777777c7ccbccccc777c777cccc7ccc7777777777777777777777777bdddddbbddbbbbbbbdbbb7777777c777ccc77cbbccc7c7777777c7777ccccc7cccbc7777bbddccccc777b77777ebbeb
-            777777777777777ccc77cccc777cc777ccc77cc77777777777777777777777db77dddbdbbbbb77bdbbb77777777776777cc777cccc77cc7cc777ccc777ccccccccccc777bbb777c7777bbbb7777ebbeb
-            777777777777777ccc777cc7777c7777c777ccc77777777777777777777777ddb7bdb7bddbb777bdbb77777777777c777777cccc777ccc7cc7c777c77ccccccc7bddb777bb77777bb7bdbbb7777ebbeb
-            7777777777777777c777cc77777c77777777cc77777777777777777777777bddbdddb7bdddbb7bbbbb77777777c77c7c77777cc7777ccccccc7c77777ccc7ccc77dbd777bb7777db77bbbb77777ebbeb
-            77777777777777777777ccc7777c777777777777777777777777777777777dddddddddddddbb7bbbbb77777777cc777777c7cc7777cccccccccc777c77ccc7c777b7777777777777777b7777777ebbbb
-            777777777777777777777777777777c77777c7777777777777777777777cbdddddbbddddddbb77777777777777cc77777cc777777ccccccccc7ccccc7cccc77c777777777777777777777777777ebebb
-            777777777777777777c77777777777c7777c77777777777777777777777cdbdbddddddddddb777777777777777c777c77d7c777777ccccccccc7cccc7cccc77777777c777777777777777777777eebbb
-            777777777777777777777777777777777ccc7777777777777777777777777bb7bddbbbddddb777777777777777cc777bbdb7777777c7ccccccccccccccccc777777777777777777777777777777ebbbb
-            77777777777777777c7777cc777c77777ccc777777777777777777777bbbbb77bbbb77bddb777777777777777777777bbddbb7777777ccc77ccc7cccccccc777777777777777777777777777777eeebb
-            77777777777777777cccc777777cc7c77ccc777777777777777777777dddddb777777777b777777777777777bbb7777777bbbbc77777cc77cc77ccccccccc777b77777b77777777777777777777eebbb
-            7777777777777777777777777777c77c7c7777777777777777777777bddbbdb777777777777777777777777bb777777777bb777777777cc76777ccccccccc77777777777c77777777c77777777cebbeb
-            77777777777777777777777777777777c7777777777777777777777bddd7bbb7777777777777777777777777b77777777777777777777cccc777cccccc7cc777777c7777777777777c777777777ebbeb
-            7777777777777777777777cc77777777777777777777777777777c7bbbb7777777777777777777777777777777777777777777777c777777777cc7ccc777c777777cc7777c7777777c777777777ebeeb
-            777777777777777777c7777777777777777777777777777777777c777b777777777777777777777bb77777777777777777777777777777777777777cc777c7777777c7777c7777777c77c777777ebeeb
-            77777777777777777777777c77777777777777777777777777777777777777777777777bbb77777777777777777777777777777bb777cc7777777777c7777c777777c777767777777c777777777ebeee
-            777777777777777777c7777c77c7c777777777777777777777777c777777777777777bddb777777777777777777777777777777b77777c77777777ccc777bc77777777777777777c7c777777777ebeee
-            c77777777777777777c77c7c777cc777777777777777777bb777777777777777777bbddddb77777777777777777777777777777777777cc777777777c77777777777777767777c77cc7777777ccebebe
-            cc7777777777777777c777cc777cc7777c77777777cbbdbddbb7cc777777777777777dbbdb7777777777777777777777777777777777777777777777777777777777777ccc777777cc77777777cebebe
-            c7c7777777777777777cb7cc7777c7777c777777777ddbddddbb77777777777777777b77b77777777777777777777777777777777777777777777c777c7777777777777777c77777cc7777c7c7cebbbe
-            77c7c77777777777777c777c7777c7777777777777ddddddddb77c777777777777777777777777777777777777777777777777777777777c777777c77777777777777777c777c7777c7777c7c7cebbbe
-            7777c77777777777777c777777777777777c777c7bbbdddbbbb777777777777777777777777777777777c77777777777777777777777777cc777cccc7777777777777777c77cc77c777777c777cebbbe
-            777cc77777777777777c77777ccc777777777777bdbdbb77bdb777777777777777cc7777777777777777777777777777777777777c777777777c7ccc77c77777777777777c77c7c7c777777c77cbbbbe
-            7777777777777777c777777777d7777777cc777bdbd777777bb77777777777777777777777777777777777777777c7777777777777c7c7c777777c7c7c77c777c777777c77c77c77cc7cc77c77cbbbee
-            7777777777777777c7777777bdb77bbddd77c77bbbb7777777777777777777c77cc7777777777777777c77777777c777777c7ccc7777c7777cc777cc7c777cc7c77c7ccc77c77777c77c77777cebbbee
-            777c77777777777cc7777777b77777b77b77777bb7b7777777777777777777777777777c777777777777c7777777c7c7777777777777777777777777777777777777777c777c777777777c777cbbbbee
-            777777cc77777777c777bbb777777777777777777777777777777777777777777c77777cc77777777c7777777777777777777777777777777777777777777777777777777777777777cc7c777cbbbbee
-            7777777c7777c77c77cdb777777777777b77777777777777777777c7777c7777c77c77cc7777c7c777777777777777777777777777777777777777777777777777777777777777777777bc7ccebbbbee
-            7777777c7ccc777c77cbb777777777777c77777777777777777777c777c77777c7c777ccc7777cc7777777777777777777777777777777777777777777777777777777777777777777777cc7cebbbeee
-            77c777777ccc77cc7777777777777777777777c777777777777777c777c77777c77777ccc77777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbeee
-            777777777cc777c7c7777777777777777777c77777777777777c77cc77cc777c77777cc7777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbebe
-            77777777777777cc777777777777777c7c77c777c7777777777c77777cc777cc77777cc7777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbebb
-            7777777777777c7777777777777777777c7777777777777777c777777777777c7777c777777777777777777777777777777777777777777777777777777777777777777777777777777777777eebbbbb
-            777777777777777777777777777777c77c7777777777c77777c77777777777777777ccc7777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbb
-            777777777777777777777777777777777cc77777c7777777c7c77c7777777777777cc7cc777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbb
-            77777777777777777777777777777777777777777cc7777777767c7cc7777777777cccc7777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbb
-            77777777777777777777777777777777c777777777c777777776cc777777777777ccc77c777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbb
-            777777777777777777777777777777777777777777777777777cc7777777777777ccc77c777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbb
-            777777777777777777777777777777777777777777777777777c7777777777777c7777c7777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbe
-            77777777777777777777777777777777777777777777777777cc7777777c777777777cc777777777777777777777777777777777777777777777777777777777777777777777777777777777eebeebbe
-            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbebbee
-            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbee
-            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbeebee
-            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbebee
-            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbeebe
-            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbeeeee
-            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbeeeee
-            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777eebeeeeb
-            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbeeeeb
-            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbeeeeb
-            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbeeebb
-            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbebb
-            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbebb
-            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbebe
-            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbeeebe
-            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbeebbe
-            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777bebbbebbe
-            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbebbe
-            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbebbe
-            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbbbe
-            77777777777777777777777777777777777777777777777777777777777777b7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbeebbe
-            77777777777777777777777777777777777777777777777777777777777777b7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbeebbe
-            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbeebbe
-            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbeebbe
-            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777bbbbeeebe
-            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbeeee
-            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbeeee
-            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777cbebbbeeee
-            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777cbeebbeeee
-            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777cbebeee777
-            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ceeeec7777
-            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777cc777ee77777
-            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777c7777777c7777
-            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777c777777777777
-            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777779977777777777777777777777777777777777777777777777777777777777777777777
-            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
-            7777777777777777777777777b77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
-            7777777777777777777777777777777777777777777777777777777777b77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
-            7777777777777777777777777777777777777777777777777777777777b77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
-            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777cccc77777777777777777
-            77777777777777777777777777777777777777777777777777b77777777777777777777777777777777777777777777777777777777777777777777777777777777777777c77777c7777777777777777
-            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
-            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
-            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777c7777
-            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777c777777777777777777777777
-            7777777777777777777777777777777777777777777777ccc777777777777777777777777777777777777777777777777777777777777777777777777777777777777777c77777777777777777777777
-            777cccc77777777777777777777777777777777777777c7777c7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777cc7777
-            7cccc7777777777777777b7777777777777777777777c7bb777777777777777777777777777777777777777777777777777777777777777777777777777c777777777777777777777777777777777777
-            c77c77777777777777777777777777777777777777cbb7bddb777bb77777777777777777777777777777777777777777777777777777777777777777777777c777777c77777777777777777777777777
-            777c777777777777777777777777777777777cccc7cbdbbddb7777b7777c7777777777777777777777777777777777777777777777777777777777777777777c77ccc7c7777777777777777777777777
-            77c7777777777777777777777777777777777bd7777bb77b77777777777777777777777777777777ccc77777777777777777777777777777777777777777777777777777777777777777777777777777
-            7777777cccc777777777777777777777777bdddbb777777777777777777767777777777777777777777777777777777777777777777777cc77c77c777777777777777777777777777777777777777777
-            7c77cc77777777777777777777777777c7cdddddb7777777777777777777c76cc7777777777777777c77c77c777777777777777777777777777cc7777777777777777777777777777777777777777777
-            7ccc77777777777777776777777777b7777b777b777777777777777777777777777777777777c777777776ccc77777777777777777777777777777777777777777777777777777777777777777777777
-            777777777ccccc777777777777777dd77777bbb77777b7777777777777777777777cc7777777c7c777c777c77c7cc7777777777777777777777777777777777777777777777777777777777777777777
-            c7cc7777ccc77677c7c777c7ccc777777777bbb7777777777777777777777777777777777777c77c77c777c77c7ccc777767777777777777777777777777777777777777777777777777777777777777
-            77ccc77cbb7dbcceecbbbb6bbbbbbbb777d9b77db7e7c77bbbb7b777e7bc7777777777777777777777e777bbb777b7bbbb77bb77777b77777777777777777b77b777777777e77777b7bb7777777e7777
-            777777cb999999999bcc999999999bbeee99bececbbcebeb9999ccceb99bc7777777777777eeeeeebbbebbbbbbebbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbebebbeeeeebbbbbbeebbbbbbbbeebbe
-        `)
-        scene.centerCameraAt(80, 60);
-        scene.backgroundImage().fillRect(5, 8, 150, 100, 1)
-        scene.backgroundImage().drawRect(5, 8, 150, 100, 15)
-        let enemySprite = sprites.create(opponent.sprite.image,SpriteKind.Enemy);
-        enemySprite.setPosition(80,45);
-        enemySprite.z=100;
-        enemySprite.setFlag(SpriteFlag.Invisible, false);
-        game.setDialogFrame(img`
-            ..99999999999999999999..
-            .9966666666666666666699.
-            996661111111111111166699
-            966611111111111111116669
-            966611111111111111116669
-            966611111111111111116669
-            966611111111111111116669
-            966611111111111111116669
-            966611111111111111116669
-            966611111111111111116669
-            966611111111111111116669
-            966611111111111111116669
-            966611111111111111116669
-            966611111111111111116669
-            966611111111111111116669
-            966611111111111111116669
-            966611111111111111116669
-            966611111111111111116669
-            966611111111111111116669
-            966611111111111111116669
-            966611111111111111116669
-            996661111111111111166699
-            .9966666666666666666699.
-            ..99999999999999999999..
-        `)
-        game.showLongText("You challenged " + opponent.name + " to a battle.", DialogLayout.Bottom)
-
-        
-        game.showLongText("You sent out " + playerCurrentCreature.name + " to battle!", DialogLayout.Bottom)
-        game.showLongText("They sent out " + opponentCurrentCreature.name + " to battle!", DialogLayout.Bottom)
-        enemySprite.setFlag(SpriteFlag.Invisible, true);
-        enemySprite.destroy();
-
-        while (playerRemainingPokemon > 0 && opponentRemainingPokemon > 0) {
-            let win = creatureBattleCreature(playerCurrentCreature, opponentCurrentCreature)
-            if (win) {
-                game.showLongText("You knocked out " + opponentCurrentCreature.name + " and earned " + opponentCurrentCreature.xpReward + " xp.", DialogLayout.Bottom)
-                opponentRemainingPokemon--;
-                if (opponentRemainingPokemon > 0) {
-                    opponentCurrentIndex++;
-                    opponentCurrentCreature = opponent.partyPokemon[opponentCurrentIndex];
-                    game.showLongText(opponent.name + " sent out " + opponentCurrentCreature.name, DialogLayout.Bottom);
-                } else {
-                    game.showLongText("You won the battle and defeated " + opponent.name +"!", DialogLayout.Bottom);
-                    battleResult = true;
-                }
-            } else {
-                game.showLongText("They knocked out " + playerCurrentCreature.name, DialogLayout.Bottom)
-                playerRemainingPokemon--;
-                if (playerRemainingPokemon > 0) {
-
-                    let choices = [];
-                    for (let creature of player.partyPokemon) {
-                        if (creature.hp > 0) {
-                            choices.push(creature.name);
-                        }
-                    }
-                    switch (choices.length) {
-                        case 0:
-                            //you lose 
-                            break;
-                        case 1:
-                            game.showLongText("You only have " + choices[0] + " remaining. You sent out " + choices[0] + ".", DialogLayout.Bottom);
-                            break;
-                        case 2:
-                            story.printDialog("Pick a Pokemon to send out:", 80, 90, 50, 150, 15, 1, story.TextSpeed.VeryFast);
-                            story.showPlayerChoices(choices[0], choices[1]);
-                            break;
-                        case 3:
-                            story.printDialog("Pick a Pokemon to send out:", 80, 90, 50, 150, 15, 1, story.TextSpeed.VeryFast);
-                            story.showPlayerChoices(choices[0], choices[1], choices[2]);
-                            break;
-                        case 4:
-                            story.printDialog("Pick a Pokemon to send out:", 80, 90, 50, 150, 15, 1, story.TextSpeed.VeryFast);
-                            story.showPlayerChoices(choices[0], choices[1], choices[2], choices[3]);
-                            break;
-                        case 5:
-                            story.printDialog("Pick a Pokemon to send out:", 80, 90, 50, 150, 15, 1, story.TextSpeed.VeryFast);
-                            story.showPlayerChoices(choices[0], choices[1], choices[2], choices[3], choices[4]);
-                            break;
-                    }
-                    pauseUntil(() => !story.isMenuOpen());
-                    if (choices.length >= 2) {
-                        for (let creature of player.partyPokemon) {
-                            if (creature.name == story.getLastAnswer()) {
-                                playerCurrentCreature = creature;
-                                game.showLongText("You sent out " + playerCurrentCreature.name + " to battle.", DialogLayout.Bottom);
-                                break;
-                            }
-                        }
-                    } else if (choices.length == 1) {
-                        for (let creature of player.partyPokemon) {
-                            if (creature.name == choices[0]) {
-                                playerCurrentCreature = creature;
-                                game.showLongText("You sent out " + playerCurrentCreature.name + " to battle.", DialogLayout.Bottom);
-                                break;
-                            }
-                        }
-                    } else {
-                        game.showLongText("You lost the battle!.", DialogLayout.Bottom);
-                        battleResult = false;
-                    }
-
-                }
-            }
-        }
-
-
-        scene.setBackgroundImage(img`
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-        `);
-        tiles.setCurrentTilemap(map)
-        scene.centerCameraAt(player.sprite.x, player.sprite.y);
-        scene.cameraFollowSprite(player.sprite);
-        pause(100);
-        for (let creature of player.partyPokemon) {
-            checkLevelUp(creature);
-            checkEvolve(creature);
-        }
-
-        return battleResult;
-
-    }
-
-    //% blockId=creatures_trainerBattleWild
-    //% block="make $player=variables_get(myTrainer) battle wild $wildCreature=variables_get(wildCreature)"
-    //% expandableArgumentMode=toggle
-    //% group="Battle"
-    //% weight=80
-    export function trainerBattleWild(player: Trainer, wildCreature: Creature) {
-        let battleResult = false;
-        let playerCurrentCreature = player.partyPokemon[0];
-        let playerCurrentIndex = 0;
-
-        let playerRemainingPokemon = player.partyPokemon.length;
-        for (let creature of player.partyPokemon) {
-            if (creature.hp <= 0) {
-                playerRemainingPokemon--;
-            }
-        }
-
-        let map: tiles.TileMapData = game.currentScene().tileMap.data;
-        tiles.setCurrentTilemap(tilemap` `)
-        scene.setBackgroundImage(img`
-            ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
-            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777ceeebec7777cecccebbbbbbbe77777cee77b77b7cebbbebeeec777cee77777777cbbbeebebe
-            777777777777777777777777777777777777777777777777777777777777777777777777777777777777ceebbbeb7777cecceebebbbbbe777777bebcee7b77ebbbebeeeec77cee77777777beebeebbbe
-            777777777777777777777777777777777777777777777777777777777777777777777777777777777777cebbbbeb7777ebcceebebbbbbe7777777ee7ee777bebbbebeeeec7ceee77777777bebbeebbbe
-            777777777777777777c77777777777777777777777777777777777777777777777777777777777777777eebbbe777777ebeeeebebbbbbb77777777ebee77777bbbbeebeee7eeec777777777ceeeebbbe
-            777777777777777777c77777777777777777777777777777777777777777777777777777777777777777eebbbe777777ebeeeebebbbbb7777777777ebbe7777bbbbebbeeeebee77777777777eeeebbee
-            777777777777777777c777777cc777777777777777777777777777777777777777777777777777777777eebbbe777777eebbeebebbbbb77777777b77eebbbb7ebbbebbeeebbee77777777777ebeebbee
-            77777777777777777cc7777ccc777777777777777777777777777777777777777777777777c777777777eebbbe7777777ebbeebebbbbe7777777777777ebb77ebbbebbbeeebe7777777777777beebbee
-            777777777777cc77cccc77cccc7777777b77777777777777777777777777777777777c7777c77777777cebbbbe7777777eebeebbbbbbe7777777777777ebbe7ebbbbbbbbeeec7777777777777bbebbbe
-            777777777777cc77cccc77ccc777c77777cc77777777c77777777777777777777777cc777cc7777777bcebebbb7777777eeeeeebbbbbeb777777777777bebbeeebbbbbebeee77777777777777ebebbbe
-            7777777cc777cc77cccc7cccc77cc7777cc777777777c77c77777b77777777777c77cc7777c7777777beebbbe77777777ceeeeebbbbbe777777777777777ebbbebbbbbeeeeec777777777c77cceebbbe
-            777c7777c7777cc7cccccccccb7cc7c77cc77777777cc7cc77777777777777777c77cc77cc777c77777eebebe77b77777ceeeeebbbbe7777777777777777bbbbbbbbbbebeeec7777777777c7ccbebbbb
-            7777cc77cc7777c7ccccccccc7ccc7c7ccc77777c77cc7cc7c77c777c77777777cc7ccc7ccc77cc7c7cebeebe77b77b77ceeeeebbbbe7777777777777777cbebbeebbbebeeee777b7c77c7ccc7debbbb
-            7c77ccc7ccc77ccccccccccccccc7cc7cc77cc77c7cccccccc7cc777c77cc7777cccccccccccccccccceeeeec77777b77ceeeebbbbbeb777777777777777777beeebbbebbeeecc7b7ccbcccccbbebbbb
-            77c7ccc7ccc77cccccccccccccccccccccc7cc7cccccccccccccc777c7cc77cc7cccccc7ccccccccccceeeee77cb77777eeeeebbbbbe777777777777777777bbeeebbbebbeeec7c77c77cccccbbebebb
-            7cc7ccc7ccc7ccccccccccccccccccccccc7cc7cccccc77ccccccc7cccccc7cccccccccccccccccccceeeeee77cb77777eeeeebbbbb777777777777777777777bebbbbebbeeeebccbcccccc77b7eebbb
-            cccccc7cccc7cccccccccccccccccccccc77cc7cccccccccc77ccc7cccccc7cccccccccc77777ccccc77ccee7c777777ceeeeebbbbb777777777777777777777bebbbbbbbeeeeccc7ccccccc777ebbbb
-            ccccccccccccccccccccccccccccccccccccccccccccc7ccccccccccccccccccccccccc7bdb7b7bbe77777cccc777777ceeeeebbbbbb777777777777777777777ebbbbbbebeeeccc7ccccb77777ebbbb
-            ccccc7777cccccccccccccccccccccccccc7cc777ccc77cccccccccccc777ccccccccccdbbbbbbbbb7bb7777cc77c7ccceeeeebbbbbb7777777777777777777777bbbbbbeeeeeecccccbdb77777ebbbb
-            77c777777cccccccccccccccccccccccc7c7c7777ccccc77cccccc777777777777cccc7bbdbbdddbbbbdb777ccc7c7cceeeeeebbbbe7c77777777777777777777bbbbbebeeeeeecccccddb77777ebbbe
-            7777777777ccccccccc7cc7c7cccccc7cc7c77ccc7cc77777777c777777777777bccb7c7dbdbdbddbb7bdb77ccccccceeeceeebebbccc777777777777c77777ccbbbbbb7ccceeecccccbdbb7777ebbbe
-            7777777777777ccccccccccccccccc77ccccccccccc77777777777777777777777bddb77bbdbbbbb77bbbdb77cccccccccceec7ebbccc777c77777777cc7777cc7bbbec7bbbceecccc7bbbb7777ebbee
-            777777777777777cccccccccccc7cc777ccccccccc77777777777777777777777ddddd7bbdbbbbb777dbbdb777c7ccc77ceeccccbbccccc7c77777777cc7777ccccbbc777bbbeccccc777b77777ebbee
-            777777777777777c7ccbccccc777c777cccc7ccc7777777777777777777777777bdddddbbddbbbbbbbdbbb7777777c777ccc77cbbccc7c7777777c7777ccccc7cccbc7777bbddccccc777b77777ebbeb
-            777777777777777ccc77cccc777cc777ccc77cc77777777777777777777777db77dddbdbbbbb77bdbbb77777777776777cc777cccc77cc7cc777ccc777ccccccccccc777bbb777c7777bbbb7777ebbeb
-            777777777777777ccc777cc7777c7777c777ccc77777777777777777777777ddb7bdb7bddbb777bdbb77777777777c777777cccc777ccc7cc7c777c77ccccccc7bddb777bb77777bb7bdbbb7777ebbeb
-            7777777777777777c777cc77777c77777777cc77777777777777777777777bddbdddb7bdddbb7bbbbb77777777c77c7c77777cc7777ccccccc7c77777ccc7ccc77dbd777bb7777db77bbbb77777ebbeb
-            77777777777777777777ccc7777c777777777777777777777777777777777dddddddddddddbb7bbbbb77777777cc777777c7cc7777cccccccccc777c77ccc7c777b7777777777777777b7777777ebbbb
-            777777777777777777777777777777c77777c7777777777777777777777cbdddddbbddddddbb77777777777777cc77777cc777777ccccccccc7ccccc7cccc77c777777777777777777777777777ebebb
-            777777777777777777c77777777777c7777c77777777777777777777777cdbdbddddddddddb777777777777777c777c77d7c777777ccccccccc7cccc7cccc77777777c777777777777777777777eebbb
-            777777777777777777777777777777777ccc7777777777777777777777777bb7bddbbbddddb777777777777777cc777bbdb7777777c7ccccccccccccccccc777777777777777777777777777777ebbbb
-            77777777777777777c7777cc777c77777ccc777777777777777777777bbbbb77bbbb77bddb777777777777777777777bbddbb7777777ccc77ccc7cccccccc777777777777777777777777777777eeebb
-            77777777777777777cccc777777cc7c77ccc777777777777777777777dddddb777777777b777777777777777bbb7777777bbbbc77777cc77cc77ccccccccc777b77777b77777777777777777777eebbb
-            7777777777777777777777777777c77c7c7777777777777777777777bddbbdb777777777777777777777777bb777777777bb777777777cc76777ccccccccc77777777777c77777777c77777777cebbeb
-            77777777777777777777777777777777c7777777777777777777777bddd7bbb7777777777777777777777777b77777777777777777777cccc777cccccc7cc777777c7777777777777c777777777ebbeb
-            7777777777777777777777cc77777777777777777777777777777c7bbbb7777777777777777777777777777777777777777777777c777777777cc7ccc777c777777cc7777c7777777c777777777ebeeb
-            777777777777777777c7777777777777777777777777777777777c777b777777777777777777777bb77777777777777777777777777777777777777cc777c7777777c7777c7777777c77c777777ebeeb
-            77777777777777777777777c77777777777777777777777777777777777777777777777bbb77777777777777777777777777777bb777cc7777777777c7777c777777c777767777777c777777777ebeee
-            777777777777777777c7777c77c7c777777777777777777777777c777777777777777bddb777777777777777777777777777777b77777c77777777ccc777bc77777777777777777c7c777777777ebeee
-            c77777777777777777c77c7c777cc777777777777777777bb777777777777777777bbddddb77777777777777777777777777777777777cc777777777c77777777777777767777c77cc7777777ccebebe
-            cc7777777777777777c777cc777cc7777c77777777cbbdbddbb7cc777777777777777dbbdb7777777777777777777777777777777777777777777777777777777777777ccc777777cc77777777cebebe
-            c7c7777777777777777cb7cc7777c7777c777777777ddbddddbb77777777777777777b77b77777777777777777777777777777777777777777777c777c7777777777777777c77777cc7777c7c7cebbbe
-            77c7c77777777777777c777c7777c7777777777777ddddddddb77c777777777777777777777777777777777777777777777777777777777c777777c77777777777777777c777c7777c7777c7c7cebbbe
-            7777c77777777777777c777777777777777c777c7bbbdddbbbb777777777777777777777777777777777c77777777777777777777777777cc777cccc7777777777777777c77cc77c777777c777cebbbe
-            777cc77777777777777c77777ccc777777777777bdbdbb77bdb777777777777777cc7777777777777777777777777777777777777c777777777c7ccc77c77777777777777c77c7c7c777777c77cbbbbe
-            7777777777777777c777777777d7777777cc777bdbd777777bb77777777777777777777777777777777777777777c7777777777777c7c7c777777c7c7c77c777c777777c77c77c77cc7cc77c77cbbbee
-            7777777777777777c7777777bdb77bbddd77c77bbbb7777777777777777777c77cc7777777777777777c77777777c777777c7ccc7777c7777cc777cc7c777cc7c77c7ccc77c77777c77c77777cebbbee
-            777c77777777777cc7777777b77777b77b77777bb7b7777777777777777777777777777c777777777777c7777777c7c7777777777777777777777777777777777777777c777c777777777c777cbbbbee
-            777777cc77777777c777bbb777777777777777777777777777777777777777777c77777cc77777777c7777777777777777777777777777777777777777777777777777777777777777cc7c777cbbbbee
-            7777777c7777c77c77cdb777777777777b77777777777777777777c7777c7777c77c77cc7777c7c777777777777777777777777777777777777777777777777777777777777777777777bc7ccebbbbee
-            7777777c7ccc777c77cbb777777777777c77777777777777777777c777c77777c7c777ccc7777cc7777777777777777777777777777777777777777777777777777777777777777777777cc7cebbbeee
-            77c777777ccc77cc7777777777777777777777c777777777777777c777c77777c77777ccc77777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbeee
-            777777777cc777c7c7777777777777777777c77777777777777c77cc77cc777c77777cc7777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbebe
-            77777777777777cc777777777777777c7c77c777c7777777777c77777cc777cc77777cc7777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbebb
-            7777777777777c7777777777777777777c7777777777777777c777777777777c7777c777777777777777777777777777777777777777777777777777777777777777777777777777777777777eebbbbb
-            777777777777777777777777777777c77c7777777777c77777c77777777777777777ccc7777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbb
-            777777777777777777777777777777777cc77777c7777777c7c77c7777777777777cc7cc777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbb
-            77777777777777777777777777777777777777777cc7777777767c7cc7777777777cccc7777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbb
-            77777777777777777777777777777777c777777777c777777776cc777777777777ccc77c777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbb
-            777777777777777777777777777777777777777777777777777cc7777777777777ccc77c777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbb
-            777777777777777777777777777777777777777777777777777c7777777777777c7777c7777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbe
-            77777777777777777777777777777777777777777777777777cc7777777c777777777cc777777777777777777777777777777777777777777777777777777777777777777777777777777777eebeebbe
-            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbebbee
-            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbee
-            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbeebee
-            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbebee
-            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbeebe
-            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbeeeee
-            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbeeeee
-            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777eebeeeeb
-            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbeeeeb
-            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbeeeeb
-            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbeeebb
-            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbebb
-            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbebb
-            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbebe
-            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbeeebe
-            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbeebbe
-            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777bebbbebbe
-            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbebbe
-            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbebbe
-            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbbbe
-            77777777777777777777777777777777777777777777777777777777777777b7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbeebbe
-            77777777777777777777777777777777777777777777777777777777777777b7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbeebbe
-            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbeebbe
-            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbeebbe
-            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777bbbbeeebe
-            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbeeee
-            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbeeee
-            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777cbebbbeeee
-            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777cbeebbeeee
-            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777cbebeee777
-            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ceeeec7777
-            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777cc777ee77777
-            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777c7777777c7777
-            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777c777777777777
-            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777779977777777777777777777777777777777777777777777777777777777777777777777
-            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
-            7777777777777777777777777b77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
-            7777777777777777777777777777777777777777777777777777777777b77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
-            7777777777777777777777777777777777777777777777777777777777b77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
-            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777cccc77777777777777777
-            77777777777777777777777777777777777777777777777777b77777777777777777777777777777777777777777777777777777777777777777777777777777777777777c77777c7777777777777777
-            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
-            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
-            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777c7777
-            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777c777777777777777777777777
-            7777777777777777777777777777777777777777777777ccc777777777777777777777777777777777777777777777777777777777777777777777777777777777777777c77777777777777777777777
-            777cccc77777777777777777777777777777777777777c7777c7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777cc7777
-            7cccc7777777777777777b7777777777777777777777c7bb777777777777777777777777777777777777777777777777777777777777777777777777777c777777777777777777777777777777777777
-            c77c77777777777777777777777777777777777777cbb7bddb777bb77777777777777777777777777777777777777777777777777777777777777777777777c777777c77777777777777777777777777
-            777c777777777777777777777777777777777cccc7cbdbbddb7777b7777c7777777777777777777777777777777777777777777777777777777777777777777c77ccc7c7777777777777777777777777
-            77c7777777777777777777777777777777777bd7777bb77b77777777777777777777777777777777ccc77777777777777777777777777777777777777777777777777777777777777777777777777777
-            7777777cccc777777777777777777777777bdddbb777777777777777777767777777777777777777777777777777777777777777777777cc77c77c777777777777777777777777777777777777777777
-            7c77cc77777777777777777777777777c7cdddddb7777777777777777777c76cc7777777777777777c77c77c777777777777777777777777777cc7777777777777777777777777777777777777777777
-            7ccc77777777777777776777777777b7777b777b777777777777777777777777777777777777c777777776ccc77777777777777777777777777777777777777777777777777777777777777777777777
-            777777777ccccc777777777777777dd77777bbb77777b7777777777777777777777cc7777777c7c777c777c77c7cc7777777777777777777777777777777777777777777777777777777777777777777
-            c7cc7777ccc77677c7c777c7ccc777777777bbb7777777777777777777777777777777777777c77c77c777c77c7ccc777767777777777777777777777777777777777777777777777777777777777777
-            77ccc77cbb7dbcceecbbbb6bbbbbbbb777d9b77db7e7c77bbbb7b777e7bc7777777777777777777777e777bbb777b7bbbb77bb77777b77777777777777777b77b777777777e77777b7bb7777777e7777
-            777777cb999999999bcc999999999bbeee99bececbbcebeb9999ccceb99bc7777777777777eeeeeebbbebbbbbbebbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbebebbeeeeebbbbbbeebbbbbbbbeebbe
-        `)
-        scene.centerCameraAt(80, 60);
-        scene.backgroundImage().fillRect(5, 8, 150, 100, 1)
-        scene.backgroundImage().drawRect(5, 8, 150, 100, 15)
-
-        game.setDialogFrame(img`
-            ..99999999999999999999..
-            .9966666666666666666699.
-            996661111111111111166699
-            966611111111111111116669
-            966611111111111111116669
-            966611111111111111116669
-            966611111111111111116669
-            966611111111111111116669
-            966611111111111111116669
-            966611111111111111116669
-            966611111111111111116669
-            966611111111111111116669
-            966611111111111111116669
-            966611111111111111116669
-            966611111111111111116669
-            966611111111111111116669
-            966611111111111111116669
-            966611111111111111116669
-            966611111111111111116669
-            966611111111111111116669
-            966611111111111111116669
-            996661111111111111166699
-            .9966666666666666666699.
-            ..99999999999999999999..
-        `)
-        game.showLongText("A wild " + wildCreature.name + " appeared.", DialogLayout.Bottom)
-        game.showLongText("You sent out " + playerCurrentCreature.name + " to battle!", DialogLayout.Bottom)
-
-        while (playerRemainingPokemon > 0 && wildCreature.hp > 0) {
-            let win = creatureBattleCreature(playerCurrentCreature, wildCreature);
-            if (win) {
-                game.showLongText("You knocked out " + wildCreature.name + " and earned " + wildCreature.xpReward + " xp.", DialogLayout.Bottom)
-                game.showLongText("You won the battle", DialogLayout.Bottom)
-            } else {
-                game.showLongText("The wild pokemon knocked out " + playerCurrentCreature.name, DialogLayout.Bottom)
-                playerRemainingPokemon--;
-                if (playerRemainingPokemon > 0) {
-
-                    let choices = [];
-                    for (let creature of player.partyPokemon) {
-                        if (creature.hp > 0) {
-                            choices.push(creature.name);
-                        }
-                    }
-                    switch (choices.length) {
-                        case 0:
-                            //you lose 
-                            break;
-                        case 1:
-                            game.showLongText("You only have " + choices[0] + " remaining. You sent out " + choices[0] + ".", DialogLayout.Bottom);
-                            break;
-                        case 2:
-                            story.printDialog("Pick a Pokemon to sent out:", 80, 90, 50, 150, 15, 1, story.TextSpeed.VeryFast);
-                            story.showPlayerChoices(choices[0], choices[1]);
-                            break;
-                        case 3:
-                            story.printDialog("Pick a Pokemon to sent out:", 80, 90, 50, 150, 15, 1, story.TextSpeed.VeryFast);
-                            story.showPlayerChoices(choices[0], choices[1], choices[2]);
-                            break;
-                        case 4:
-                            story.printDialog("Pick a Pokemon to sent out:", 80, 90, 50, 150, 15, 1, story.TextSpeed.VeryFast);
-                            story.showPlayerChoices(choices[0], choices[1], choices[2], choices[3]);
-                            break;
-                        case 5:
-                            story.printDialog("Pick a Pokemon to sent out:", 80, 90, 50, 150, 15, 1, story.TextSpeed.VeryFast);
-                            story.showPlayerChoices(choices[0], choices[1], choices[2], choices[3], choices[4]);
-                            break;
-                    }
-                    pauseUntil(() => !story.isMenuOpen());
-                    if (choices.length >= 2) {
-                        for (let creature of player.partyPokemon) {
-                            if (creature.name == story.getLastAnswer()) {
-                                playerCurrentCreature = creature;
-                                game.showLongText("You sent out " + playerCurrentCreature.name + " to battle.", DialogLayout.Bottom);
-                                break;
-                            }
-                        }
-                    } else if (choices.length == 1) {
-                        for (let creature of player.partyPokemon) {
-                            if (creature.name == choices[0]) {
-                                playerCurrentCreature = creature;
-                                game.showLongText("You sent out " + playerCurrentCreature.name + " to battle.", DialogLayout.Bottom);
-                                break;
-                            }
-                        }
-                    } else {
-                        game.showLongText("You lost the battle!.", DialogLayout.Bottom);
-                        battleResult = false;
-                    }
-                } else {
-                    game.showLongText("You lost the battle!.", DialogLayout.Bottom);
-                    battleResult = false;
-                }
-            }
-
-        }
-        scene.setBackgroundImage(img`
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-            ................................................................................................................................................................
-        `);
-        tiles.setCurrentTilemap(map)
-        wildCreature.sprite.destroy();
-
-        scene.centerCameraAt(player.sprite.x, player.sprite.y);
-        pause(100);
-        for (let creature of player.partyPokemon) {
-            checkLevelUp(creature);
-            checkEvolve(creature);
-        }
-
-
-    }
-
-    //% blockId=creatures_trainerHealAll
-    //% block="$player=variables_get(myTrainer) heal all pokemon"
-    //% group="Other"
-    //% weight=75
-    export function trainerHealAll(player: Trainer){
-        for(let creature of player.partyPokemon){
-            creature.hp = creature.maxHP;
-        }
-    }
-
-
-    export function checkEvolve(creature: Creature) {
-        if (creature.evolutionLevel == 0) {
-            return;
-        }
-        if (creature.level >= creature.evolutionLevel) {
-            if (creature._evolutionID != 0) {
-                const oldSprite = creature.sprite;
-                controller.moveSprite(myTrainer.sprite, 0, 0);
-                creature.sprite.setFlag(SpriteFlag.Invisible, false);
-                creature.sprite.setPosition(scene.cameraLeft() + 80, scene.cameraTop() + 30)
-                story.printDialog(creature._name + " is evolving...", 80, 90, 50, 150, 15, 1, story.TextSpeed.VeryFast);
-                pause(200)
-                creature.sprite.startEffect(effects.warmRadial, 1500)
-                pause(500)
-
-                animation.runMovementAnimation(creature.sprite, animation.animationPresets(animation.bobbing), 500, false)
-                pause(500);
-
-                animation.runMovementAnimation(creature.sprite, animation.animationPresets(animation.bobbing), 500, false)
-                pause(500);
-                creature.sprite.startEffect(effects.warmRadial, 1500)
-                animation.runMovementAnimation(creature.sprite, animation.animationPresets(animation.bobbing), 500, false)
-                pause(500);
-
-                animation.runMovementAnimation(creature.sprite, animation.animationPresets(animation.bobbing), 500, false)
-                pause(500);
-
-                animation.runMovementAnimation(creature.sprite, animation.animationPresets(animation.bobbing), 500, false)
-                pause(500);
-                creature.sprite.startEffect(effects.warmRadial, 1500)
-                pause(500)
-
-                const evId = creature._evolutionID;
-                let evolution = makeCreatureFromID(evId);
-                creature.sprite = evolution.sprite;
-                oldSprite.setImage(creature._sprite.image);
-                oldSprite.setPosition(scene.cameraLeft() + 80, scene.cameraTop() + 30)
-                creature.healthbar.destroy();
-                creature.creatureType1 = evolution.creatureType1;
-                creature.creatureType2 = evolution.creatureType2;
-                creature.name = evolution.name;
-                creature.evolutionID = evolution.evolutionID;
-                creature.xp = 0;
-                creature.hp = evolution.hp;
-                creature.maxHP = evolution.maxHP;
-                creature.attackValue = evolution.attackValue;
-                for(let i = 0; i < creature.level-5; i++) {
-                    creature.maxHP *= 1.05;
-                    creature.hp *= 1.05;
-                    creature.attackValue *= 1.05;
-                }
-                creature.xpReward = evolution.xpReward;
-                creature._sayHP = false;
-                creature._sayXP = false;
-                creature.sprite.setFlag(SpriteFlag.Invisible, true);
-                creature.healthbar = statusbars.create(20, 4, StatusBarKind.Health)
-                creature.healthbar.attachToSprite(creature.sprite) 
-                creature.healthbar.max = creature.maxHP;
-                creature.healthbar.value = creature.hp;
-                creature.healthbar.setFlag(SpriteFlag.Invisible, true);
-                pause(500);
-                game.showLongText("Your Pokemon evolved into " + creature.name + ".", DialogLayout.Bottom);
-                oldSprite.destroy();
-                controller.moveSprite(myTrainer.sprite, 80, 80);
-            }
-        }
-    }
-
-
-
-    export function checkLevelUp(creature: Creature) {
-        let levelUpThresholds = [5, 6, 7, 8, 9, 10, 12, 14, 18, 25]
-        for (let i = 0; i < 90; i++) {
-            levelUpThresholds.push(levelUpThresholds[9 + i] + (i * 5) + 3)
-        }
-        let xpForLevel: number[] = []
-        for (let i = 0; i < 100; i++) {
-            xpForLevel.push(levelUpThresholds[i])
-            for (let j = 0; j < 100; j++) {
-                if (j <= i) {
-                    xpForLevel[i] += levelUpThresholds[j];
-                }
-            }
-        }
-
-
-        if (creature.xp > xpForLevel[creature.level]) {
-            creature.level++;
-            game.showLongText(creature.name + " leveled up to level " + creature.level, DialogLayout.Bottom);
-            creature.maxHP *= 1.05;
-            creature.attackValue *= 1.05;
-            checkLevelUp(creature);
-        }
-        //throw "test"
-
-    }
-
-    export function getXpForLevel(level: number) {
-        let levelUpThresholds = [5, 6, 7, 8, 9, 10, 12, 14, 18, 25]
-        for (let i = 0; i < 90; i++) {
-            levelUpThresholds.push(levelUpThresholds[9 + i] + (i * 5) + 3)
-        }
-        let xpForLevel: number[] = []
-        for (let i = 0; i < 100; i++) {
-            xpForLevel.push(levelUpThresholds[i])
-            for (let j = 0; j < 100; j++) {
-                if (j <= i) {
-                    xpForLevel[i] += levelUpThresholds[j];
-                }
-            }
-        }
-        return xpForLevel[level];
-    }
-
-    interface TypeChart {
-        [attackingType: number]: {
-            [defendingType: number]: number;
-        };
-    }
-
-    const typeChart: TypeChart = {
-        12: { 15: 0.5, 8: 0 },
-        6: { 15: 2, 17: 0.5, 9: 2, 11: 2, 0: 2 },
-        17: { 10: 2, 9: 0.5, 6: 2 },
-        9: { 10: 2, 15: 2, 17: 0.5, 6: 0.5, 11: 2 },
-        3: { 10: 0, 17: 2, 7: 2 },
-        11: { 9: 2, 10: 2, 16: 0.5, 6: 2, 2: 2 },
-        5: { 12: 2, 15: 2, 16: 2, 8: 0, 14: 0.5, 7: 0.5, 0: 0.5 },
-        13: { 9: 2, 10: 0.5, 16: 0.5, 14: 2 },
-        10: { 15: 0.5, 3: 2, 9: 0.5, 11: 2, 13: 2, 0: 0.5 },
-        7: { 15: 0.5, 3: 0.5, 16: 0.5, 9: 2, 0: 2 },
-        14: { 5: 2, 13: 2, 16: 0.5 },
-        0: { 9: 2, 14: 2, 1: 2, 6: 0.5, 7: 0.5, 16: 0.5 },
-        15: { 5: 0.5, 10: 0.5, 6: 2, 9: 2, 17: 2 },
-        8: { 12: 0, 5: 0, 8: 2, 16: 0.5, 14: 2, 1: 0.5 },
-        2: { 2: 2, 16: 0.5, 11: 2 },
-        1: { 8: 2, 14: 2, 5: 0.5 },
-    };
-
-
-    //% group="Value"
-    //% blockId="creatures_getAttackMultiplier"
-    //% expandableArgumentMode=toggle
-    //% block="Calculate Attack Multiplier %attackType vs %defenseTypes"
-    export function calculateAttackMult(attackType: CreatureType, defenseTypes: CreatureType[]): number {
-        let multiplier: number = 1.0;
-        //game.splash(attackType);
-        for(let defenseType of defenseTypes){
-            //game.splash("Starting defenseType " + defenseType);
-            if (typeChart[attackType]!=null) {
-                //game.splash("attack type exists in chart");
-                // Check if defense type exists in attack type's chart
-                if (typeChart[attackType][defenseType] != null) {
-                    //game.splash("defense type exists in chart of " + attackType);
-                    // Get effectiveness multiplier
-                    const effectiveness = typeChart[attackType][defenseType];
-
-                    // Update multiplier
-                    multiplier *= effectiveness;
-                }
-            }
-        }
-        //game.splash(multiplier);
-        return multiplier;
-
-    }
-
-
-    //% group="Create"
-    //% weight=98
-    //% blockId="creatures_setMap"
-    //% expandableArgumentMode=enabled
-    //% block="set map to $tilemap with grass $grass || house $door1 lab $door2 pokemon center $door3 gym $door4"
-    //% tilemap.fieldEditor="tilemap"
-    //% tilemap.fieldOptions.decompileArgumentAsString="true"
-    //% tilemap.fieldOptions.filter="tile"
-    //% tilemap.fieldOptions.taggedTemplate="tilemap"
-    //% grass.shadow=tileset_tile_picker
-    //% grass.decompileIndirectFixedInstances=true
-    //% door1.shadow=tileset_tile_picker
-    //% door1.decompileIndirectFixedInstances=true
-    //% door2.shadow=tileset_tile_picker
-    //% door2.decompileIndirectFixedInstances=true
-    //% door3.shadow=tileset_tile_picker
-    //% door3.decompileIndirectFixedInstances=true
-    //% door4.shadow=tileset_tile_picker
-    //% door4.decompileIndirectFixedInstances=true
-    export function setCreatureMap(tilemap: tiles.TileMapData, grass: Image, door1?: Image, door2?: Image, door3?: Image, door4?: Image) {
-        tiles.setCurrentTilemap(tilemap)
-
-        if(grass && !grass.equals(img`
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-        `)){
-            tileUtil.createSpritesOnTiles(grass, img`
-        . . . . . . 6 6 6 6 . . . . . . 
-        . . . . . c 6 7 7 6 c . . . . . 
-        . . . . c 6 7 5 7 7 6 c . . . . 
-        . . 6 6 c c 6 5 5 6 c c 6 6 . . 
-        6 6 6 5 5 5 6 7 5 6 5 5 7 6 6 6 
-        6 6 7 7 7 5 7 6 7 5 5 7 7 7 7 6 
-        . c c c 6 6 7 6 6 5 7 6 c c 6 . 
-        6 c 6 6 6 6 6 c c 6 6 6 6 6 c 6 
-        6 6 7 7 7 c c c c c c 7 7 7 6 6 
-        6 7 7 7 6 6 c c c c 6 6 7 7 7 6 
-        c 6 c c 6 7 6 c c 6 7 6 c c 6 c 
-        . c c 5 5 7 6 7 7 6 7 5 5 c c . 
-        . c 6 7 5 5 6 7 7 6 5 5 7 6 c . 
-        . 6 6 7 7 6 6 5 5 6 6 7 7 6 6 . 
-        . . 6 6 6 6 c 6 7 6 c 6 6 6 . . 
-        . . . 6 6 c . 6 6 6 . c 6 . . . 
-        `, SpriteKind.Grass)
-        }
-        
-        if (door1 && !door1.equals(img`
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-        `)) {
-            for (let value of tiles.getTilesByType(door1)) {
-                let mySprite = sprites.create(img`
-                    dddddddddddd1ddddddddddddddd1ddddddddddddddd1ddddddddddddddd1ddddddddddddddd1d
-                    ddddddddddbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbdddddddddd
-                    ddddddddbb44444444444444444444444444444444444444444444444444444444eeccdddddddd
-                    d1ddddbbdd44444444444444444444444444444444444444444444444444444444eeeecc9ddddd
-                    ddddbb4ddd44444444444444444444444444444444444444444444444444444444eeeeeeccdd9d
-                    ddbbdd4ddd444eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee4eeeeeeeeccdd
-                    bb4ddd4ddd444e4444444444444444444444444444444444444444444444444444eeeeeeeeeecc
-                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
-                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
-                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
-                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
-                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
-                    dd4ddd4ddd444eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee44eeeeeeeeeeee
-                    dd4ddd4ddd444e4444444444444444444444444444444444444444444444444e44eeeeeeeeeeee
-                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
-                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
-                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
-                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
-                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
-                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
-                    dd4ddd4ddd444eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee44eeeeeeeeeeee
-                    dd4ddd4ddd444e4444444444444444444444444444444444444444444444444e44eeeeeeeeeeee
-                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
-                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
-                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
-                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
-                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
-                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
-                    dd4ddd4ddd444eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee44eeeeeeeeeeee
-                    dd4ddd4ddd444e4444444444444444444444444444444444444444444444444e44eeeeeeeeeeee
-                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
-                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
-                    dd4ddd4ddd44444444444444444444444444444444444444444444444444444444eeeeeeeeeeee
-                    dd4ddd4deccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccceeeeeeee
-                    dd4dddcceeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeecceeeeee
-                    dd4dcceeecccccccccccccccccccccccccccccccccccccccccccccccccccccccccccceeecceeee
-                    ddcceeeccbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcceeeccee
-                    cceeeccbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcceeecc
-                    eeeccbcbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcbcceee
-                    eccbbbcbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcbbbcce
-                    ccbbbbcbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcbbbbcc
-                    bc1dddbdddddddddccccccccccccccccccccccddccccccccccccccccccccccdddddddddbdddbcb
-                    bc1dddbdddddddddc666666666cc666666666cddc666666666cc666666666cdddddddddbdddbcb
-                    bc1dddbdddddddddc666666666cc666666666cddc666666666cc666666666cdddddddddbdddbcb
-                    bc1dddbdddddddddc999999999cc999999999cddc999999999cc999999999cdddddddddbdddbcb
-                    bc1dddbdddddddddc999999999cc999999999cddc999999999cc999999999cdddddddddbdddbcb
-                    bc1dddbdddddddddc999999999cc999999999cddc999999999cc999999999cdddddddddbdddbcb
-                    bc1dddbdddddddddc999999999cc999999999cddc999999999cc999999999cdddddddddbdddbcb
-                    bc1dddbdddddddddcbbbbbbbbbccbbbbbbbbbcddcbbbbbbbbbccbbbbbbbbbcdddddddddbdddbcb
-                    bc1dddbdddddddddccccccccccccccccccccccddccccccccccccccccccccccdddddddddbdddbcb
-                    bc1dddbddddddddd1111111111111111111111dd1111111111111111111111dddddddddbdddbcb
-                    bc1dddbddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddbdddbcb
-                    bc1dddbddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddbdddbcb
-                    bc1dddbddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddbdddbcb
-                    bc1dddbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbdddbcb
-                    bc1dddbddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddbdddbcb
-                    bc1dddbddddddddccccccccccccccccddddddddddddddddddddddddddddddddddddddddbdddbcb
-                    bc1dddbddddddddcbbbbbbbbbbbbbbcdddddddddccccccccccccccccccccccdddddddddbdddbcb
-                    bc1dddbddddddddcbccccccccccccbcdddddddddc666666666cc666666666cdddddddddbdddbcb
-                    bc1dddbddddddddcec6666666666cecdddddddddc666666666cc666666666cdddddddddbdddbcb
-                    bc1dddbddddddddcec6666666666c3cdddddddddc999999999cc999999999cdddddddddbdddbcb
-                    bc1dddbddddddddcec6666666666c3cdddddddddc999999999cc999999999cdddddddddbdddbcb
-                    bc1dddbddddddddcec9999999999c3cdddddddddc999999999cc999999999cdddddddddbdddbcb
-                    bc1dddbddddddddcec9999999999c3cdddddddddc999999999cc999999999cdddddddddbdddbcb
-                    bc1dddbddddddddcecccccccccccc3cdddddddddcbbbbbbbbbccbbbbbbbbbcdddddddddbdddbcb
-                    bc1dddbddddddddccc333333333333cdddddddddccccccccccccccccccccccdddddddddbdddbcb
-                    bc1dddbddddddddc1dc44444444444cddddddddd1111111111111111111111dddddddddbdddbcb
-                    bcddddbddddddddcddceeeeeeeeeeecddddddddddddddddddddddddddddddddddddddddbdddbcb
-                    bcddddbddddddddccceeeeeeeeeeeecddddddddddddddddddddddddddddddddddddddddbdddbcb
-                    bcddddbddddddddceeeeeeeeeeeeeecddddddddddddddddddddddddddddddddddddddddbdddbcb
-                `, SpriteKind.Structure)
-                tiles.placeOnTile(mySprite, value)
-                mySprite.x += 16
-                mySprite.y += -32
-                for (let i = value.column-1; i < 4 + value.column; i++) {
-                    for (let j = value.row-4; j < value.row +1; j++) {
-                        tiles.setWallAt(new tiles.Location(i,j,game.currentScene().tileMap), true);
-                    }
-                }
-                tiles.setWallAt(value, false);
-            }
-        }
-        if (door2 && !door2.equals(img`
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-        `)) {
-            for (let value2 of tiles.getTilesByType(door2)) {
-                let mySprite = sprites.create(img`
-                    cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-                    bdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd111111111111111111111111ddddddb
-                    dbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbccccccccccccccbbbbbbbbbbbbb
-                    dbbccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccbbbbbbbbbbbbbeccccccccccbbb
-                    dbcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccbbbbbbbbbbbbbecccccccccccbb
-                    dbcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccbbeeeeeeeeeebecccccccccccbb
-                    dbcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccbbeeeeeeeeeebecccccccccccbb
-                    dbcbbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbccccbbeeeeeeeeeebeccccbbbbbbcbb
-                    dbcbbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbbbbbcbbbcbbcbbeeeeeeeeeebecbbcbbbbbbcbb
-                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddcebcbbccccccccccbecbecbbdddbcbb
-                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceecbbccccccccccbeceecbbdddbcbb
-                    dbcbbddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddceecbbccccccccccbeceecbbdddbcbb
-                    dbccccccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbccceecbbccccccccccbeceecbbcccbcbb
-                    dbcbbddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddceecbbccccccccccbeceecbbdddbcbb
-                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceecbbccccccccccbeceecbbdddbcbb
-                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceecbbbbbbbbbbbbbeceecbbdddbcbb
-                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceecbbbbbbbbbbbbbeceecbbdddbcbb
-                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceeceeeeeeeeeeeeeeceecbbdddbcbb
-                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceeceeeeeeeeeeeeeeceecbbdddbcbb
-                    dbcbbddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddceeceeeeeeeeeeeeeeceecbbdddbcbb
-                    dbccccccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbccceeceeeeeeeeeeeeeeceecbbcccbcbb
-                    dbcbbddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddceeceeeeeeeeeeeeeeceecbbdddbcbb
-                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceeceeeeeeeeeeeeeeceecbbdddbcbb
-                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceecccccccccccccccceecbbdddbcbb
-                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceeceeeeeeeeeeeeeeceecbbdddbcbb
-                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceceeeeeeeeeeeeeeeececbbdddbcbb
-                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddceceeeeeeeeeeeeeeeececbbdddbcbb
-                    dbcbbddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddcceeeeeeeeeeeeeeeeeeccbbdddbcbb
-                    dbccccccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbcccccbbbccccccccccccccccccccccccbbcccbcbb
-                    dbcbbddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddddddbdddbbbbbbbbbbbbbbbbbbbbbbbbdddbcbb
-                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcddddbbbbbbbbbbbbbbbbbbbbbbbdddbcbb
-                    dbcbbddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcdddddddcddddddbcbb
-                    dbbccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccbbb
-                    dbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
-                    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
-                    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
-                    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
-                    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
-                    bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
-                    cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-                    cbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbc
-                    cbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbc
-                    cdbbbdddddd4d1111d4dddddddd4d1111d4dddddddddddddddddddddddddddddddddddddddd4d1111d4dddddddd4d1111d4ddddddbbbbc
-                    c1dddddddd411bccb114dddddd411bccb114dddddddddddddddddddddddddddddddddddddd411bccb114dddddd411bccb114dddddddbbc
-                    c1dddddddbd1c6666c1dbddddbd1c6666c1dbddddddddddddddddddddddddddddddddddddbd1c6666c1dbddddbd1c6666c1dbddddddbbc
-                    c1bbbdddd41b666666b14dddd41b666666b14dddddddddddddddddddddddddddddddddddd41b666666b14dddd41b666666b14ddddbbbbc
-                    c1bbbdddd41c666666c14dddd41c666666c14dddddddddddddddddddddddddddddddddddd41c666666c14dddd41c666666c14ddddbbbbc
-                    c1ddddddd41c999999c14dddd41c999999c14dddddddddddddddddddddddddddddddddddd41c999999c14dddd41c999999c14ddddddbbc
-                    c1ddddddd41b499994b14dddd41b499994b14dddddddddddddddddddddddddddddddddddd41b499994b14dddd41b499994b14ddddddbbc
-                    c1bbbddddbd1c4444c1dbddddbd1c4444c1dbddddddddddddddddddddddddddddddddddddbd1c4444c1dbddddbd1c4444c1dbddddbbbbc
-                    c1bbbddddd411bccb114dddddd411bccb114dddddddddddddddddddddddddddddddddddddd411bccb114dddddd411bccb114dddddbbbbc
-                    c1ddddddddd4d1111d4dddddddd4d1111d4dddddddddddddddddddddddddddddddddddddddd4d1111d4dddddddd4d1111d4ddddddddbbc
-                    c1ddddddddddb4444bddddddddddb4444bddddddddddddddddddddddddddddddddddddddddddb4444bddddddddddb4444bdddddddddbbc
-                    c1bbbddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddbbbbc
-                    c1bbbddddddddddccccccccccccccccccccccccddddddddddddddddddddddddddddddddccccccccccccccccccccccccddddddddddbbbbc
-                    c1dddddddddddddcbebbbbbbbbbbbbbbbbbbebcddddddddccccccccccccccccddddddddcbebbbbbbbbbbbbbbbbbbebcddddddddddddbbc
-                    c1dddddddddddddcbebbbbbbbbbbbbbbbbbbebcddddddddcbbbbbbbbbbbbbbcddddddddcbebbbbbbbbbbbbbbbbbbebcddddddddddddbbc
-                    c1bbbddddddddddceeeeeeeeeeeeeeeeeeeeeecddddddddcbbbbccccccbbbbcddddddddceeeeeeeeeeeeeeeeeeeeeecddddddddddbbbbc
-                    c1bbbddddddddddccccccccccccccccccccccccddddddddc666c666666c666cddddddddccccccccccccccccccccccccddddddddddbbbbc
-                    c1ddddddddddddddc666666666cc666666666cdddddddddc66c66666666c66cdddddddddc666666666cc666666666cdddddddddddddbbc
-                    c1ddddddddddddddc666666666cc666666666cdddddddddc66c66666666c66cdddddddddc666666666cc666666666cdddddddddddddbbc
-                    c1bbbdddddddddddc666666666cc666666666cdddddddddc66c66666666c66cdddddddddc666666666cc666666666cdddddddddddbbbbc
-                    c1bbbdddddddddddc999999999cc999999999cdddddddddc66c99999999c66cdddddddddc999999999cc999999999cdddddddddddbbbbc
-                    c1ddddddddddddddc999999999cc999999999cdddddddddc666c999999c666cdddddddddc999999999cc999999999cdddddddddddddbbc
-                    c1ddddddddddddddc444444444cc444444444cdddddddddccc66cccccc6666cdddddddddc444444444cc444444444cdddddddddddddbbc
-                    c1bbbdddddddddddccccccccccccccccccccccdddddddddc1dc66666666666cdddddddddccccccccccccccccccccccdddddddddddbbbbc
-                    c1bbbddddddddddd1111111111111111111111dddddddddcddc66666666666cddddddddd1111111111111111111111dddddddddddbbbbc
-                    c1dddddddddddddddddddddddddddddddddddddddddddddccc666666666666cdddddddddddddddddddddddddddddddddddddddddddddbc
-                    c1dddddddddddddddddddddddddddddddddddddddddddddc66666666666666cdddddddddddddddddddddddddddddddddddddddddddddbc
-                    c1dddddddddddddddddddddddddddddddddddddddddddddccccccccccccccccdddddddddddddddddddddddddddddddddddddddddddddbc
-                `, SpriteKind.Structure)
-                tiles.placeOnTile(mySprite, value2)
-                mySprite.x += 0
-                mySprite.y += -32
-                for (let i = value2.column - 3; i < 4 + value2.column; i++) {
-                    for (let j = value2.row - 4; j < value2.row+1; j++) {
-                        tiles.setWallAt(new tiles.Location(i, j, game.currentScene().tileMap), true);
-                    }
-                }
-                tiles.setWallAt(value2, false);
-            }
-        }
-        if (door3 && !door3.equals(img`
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-        `)) {
-            for (let value3 of tiles.getTilesByType(door3)) {
-                let mySprite = sprites.create(img`
-                    dd3444444444444444444444444444444444444444444444444444444444444444444444444444ddddbbd
-                    444444e44444444444444444444444444444444444444444444444444444e4444444444444e434443bdbb
-                    4ee444444444444444444444444444444444444444444444444444444444444444444444444434ee443db
-                    eee444444444444444444444444444444444444444444444444444444444444444444444444434eeee4bb
-                    eee444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
-                    eee444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
-                    ee4444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
-                    ee4444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
-                    ee4444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
-                    ee44444444444444444444444444444444444e4444444444444444444444444444e44444444444eeeeeee
-                    ee4444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
-                    ee4444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
-                    eee444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
-                    eee444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
-                    eee444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
-                    eee444444444444444444444444444444444444444444444444444444444444444e44444444444eeeeeee
-                    eee444444444444444444444444444444444444444444444444444444444444344444444344444eeeeeee
-                    eee444444444444444444444444444444444444444444444444444444444444444444444444434eeeeeee
-                    eee444444444444444444444443444444444444444444444444444444444444444444444444444eeeeeee
-                    eee444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
-                    eee444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
-                    eee444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
-                    eee444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
-                    eee444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
-                    eee4444444444444444e4444444444444444444444444444444444444444444444444444444444eeeeeee
-                    eee444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
-                    eee444444444444444444444444444444444444434444444444444444444444444444444444444eeeeeee
-                    eee444444444444444444444443444444444444444444444444444444444444444444444444444eeeeeee
-                    eee444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
-                    eee444444444444444444444444444444444444444444444444444444444444444444444444444eeeeeee
-                    e4444444444444444444444444444444444444444444444444444444444444444444444444444444eeeee
-                    444444444444444444444444444444444444444444444444444444444444444444444444444444444eeee
-                    4344444444444444444444444444444444444444344444444444444444444444444444444444444444eee
-                    44ee4444444444444444444444444444444444444444444444444444444444444444444444444e44444ee
-                    4eeeeee4344434444344434444344433444444443344434444444434443344434444444434eeeeee444be
-                    4eeeeee444444444444444444444444444444444444444444444444444444444444444444eeeeeee444be
-                    eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee43b
-                    eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeebbbbbbeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeebe
-                    eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeedd1111111dbeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
-                    eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee1111111111dbeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeec
-                    eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeebd11ddddddd11deeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeec
-                    eeeeeeeeeeeeeeeeeeeeeeeeecccccccd11bdbbbbbbbdd1dbcccccceeeeeeeeeeeeeeeeeeeeeeeeeeeecc
-                    beeeeeeeeeeeeeeeeeeeeeeebddddddd11ddbbbbbbbbbdd1ddddddddeeeeeeeeeeeeeeeeeeeeeeeeeeccc
-                    cccccccccccccccccccccccb11111111dddbb44bbb444bddd11111111dcccccccccccccccccccccccdbcb
-                    bbcccccccccccccccccccccbddddddddddbeeb3333beebbddddddddd1dccccccccccccccccccccccb1bcb
-                    dbbbbbcc66666bbcc66666cbddddddddddeeebddddbeeeedddddddddddc66666ccbb66666ccbbbbb11bcb
-                    11ddbbbc66666bbcc66666bbddbdddddddbbbdbeeeddbbbdddddddbddb666666cbbb66666ccbbddd11bcb
-                    111dddbc66666bdbc66666cbdbb1ddddddddddeeeeddddddddddddbddbc66666cbdb66666cbddd1111bcb
-                    dd11ddb6999969dbc9999bcbdd1dddddddbb3deeeeddbbbddddddddddbc69999cd1969999cbd111d111cc
-                    1d11ddb6999969dbc9999bcbdddddddd1bceedbeee33eeeddddddddddbc6999bcd1969999cbd11dd111cc
-                    1dd1d1bc666669dbc66666cbdddddddd1beeeb3db3beeeeddddddddd1bc66666cd1966666cbd11dd111cc
-                    11ddddbd1ddddddbbdddd1bcdddddddddddeeeeeeeeeeeddddddddddbcd1ddddddddddd1dbbddd1111dcc
-                    111dddd111111ddd111111bbbbbbbbbbbd1eeeeeeeeeeb1bbbbbbbbbbbd111111ddd11111ddddd111dbcc
-                    d1111dddddddddddddddd1bbbbbbbbbbbbc1deeeeeebddcbbbbbbbbbbbd1dddddddddddddddd1111ddbcb
-                    dd11ddddddddddddddddddbbbbbbbbbbbbcbdbbbbbbddbcbbbbbbbbbbbbdddddddddddddddddd11dd1bcb
-                    1d11ddddddddddddddddddbbbbbbbbbbbbbcbdddddddbcbbbbbbbbbbbbbddddddddddddddddd11dd11bcb
-                    11ddddddddddddddddddddbbddddddbbbbbbbcccccccbbbbbbddddddddbdddddddbbbbdddddbddd111bcb
-                    111dddddddddddddddddddbdddddddbcccccccccccccccccccdddddd1dbbbbbbbbbbbbbbbbbbbd1111bcb
-                    111d111dddd11111dddd11bbddddddbc6666666666666666ccdddddd1dbddddddddddddddddddd1111bcc
-                    111d11d222222112222211bdddddddbc6666666666666666ccdddddd1dbddddddddddddddddddd1111dcc
-                    111d11d222222212222211bb1dddddbc6666666666666666ccdddddd1dbddddddddddddddddddd111ddcc
-                    b11d11d222dd2212222211bbddddddbcbb6666666666666bccdddddd1dbddddddddddddddddddd11bd1cc
-                    bd1d11d222dd22122dd111bb1dddddbcbb6666666666666bccd1ddd11dbddddddddddddddddddd1dd11cc
-                    1ddd11d222222d122ddd11bbbbbbbbbcbb66666666666666ccbbbbbbdbbddddddddddddddddddddd1ddcc
-                    d1bd11d22211dd12222211bbbbbbbbbc6b66666666666666ccbbbbbbbbd1ddddddddddddddddddd1dddcc
-                    dddb11d22211dd122222d1bbddddddbc6b6666666666666bccbddddd1dbddddddddddddddddddb1ddd1cc
-                    ddd1bbbbbbbbbbbbb222bbbbddddddbc6b6666666666666bccbdddddddbbbbbbbbbbbbbbbbbbd1ddd1dcc
-                    ddddddddddddddddddddddbbbbbbbbbc6b6666666666666bccbbbbbbbbbdddddddddddddddddddddddbcc
-                    ddddbbbbbbbbbbbbbbbdbbbd1dddddbcbb6666666666666bccdddddd1dbdbbbbbbbbbbbbbddbddddbccbc
-                    bddddbbbbbbbbdbbbbbdddbd1dddddbcb999999999999999ccdddddd1dbdbbbbbbbbbbbbbbbddd11cccc.
-                    cbddddddddddddbbddbdddbdddddddbc9999999999999999ccdddddd1dbdbbdddddddddddddddddbcc...
-                    ccbdddddddddddddddddddbbddddddbcc666666666666c6cccbdddddddbdddddddddddddddddddccbc...
-                    c.cbbbbbbbbbbbbbbbbbbbbbddddddbcccccccccccccccccccbdddddddbbbbbbbbbbbbbbbbbbbbcbc....
-                    ..ccccccccccccccccccccccccccccccc.cccccc.......cccccccccbccccccccccccccccccccccc.....
-                    ......................cccccccccc.................cccccccccc..........................
-                `, SpriteKind.Structure)
-                tiles.placeOnTile(mySprite, value3)
-                mySprite.x += 3
-                mySprite.y += -32
-                for (let i = value3.column - 3; i < 4 + value3.column; i++) {
-                    for (let j = value3.row - 4; j < value3.row + 1; j++) {
-                        tiles.setWallAt(new tiles.Location(i, j, game.currentScene().tileMap), true);
-                    }
-                }
-                tiles.setWallAt(value3,false);
-            }
-        }
-        if (door4 && !door4.equals(img`
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-        `)) {
-            for (let value4 of tiles.getTilesByType(door4)) {
-                let mySprite = sprites.create(img`
-                    2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222.
-                    22dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd222
-                    2dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd22
-                    dddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222ddd2222
-                    ddddd22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e
-                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
-                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
-                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
-                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
-                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
-                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
-                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
-                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
-                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
-                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
-                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
-                    ddddd22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222c
-                    ddddd22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222c
-                    ddddd22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222c
-                    ddddd22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222c
-                    ddddd22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222c
-                    ddddd22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222c
-                    ddddd22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222c
-                    ddddd22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222c
-                    ddddd22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222c
-                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
-                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
-                    ddddd22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222c
-                    ddddd22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222c
-                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
-                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
-                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
-                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
-                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
-                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
-                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
-                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
-                    ddddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
-                    ddddd22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222c
-                    bdddd22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222c
-                    bdddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
-                    bdddd2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
-                    bdd222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222e222c
-                    bdd22e22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222eee22c
-                    d2222eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee222e2c
-                    222e22ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc22222c
-                    22eecccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccce222c
-                    222eccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc222c
-                    e22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222c222222222222c
-                    ceccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-                    ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-                    cbbbbbcc666666ccc666666ccc666666cc88888888ccc44444444444444444444444444444ccc8888c888cc666666cc666666ccc666666cc88888cc
-                    cb99bbbc6666666cc666666cc6666666c888888888ccc44444444444444444444444444444cc888888888cc666666cc6666666cc666666cc88898cb
-                    cb999bbc6666666cc666666cc6666666c888888888cc444444444444444444444444444444cc8888888888c666668cc6666666cc6666666888998cb
-                    cb999bbc6666666cc666666cc6666666c888888888cc444444444444441114444444444444cc8888888888c666668cc666666bcc6b66666888998cc
-                    cb199bbc9999999ccb9999bccb9999968888888888ccdd444444441111111111444444444d4c8888888888cc9bb98ccbb999bbcc6966666889999cc
-                    cb1199bcbddddbbccdddddbccbddddd8c888999988cbdd44444441111111111114444444dd4c889999988888dddd8ccbdddddbcc8d8ddd8889919cc
-                    cb1199bcbbbbbbcccbbbbbbccc888888c889999988cbd4444444111111111111114444444d4c8899999998c888888ccc88888ccc888888c899119cc
-                    cb1119bbbbbbbbbbbbbbbbbbc88888888889999988cc4444444441111111111111444444444c8899999b988888888888888888888888888899119cc
-                    cb1199999999999999999999999999999899999988cc444444444444411111444444444444cc8899999b999999999999999999999999999899119cc
-                    cb1119999999999999999999999999999999999988cc444444444444411111444444444444cc8899999bb9999999999999999999b999999899119cc
-                    cb1199889999999998999999999999999999999988cc4d444444111111111b1111444444444c8899999bb9999999999999999999b999999999119cc
-                    cb1199888888889988888999989998899999999988cbdd44444441111b11b11111444444dd4c8899999999999999999999999999999999989911bcc
-                    cbd119888888888999988888888888888888899988cbdd44444441111111111114444444dd4c8888888899888888889888888899898888889919bcc
-                    cbb999888888888888888888888888888888889988cbdd44444444111111111114444444dd4c8888888889888888888888888888888888899999bcc
-                    cb9998888888888888888888888888888888888988cbd4444444444111111114444444444d4c8888888888888888888886888888888888888999bcc
-                    cb1988888888888888812222212112121112188998cc4444444444444444444444444444444c8888888888888888888888888888888888888891dcc
-                    cb9198888888888888812111112112122122188888ccc4eeee444444444444444444444444cc8888888888888888888888888888888888888899bbb
-                    cb9998888888888888812122212222121212188888cccccccccccccccccccccccccccccccccc8888888888888888888888888888888888888919bbb
-                    cb999999888dd88888812111211112121112188888cccccccccccccccccccccccccccccccccc8d888888ddd8dd888ddddddd8dddd8dd888d89999cc
-                    cb19988888888888888122222122221211121888d8cccdbbbccc666666ccc666666ccbbbdccc88888888888888888888888888888888888889919cc
-                    cb1199888888888888888888888888888888888888cccddbbbcc666666cc6666666cbbbddccc88888888888888888888888888888888888889119cc
-                    cbd119999999999988888888888888888888888888ccc11ddbc6666666cc6666666cbdd11ccc8999999999999999999999999999999999999911bcc
-                    .cbd19999999999999999999999999999999999999ccc11ddbc6b66666cc6666666cbdd11ccc899999999999999999999999999999999999991bbc.
-                    .ccb999999999999999999999999999999999999988ccd1ddbcbb66666cc6b6b666cbdd1dccc899999999999999999999999999999999999999cc..
-                    ..cccccccccccccccccccccccccccccccccccccccccccd1ddbc6b66666cc6b6b666cbdd1dccccccccccccccccccccccccccccccccccccccccccc...
-                    ...6cccccccccccccccccccccccccccccccccccccccccddddbcbb66666cc6b6b666cbddddcccccccccccccccccccccccccccccccccccccccccc....
-                    ...........................................ccbdddbcbbb99bbcc6bbbbbbcbdddbcc............................................
-                    ...........................................ccddbbbcb99999bcc699999bcbbbddcc............................................
-                    ...........................................ccddbeecb99999bcc6b9999bceebddcc............................................
-                    ...........................................cbdddbbcb99999bcc699999bcbbdddcc............................................
-                `, SpriteKind.Structure)
-                tiles.placeOnTile(mySprite, value4)
-                mySprite.x += 0
-                mySprite.y += -32
-                for (let i = value4.column - 3; i < 5 + value4.column; i++) {
-                    for (let j = value4.row - 4; j < value4.row + 1; j++) {
-                        tiles.setWallAt(new tiles.Location(i, j, game.currentScene().tileMap), true);
-                    }
-                }
-                tiles.setWallAt(value4, false);
-            }
-        }
-
-    }
-    //let myTrainer : Trainer = null;
-
-    //% group="Create"
-    //% blockId=creatures_setTrainer 
-    //% block="make player creature trainer with starter %starter || Sprite: %player=screen_image_picker Moving Up Animation %moveUp=animation_editor Moving Down Animation %moveDown=animation_editor Moving Left Animation %moveLeft=animation_editor Moving Right Animation %moveRight=animation_editor"
-    //% expandableArgumentMode=toggle
-    //% blockSetVariable=myTrainer
-    //% weight=97 
-    export function makeCreatureTrainer(starter: StarterPokemon, player?: Image, moveUp?: Image[], moveDown?: Image[], moveLeft?: Image[], moveRight?: Image[]): Trainer {
-        let myPlayer = null;
-        if (!player) {
-            myPlayer = sprites.create(img`
-                . . . . f f f f . . . . .
-                . . f f f f f f f f . . .
-                . f f f f f f c f f f . .
-                f f f f f f c c f f f c .
-                f f f c f f f f f f f c .
-                c c c f f f e e f f c c .
-                f f f f f e e f f c c f .
-                f f f b f e e f b f f f .
-                . f 4 1 f 4 4 f 1 4 f . .
-                . f e 4 4 4 4 4 4 e f . .
-                . f f f e e e e f f f . .
-                f e f b 7 7 7 7 b f e f .
-                e 4 f 7 7 7 7 7 7 f 4 e .
-                e e f 6 6 6 6 6 6 f e e .
-                . . . f f f f f f . . . .
-                . . . f f . . f f . . . .
-            `, SpriteKind.Player)
-        } else {
-            myPlayer = sprites.create(player, SpriteKind.Player)
-        }
-        if (!moveDown) {
-            characterAnimations.loopFrames(
-                myPlayer,
-                [img`
-        . . . . f f f f . . . . . 
-        . . f f f f f f f f . . . 
-        . f f f f f f c f f f . . 
-        f f f f f f c c f f f c . 
-        f f f c f f f f f f f c . 
-        c c c f f f e e f f c c . 
-        f f f f f e e f f c c f . 
-        f f f b f e e f b f f f . 
-        . f 4 1 f 4 4 f 1 4 f . . 
-        . f e 4 4 4 4 4 4 e f . . 
-        . f f f e e e e f f f . . 
-        f e f b 7 7 7 7 b f e f . 
-        e 4 f 7 7 7 7 7 7 f 4 e . 
-        e e f 6 6 6 6 6 6 f e e . 
-        . . . f f f f f f . . . . 
-        . . . f f . . f f . . . . 
-        `, img`
-        . . . . . . . . . . . . . 
-        . . . . . f f f f . . . . 
-        . . . f f f f f f f f . . 
-        . . f f f f f f c f f f . 
-        f f f f f f f c c f f f c 
-        f f f f c f f f f f f f c 
-        . c c c f f f e e f f c c 
-        . f f f f f e e f f c c f 
-        . f f f b f e e f b f f f 
-        . f f 4 1 f 4 4 f 1 4 f f 
-        . . f e 4 4 4 4 4 e e f e 
-        . f e f b 7 7 7 e 4 4 4 e 
-        . e 4 f 7 7 7 7 e 4 4 e . 
-        . . . f 6 6 6 6 6 e e . . 
-        . . . f f f f f f f . . . 
-        . . . f f f . . . . . . . 
-        `, img`
-        . . . . . . . . . . . . . 
-        . . . . f f f f . . . . . 
-        . . f f f f f f f f . . . 
-        . f f f c f f f f f f . . 
-        c f f f c c f f f f f f f 
-        c f f f f f f f c f f f f 
-        c c f f e e f f f c c c . 
-        f c c f f e e f f f f f . 
-        f f f b f e e f b f f f . 
-        f f 4 1 f 4 4 f 1 4 f f . 
-        e f e e 4 4 4 4 4 e f . . 
-        e 4 4 4 e 7 7 7 b f e f . 
-        . e 4 4 e 7 7 7 7 f 4 e . 
-        . . e e 6 6 6 6 6 f . . . 
-        . . . f f f f f f f . . . 
-        . . . . . . . f f f . . . 
-        `],
-                160,
-                characterAnimations.rule(Predicate.MovingDown)
-            )
-        } else {
-            characterAnimations.loopFrames(myPlayer, moveUp, 160, characterAnimations.rule(Predicate.MovingDown));
-        }
-
-        if (!moveUp) {
-            characterAnimations.loopFrames(
-                myPlayer,
-                [img`
-        . . . . f f f f . . . . . 
-        . . f f c c c c f f . . . 
-        . f f c c c c c c f f . . 
-        f f c c c c c c c c f f . 
-        f f c c f c c c c c c f . 
-        f f f f f c c c f c c f . 
-        f f f f c c c f c c f f . 
-        f f f f f f f f f f f f . 
-        f f f f f f f f f f f f . 
-        . f f f f f f f f f f . . 
-        . f f f f f f f f f f . . 
-        f e f f f f f f f f e f . 
-        e 4 f 7 7 7 7 7 7 c 4 e . 
-        e e f 6 6 6 6 6 6 f e e . 
-        . . . f f f f f f . . . . 
-        . . . f f . . f f . . . . 
-        `, img`
-        . . . . . . . . . . . . . 
-        . . . . . f f f f . . . . 
-        . . . f f c c c c f f . . 
-        . f f f c c c c c c f f . 
-        f f c c c c c c c c c f f 
-        f c c c c f c c c c c c f 
-        . f f f f c c c c f c c f 
-        . f f f f c c f c c c f f 
-        . f f f f f f f f f f f f 
-        . f f f f f f f f f f f f 
-        . . f f f f f f f f f f . 
-        . . e f f f f f f f f f . 
-        . . e f f f f f f f f e f 
-        . . 4 c 7 7 7 7 7 e 4 4 e 
-        . . e f f f f f f f e e . 
-        . . . f f f . . . . . . . 
-        `, img`
-        . . . . . . . . . . . . . 
-        . . . . . f f f f . . . . 
-        . . . f f c c c c f f . . 
-        . . f f c c c c c c f f . 
-        . f f f c c c c c c c f f 
-        f f f c c c c c c c c c f 
-        f f c c c f c c c c c c f 
-        . f f f f f c c c f c f f 
-        . f f f f c c f f c f f f 
-        . . f f f f f f f f f f f 
-        . . f f f f f f f f f f . 
-        . . f f f f f f f f f e . 
-        . f e f f f f f f f f e . 
-        . e 4 4 e 7 7 7 7 7 c 4 . 
-        . . e e f f f f f f f e . 
-        . . . . . . . . f f f . . 
-        `],
-                160,
-                characterAnimations.rule(Predicate.MovingUp)
-            )
-        } else {
-            characterAnimations.loopFrames(myPlayer, moveUp, 160, characterAnimations.rule(Predicate.MovingUp));
-        }
-
-        if (!moveRight) {
-            characterAnimations.loopFrames(
-                myPlayer,
-                [img`
-        . . . . . . . . . . . . . 
-        . . . f f f f f f . . . . 
-        . f f f f f f f f f . . . 
-        . f f f f f f c f f f . . 
-        f f f f c f f f c f f f . 
-        f c f f c c f f f c c f f 
-        f c c f f f f e f f f f f 
-        f f f f f f f e e f f f . 
-        f f e e f b f e e f f f . 
-        f f e 4 e 1 f 4 4 f f . . 
-        . f f f e 4 4 4 4 f . . . 
-        . 4 4 4 e e e e f f . . . 
-        . e 4 4 e 7 7 7 7 f . . . 
-        . f e e f 6 6 6 6 f f . . 
-        . f f f f f f f f f f . . 
-        . . f f . . . f f f . . . 
-        `, img`
-        . . . . . . . . . . . . . 
-        . . . f f f f f f . . . . 
-        . f f f f f f f f f . . . 
-        . f f f f f f c f f f . . 
-        f f f f c f f f c f f f . 
-        f c f f c c f f f c c f f 
-        f c c f f f f e f f f f f 
-        f f f f f f f e e f f f . 
-        f f e e f b f e e f f . . 
-        . f e 4 e 1 f 4 4 f f . . 
-        . f f f e e 4 4 4 f . . . 
-        . . f e 4 4 e e f f . . . 
-        . . f e 4 4 e 7 7 f . . . 
-        . f f f e e f 6 6 f f . . 
-        . f f f f f f f f f f . . 
-        . . f f . . . f f f . . . 
-        `, img`
-        . . . f f f f f . . . . . 
-        . f f f f f f f f f . . . 
-        . f f f f f f c f f f . . 
-        f f f f c f f f c f f . . 
-        f c f f c c f f f c c f f 
-        f c c f f f f e f f f f f 
-        f f f f f f f e e f f f . 
-        f f e e f b f e e f f . . 
-        . f e 4 e 1 f 4 4 f . . . 
-        . f f f e 4 4 4 4 f . . . 
-        . . f e e e e e f f . . . 
-        . . e 4 4 e 7 7 7 f . . . 
-        . . e 4 4 e 7 7 7 f . . . 
-        . . f e e f 6 6 6 f . . . 
-        . . . f f f f f f . . . . 
-        . . . . f f f . . . . . . 
-        `],
-                160,
-                characterAnimations.rule(Predicate.MovingRight)
-            )
-        } else {
-            characterAnimations.loopFrames(myPlayer, moveRight, 160, characterAnimations.rule(Predicate.MovingRight));
-        }
-
-
-        if (!moveLeft) {
-            characterAnimations.loopFrames(
-                myPlayer,
-                [img`
-        . . . . . f f f f f . . . 
-        . . . f f f f f f f f f . 
-        . . f f f c f f f f f f . 
-        . . f f c f f f c f f f f 
-        f f c c f f f c c f f c f 
-        f f f f f e f f f f c c f 
-        . f f f e e f f f f f f f 
-        . . f f e e f b f e e f f 
-        . . . f 4 4 f 1 e 4 e f . 
-        . . . f 4 4 4 4 e f f f . 
-        . . . f f e e e e e f . . 
-        . . . f 7 7 7 e 4 4 e . . 
-        . . . f 7 7 7 e 4 4 e . . 
-        . . . f 6 6 6 f e e f . . 
-        . . . . f f f f f f . . . 
-        . . . . . . f f f . . . . 
-        `, img`
-        . . . . . . . . . . . . . 
-        . . . . f f f f f f . . . 
-        . . . f f f f f f f f f . 
-        . . f f f c f f f f f f . 
-        . f f f c f f f c f f f f 
-        f f c c f f f c c f f c f 
-        f f f f f e f f f f c c f 
-        . f f f e e f f f f f f f 
-        . . f f e e f b f e e f f 
-        . . f f 4 4 f 1 e 4 e f . 
-        . . . f 4 4 4 e e f f f . 
-        . . . f f e e 4 4 e f . . 
-        . . . f 7 7 e 4 4 e f . . 
-        . . f f 6 6 f e e f f f . 
-        . . f f f f f f f f f f . 
-        . . . f f f . . . f f . . 
-        `, img`
-            . . . . . . . . . . . . .
-            . . . . f f f f f f . . .
-            . . . f f f f f f f f f .
-            . . f f f c f f f f f f .
-            . f f f c f f f c f f f f
-            f f c c f f f c c f f c f
-            f f f f f e f f f f c c f
-            . f f f e e f f f f f f f
-            . f f f e e f b f e e f f
-            . . f f 4 4 f 1 e 4 e f f
-            . . . f 4 4 4 4 e f f f .
-            . . . f f e e e e 4 4 4 .
-            . . . f 7 7 7 7 e 4 4 e .
-            . . f f 6 6 6 6 f e e f .
-            . . f f f f f f f f f f .
-            . . . f f f . . . f f . .
-        `],
-                160,
-                characterAnimations.rule(Predicate.MovingLeft)
-            )
-        } else {
-            characterAnimations.loopFrames(myPlayer, moveLeft, 160, characterAnimations.rule(Predicate.MovingLeft));
-        }
-        if (!moveUp) {
-            moveUp = [img`
-                . . . . f f f f . . . . .
-                . . f f c c c c f f . . .
-                . f f c c c c c c f f . .
-                f f c c c c c c c c f f .
-                f f c c f c c c c c c f .
-                f f f f f c c c f c c f .
-                f f f f c c c f c c f f .
-                f f f f f f f f f f f f .
-                f f f f f f f f f f f f .
-                . f f f f f f f f f f . .
-                . f f f f f f f f f f . .
-                f e f f f f f f f f e f .
-                e 4 f 7 7 7 7 7 7 c 4 e .
-                e e f 6 6 6 6 6 6 f e e .
-                . . . f f f f f f . . . .
-                . . . f f . . f f . . . .
-            `, img`
-        . . . . . . . . . . . . . 
-        . . . . . f f f f . . . . 
-        . . . f f c c c c f f . . 
-        . f f f c c c c c c f f . 
-        f f c c c c c c c c c f f 
-        f c c c c f c c c c c c f 
-        . f f f f c c c c f c c f 
-        . f f f f c c f c c c f f 
-        . f f f f f f f f f f f f 
-        . f f f f f f f f f f f f 
-        . . f f f f f f f f f f . 
-        . . e f f f f f f f f f . 
-        . . e f f f f f f f f e f 
-        . . 4 c 7 7 7 7 7 e 4 4 e 
-        . . e f f f f f f f e e . 
-        . . . f f f . . . . . . . 
-        `, img`
-        . . . . . . . . . . . . . 
-        . . . . . f f f f . . . . 
-        . . . f f c c c c f f . . 
-        . . f f c c c c c c f f . 
-        . f f f c c c c c c c f f 
-        f f f c c c c c c c c c f 
-        f f c c c f c c c c c c f 
-        . f f f f f c c c f c f f 
-        . f f f f c c f f c f f f 
-        . . f f f f f f f f f f f 
-        . . f f f f f f f f f f . 
-        . . f f f f f f f f f e . 
-        . f e f f f f f f f f e . 
-        . e 4 4 e 7 7 7 7 7 c 4 . 
-        . . e e f f f f f f f e . 
-        . . . . . . . . f f f . . 
-        `]
-        }
-        if (!moveDown) {
-            moveDown = [img`
-        . . . . f f f f . . . . . 
-        . . f f f f f f f f . . . 
-        . f f f f f f c f f f . . 
-        f f f f f f c c f f f c . 
-        f f f c f f f f f f f c . 
-        c c c f f f e e f f c c . 
-        f f f f f e e f f c c f . 
-        f f f b f e e f b f f f . 
-        . f 4 1 f 4 4 f 1 4 f . . 
-        . f e 4 4 4 4 4 4 e f . . 
-        . f f f e e e e f f f . . 
-        f e f b 7 7 7 7 b f e f . 
-        e 4 f 7 7 7 7 7 7 f 4 e . 
-        e e f 6 6 6 6 6 6 f e e . 
-        . . . f f f f f f . . . . 
-        . . . f f . . f f . . . . 
-        `, img`
-        . . . . . . . . . . . . . 
-        . . . . . f f f f . . . . 
-        . . . f f f f f f f f . . 
-        . . f f f f f f c f f f . 
-        f f f f f f f c c f f f c 
-        f f f f c f f f f f f f c 
-        . c c c f f f e e f f c c 
-        . f f f f f e e f f c c f 
-        . f f f b f e e f b f f f 
-        . f f 4 1 f 4 4 f 1 4 f f 
-        . . f e 4 4 4 4 4 e e f e 
-        . f e f b 7 7 7 e 4 4 4 e 
-        . e 4 f 7 7 7 7 e 4 4 e . 
-        . . . f 6 6 6 6 6 e e . . 
-        . . . f f f f f f f . . . 
-        . . . f f f . . . . . . . 
-        `, img`
-            . . . . . . . . . . . . .
-            . . . . f f f f . . . . .
-            . . f f f f f f f f . . .
-            . f f f c f f f f f f . .
-            c f f f c c f f f f f f f
-            c f f f f f f f c f f f f
-            c c f f e e f f f c c c .
-            f c c f f e e f f f f f .
-            f f f b f e e f b f f f .
-            f f 4 1 f 4 4 f 1 4 f f .
-            e f e e 4 4 4 4 4 e f . .
-            e 4 4 4 e 7 7 7 b f e f .
-            . e 4 4 e 7 7 7 7 f 4 e .
-            . . e e 6 6 6 6 6 f . . .
-            . . . f f f f f f f . . .
-            . . . . . . . f f f . . .
-        `]
-        }
-        if (!moveLeft) {
-            moveLeft = [img`
-        . . . . . f f f f f . . . 
-        . . . f f f f f f f f f . 
-        . . f f f c f f f f f f . 
-        . . f f c f f f c f f f f 
-        f f c c f f f c c f f c f 
-        f f f f f e f f f f c c f 
-        . f f f e e f f f f f f f 
-        . . f f e e f b f e e f f 
-        . . . f 4 4 f 1 e 4 e f . 
-        . . . f 4 4 4 4 e f f f . 
-        . . . f f e e e e e f . . 
-        . . . f 7 7 7 e 4 4 e . . 
-        . . . f 7 7 7 e 4 4 e . . 
-        . . . f 6 6 6 f e e f . . 
-        . . . . f f f f f f . . . 
-        . . . . . . f f f . . . . 
-        `, img`
-        . . . . . . . . . . . . . 
-        . . . . f f f f f f . . . 
-        . . . f f f f f f f f f . 
-        . . f f f c f f f f f f . 
-        . f f f c f f f c f f f f 
-        f f c c f f f c c f f c f 
-        f f f f f e f f f f c c f 
-        . f f f e e f f f f f f f 
-        . . f f e e f b f e e f f 
-        . . f f 4 4 f 1 e 4 e f . 
-        . . . f 4 4 4 e e f f f . 
-        . . . f f e e 4 4 e f . . 
-        . . . f 7 7 e 4 4 e f . . 
-        . . f f 6 6 f e e f f f . 
-        . . f f f f f f f f f f . 
-        . . . f f f . . . f f . . 
-        `, img`
-            . . . . . . . . . . . . .
-            . . . . f f f f f f . . .
-            . . . f f f f f f f f f .
-            . . f f f c f f f f f f .
-            . f f f c f f f c f f f f
-            f f c c f f f c c f f c f
-            f f f f f e f f f f c c f
-            . f f f e e f f f f f f f
-            . f f f e e f b f e e f f
-            . . f f 4 4 f 1 e 4 e f f
-            . . . f 4 4 4 4 e f f f .
-            . . . f f e e e e 4 4 4 .
-            . . . f 7 7 7 7 e 4 4 e .
-            . . f f 6 6 6 6 f e e f .
-            . . f f f f f f f f f f .
-            . . . f f f . . . f f . .
-        `]
-        }
-        if (!moveRight) {
-            moveRight = [img`
-        . . . . . . . . . . . . . 
-        . . . f f f f f f . . . . 
-        . f f f f f f f f f . . . 
-        . f f f f f f c f f f . . 
-        f f f f c f f f c f f f . 
-        f c f f c c f f f c c f f 
-        f c c f f f f e f f f f f 
-        f f f f f f f e e f f f . 
-        f f e e f b f e e f f f . 
-        f f e 4 e 1 f 4 4 f f . . 
-        . f f f e 4 4 4 4 f . . . 
-        . 4 4 4 e e e e f f . . . 
-        . e 4 4 e 7 7 7 7 f . . . 
-        . f e e f 6 6 6 6 f f . . 
-        . f f f f f f f f f f . . 
-        . . f f . . . f f f . . . 
-        `, img`
-        . . . . . . . . . . . . . 
-        . . . f f f f f f . . . . 
-        . f f f f f f f f f . . . 
-        . f f f f f f c f f f . . 
-        f f f f c f f f c f f f . 
-        f c f f c c f f f c c f f 
-        f c c f f f f e f f f f f 
-        f f f f f f f e e f f f . 
-        f f e e f b f e e f f . . 
-        . f e 4 e 1 f 4 4 f f . . 
-        . f f f e e 4 4 4 f . . . 
-        . . f e 4 4 e e f f . . . 
-        . . f e 4 4 e 7 7 f . . . 
-        . f f f e e f 6 6 f f . . 
-        . f f f f f f f f f f . . 
-        . . f f . . . f f f . . . 
-        `, img`
-            . . . f f f f f . . . . .
-            . f f f f f f f f f . . .
-            . f f f f f f c f f f . .
-            f f f f c f f f c f f . .
-            f c f f c c f f f c c f f
-            f c c f f f f e f f f f f
-            f f f f f f f e e f f f .
-            f f e e f b f e e f f . .
-            . f e 4 e 1 f 4 4 f . . .
-            . f f f e 4 4 4 4 f . . .
-            . . f e e e e e f f . . .
-            . . e 4 4 e 7 7 7 f . . .
-            . . e 4 4 e 7 7 7 f . . .
-            . . f e e f 6 6 6 f . . .
-            . . . f f f f f f . . . .
-            . . . . f f f . . . . . .
-        `]
-        }
-        let myTrainer = new Trainer("Ash", 0, myPlayer, moveUp, moveDown, moveLeft, moveRight);
-        //game.splash(starter)
-        myTrainer.addPartyPokemon(makeCreatureFromID(starter, 5, 12000));
-        //myTrainer.addPartyPokemon(makeCreatureFromID(150));
-        //myTrainer.addPartyPokemon(makeCreatureFromID(1));
-        //myTrainer.addPartyPokemon(makeCreatureFromID(4));
-        //myTrainer.addPartyPokemon(makeCreatureFromID(7));
-        //myTrainer.addPartyPokemon(makeCreatureFromID(88));
-
-
-        controller.moveSprite(myPlayer, 80, 80)
-        myPlayer.z = 90
-        tiles.placeOnTile(myPlayer, tiles.getTileLocation(32, 32))
-        scene.cameraFollowSprite(myPlayer)
-        return myTrainer;
-    }
-
-    //% group="Create"
-    //% blockId=creatures_setEnemyTrainer 
-    //% block="make enemy creature trainer with ids $ids levels $levels || $sprite and name"
-    //% expandableArgumentMode=toggle
-    //% blockSetVariable=opponent
-    //% weight=96 
-    export function makeEnemyTrainer(ids: number[], levels: number[], sprite?: Image, name?: string){
-        let enemySprite = null;
-        if (!sprite){
-            enemySprite = sprites.create(img`
-                . . . . f f f f . . . .
-                . . f f e e e e f f . .
-                . f f e e e e e e f f .
-                f f f f 4 e e e f f f f
-                f f f 4 4 4 e e f f f f
-                f f f 4 4 4 4 e e f f f
-                f 4 e 4 4 4 4 4 4 e 4 f
-                f 4 4 f f 4 4 f f 4 4 f
-                f e 4 4 4 4 4 4 4 4 e f
-                . f e 4 4 b b 4 4 e f .
-                . f f e 4 4 4 4 e f f .
-                e 4 f b 1 1 1 1 b f 4 e
-                4 d f 1 1 1 1 1 1 f d 4
-                4 4 f 6 6 6 6 6 6 f 4 4
-                . . . f f f f f f . . .
-                . . . f f . . f f . . .
-            `, SpriteKind.Enemy);
-        } else {
-            enemySprite = sprites.create(sprite, SpriteKind.Enemy);
-        }
-        let trainerName = "Brock";
-        if(name){
-            trainerName=name;
-        }
-        enemySprite.setFlag(SpriteFlag.Invisible, true);
-        let enemyTrainer = new Trainer(trainerName, 0, enemySprite, [enemySprite.image], [enemySprite.image], [enemySprite.image], [enemySprite.image]);
-        //game.splash(starter)
-        for(let i = 0; i < ids.length && levels.length; i++) {
-            enemyTrainer.addPartyPokemon(makeCreatureFromID(ids[i], levels[i], getXpForLevel(levels[i])));
-        }
-
-        return enemyTrainer;
-        
-    }
-    
-    //% group="Battle"
-    //% blockId=creatures_battleGym
-    //% block="make $player=variables_get(myTrainer) battle gym at location $location=variables_get(location)"
-    //% weight=70
-    export function battleGym(player: Trainer, location: tiles.Location) {
-
-        timer.throttle("gym", 500, function () {
-            tiles.setTileAt(location, assets.tile`transparency16`)
-            player.sprite.setFlag(SpriteFlag.GhostThroughTiles, true)
-            game.showLongText("Welcome to the Gym. Do you wish to battle?", DialogLayout.Bottom)
-            story.startCutscene(function () {
-                controller.moveSprite(player.sprite, 0, 0)
-                pause(200)
-                story.showPlayerChoices("Yes", "No")
-                scene.centerCameraAt(80, 60)
-                pause(200)
-                pauseUntil(() => !(story.isMenuOpen()))
-                if (story.checkLastAnswer("Yes")) {
-                    tiles.placeOnTile(player.sprite, tiles.getTileLocation(location.column, location.row + 1))
-                    let gym = player.badges + 1;
-                    let gymLeader = null;
-                    switch (gym) {
-                        case 1:
-                            gymLeader = makeEnemyTrainer([74, 95], [12, 14], img`
-                    . . . . f f f f . . . .
-                    . . f f e e e e f f . .
-                    . f f e e e e e e f f .
-                    f f f f 4 e e e f f f f
-                    f f f 4 4 4 e e f f f f
-                    f f f 4 4 4 4 e e f f f
-                    f 4 e 4 4 4 4 4 4 e 4 f
-                    f 4 4 f f 4 4 f f 4 4 f
-                    f e 4 4 4 4 4 4 4 4 e f
-                    . f e 4 4 b b 4 4 e f .
-                    . f f e 4 4 4 4 e f f .
-                    e 4 f b 1 1 1 1 b f 4 e
-                    4 d f 1 1 1 1 1 1 f d 4
-                    4 4 f 6 6 6 6 6 6 f 4 4
-                    . . . f f f f f f . . .
-                    . . . f f . . f f . . .
-                `, "Brock");
-                            break;
-                        case 2:
-                            gymLeader = makeEnemyTrainer([120, 121], [18, 21], img`
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                `, "Misty");
-                            break;
-                        case 3:
-                            gymLeader = makeEnemyTrainer([100, 25, 26], [21, 18, 24], img`
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                `, "Lt. Surge");
-                            break;
-                        case 4:
-                            gymLeader = makeEnemyTrainer([71, 114, 45], [29, 24, 29], img`
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                `, "Erika");
-                            break;
-                        case 5:
-                            gymLeader = makeEnemyTrainer([109, 89, 109, 110], [37, 39, 37, 43], img`
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                `, "Koga");
-                            break;
-                        case 6:
-                            gymLeader = makeEnemyTrainer([64, 122, 49, 65], [38, 37, 38, 43], img`
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                `, "Sabrina");
-                            break;
-                        case 7:
-                            gymLeader = makeEnemyTrainer([58, 77, 78, 59], [42, 40, 42, 47], img`
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                `, "Blaine");
-                            break;
-                        case 8:
-                            gymLeader = makeEnemyTrainer([111, 51, 31, 34, 112], [45, 42, 44, 45, 50], img`
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                `, "Giovanni");
-                            break;
-                        case 9:
-                            gymLeader = makeEnemyTrainer([87, 91, 80, 124, 131], [54, 53, 54, 56, 56], img`
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                `, "Lorelei");
-                            break;
-                        case 10:
-                            gymLeader = makeEnemyTrainer([95, 106, 107, 95, 68], [53, 55, 55, 56, 58], img`
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                `, "Bruno");
-                            break;
-                        case 11:
-                            gymLeader = makeEnemyTrainer([94, 42, 93, 24, 94], [56, 56, 55, 58, 60], img`
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                `, "Agatha");
-                            break;
-                        case 12:
-                            gymLeader = makeEnemyTrainer([130, 148, 148, 142, 149], [58, 56, 56, 60, 62], img`
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                    . . . . . . . . . . . . . . . .
-                `, "Lance");
-                            break;
-                        case 13:
-                            gymLeader = makeEnemyTrainer([18, 65, 112, 59, 130, 9], [61, 59, 61, 63, 61, 65], img`
-                                . . . . . . . . . . . . . . . .
-                                . . . . . . . . . . . . . . . .
-                                . . . . . . . . . . . . . . . .
-                                . . . . . . . . . . . . . . . .
-                                . . . . . . . . . . . . . . . .
-                                . . . . . . . . . . . . . . . .
-                                . . . . . . . . . . . . . . . .
-                                . . . . . . . . . . . . . . . .
-                                . . . . . . . . . . . . . . . .
-                                . . . . . . . . . . . . . . . .
-                                . . . . . . . . . . . . . . . .
-                                . . . . . . . . . . . . . . . .
-                                . . . . . . . . . . . . . . . .
-                                . . . . . . . . . . . . . . . .
-                                . . . . . . . . . . . . . . . .
-                                . . . . . . . . . . . . . . . .
-                            `, "Gary");
-                            break;
-                    }
-                    if (!gymLeader) {
-                        return;
-                    }
-
-                    let win = trainerBattleTrainer(player, gymLeader);
-
-
-                    if (win) {
-                        game.showLongText("You defeated the gym! Now battle the next.", DialogLayout.Bottom)
-                        controller.moveSprite(player.sprite, 80, 80)
-                        player.badges += 1
-                        tiles.setTileAt(location, assets.tile`myTile11`)
-                        if (player.badges == 14) {
-                            game.gameOver(true)
-                        }
-                    } else {
-                        game.showLongText("You lost. Get stronger and try again!", DialogLayout.Bottom)
-                        controller.moveSprite(player.sprite, 80, 80)
-                        tiles.setTileAt(location, assets.tile`myTile11`)
-                    }
-                } else {
-                    tiles.placeOnTile(player.sprite, tiles.getTileLocation(location.column, location.row + 1))
-                    game.showLongText("Not feeling strong enough yet?", DialogLayout.Bottom)
-                    controller.moveSprite(player.sprite, 80, 80)
-                    tiles.setTileAt(location, assets.tile`myTile11`)
-                }
-                player.sprite.setFlag(SpriteFlag.GhostThroughTiles, false)
-            })
-        })
-
-    }
-
-    //% group="Events"
-    //% blockId=creatures_overlapGrass
-    //% block="Player $sprite=variables_get(sprite) overlap Grass $otherSprite=variables_get(otherSprite) with ids $ids"
-    export function overlapGrass(ids: number[], sprite: Sprite, otherSprite: Sprite) {
-        // If player is running through grass, run a chance to start a wild battle with a random pokemon from the route list
-        if (characterAnimations.matchesRule(sprite, characterAnimations.rule(Predicate.Moving))) {
-            timer.throttle("battleChance", 200, function () {
-                if (Math.percentChance(15)) {
-                    sprite.setFlag(SpriteFlag.GhostThroughSprites, true)
-                    controller.moveSprite(sprite, 0, 0)
-                    const wildCreature = creatures.makeCreatureFromID(
-                        ids._pickRandom(), 5, 0
-                    )
-                    creatures.trainerBattleWild(myTrainer, wildCreature);
-                    scene.cameraFollowSprite(sprite)
-                    timer.after(500, function () {
-                        controller.moveSprite(sprite, 80, 80)
-                        //heal pokemon in first slot;
-                        myTrainer.partyPokemon[0].hp = myTrainer.partyPokemon[0].maxHP;
-                    })
-                    timer.after(7000, function () {
-                        sprite.setFlag(SpriteFlag.GhostThroughSprites, false)
-                    })
-                }
-            })
-            timer.throttle("animateGrass", 160, function () {
-                animation.runImageAnimation(
-                    otherSprite,
-                    [img`
-                5 7 5 7 7 7 6 6 6 6 7 7 7 7 7 7 
-                7 7 7 7 7 c 6 7 7 6 c 7 7 1 7 7 
-                7 7 7 1 c 6 7 5 7 7 6 c 1 7 1 7 
-                7 7 6 6 c c 6 5 5 6 c c 6 6 6 7 
-                6 6 6 5 5 5 6 7 5 6 5 5 7 6 6 6 
-                6 6 7 7 7 5 7 6 7 5 5 7 7 7 7 6 
-                7 c c c 6 6 7 6 6 5 7 6 c c 6 7 
-                6 c 6 6 6 6 6 c c 6 6 6 6 6 c 6 
-                6 6 7 7 7 c c c c c c 7 7 7 6 6 
-                6 7 7 7 6 6 c c c c 6 6 7 7 7 6 
-                c 6 c c 6 7 6 c c 6 7 6 c c 6 c 
-                7 c c 5 5 7 6 7 7 6 7 5 5 c c 1 
-                7 c 6 7 5 5 6 7 7 6 5 5 7 6 c d 
-                7 6 6 7 7 6 6 5 5 6 6 7 7 6 6 6 
-                7 7 6 6 6 6 c 6 7 6 c 6 6 6 6 7 
-                7 7 5 6 6 c 7 6 6 6 7 c 6 7 7 7 
-                `, img`
-                7 7 7 7 6 6 7 6 6 6 c 1 d 6 7 7 
-                7 7 1 6 6 7 6 c 6 7 6 c c 6 6 7 
-                7 1 7 6 6 7 c 6 7 7 c c 6 6 6 7 
-                7 7 1 6 7 7 c 6 7 7 c 5 7 7 6 6 
-                7 7 c c 5 7 6 6 7 6 6 5 5 7 6 c 
-                7 c 6 c 5 5 7 6 c 6 7 7 5 6 c 7 
-                6 6 7 6 6 5 5 6 c c 6 6 6 6 6 6 
-                6 7 7 5 5 7 6 c c c c 7 7 5 7 6 
-                6 7 5 5 7 6 6 c c c c 7 7 5 6 6 
-                6 6 7 6 6 7 7 6 c c 6 6 6 6 c 7 
-                7 c 6 c 5 5 6 6 c 6 7 7 5 6 6 c 
-                7 7 c c 5 7 6 6 7 6 6 5 5 7 6 6 
-                7 7 1 6 5 7 c 6 7 7 c 5 7 7 6 6 
-                5 7 7 6 6 7 c 6 7 7 c c 6 6 6 5 
-                7 7 7 7 6 6 c c 6 7 6 c c 6 7 7 
-                5 7 7 7 6 6 7 6 6 6 c 7 7 7 7 7 
-                `, img`
-                7 7 7 6 c 7 6 6 6 7 c 6 6 5 7 7 
-                7 6 6 6 6 c 6 7 6 c 6 6 6 6 7 7 
-                6 6 6 7 7 6 6 5 5 6 6 7 7 6 6 7 
-                d c 6 7 5 5 6 7 7 6 5 5 7 6 c 7 
-                1 c c 5 5 7 6 7 7 6 7 5 5 c c 7 
-                c 6 c c 6 7 6 c c 6 7 6 c c 6 c 
-                6 7 7 7 6 6 c c c c 6 6 7 7 7 6 
-                6 6 7 7 7 c c c c c c 7 7 7 6 6 
-                6 c 6 6 6 6 6 c c 6 6 6 6 6 c 6 
-                7 6 c c 6 7 5 6 6 7 6 6 c c c 7 
-                6 7 7 7 7 5 5 7 6 7 5 7 7 7 6 6 
-                6 6 6 7 5 5 6 5 7 6 5 5 5 6 6 6 
-                7 6 6 6 c c 6 5 5 6 c c 6 6 7 7 
-                7 1 7 1 c 6 7 7 5 7 6 c 1 7 7 7 
-                7 7 1 7 7 c 6 7 7 6 c 7 7 7 7 7 
-                7 7 7 7 7 7 6 6 6 6 7 7 7 5 7 5 
-                `, img`
-                    7 7 7 7 7 c 6 6 6 7 6 6 7 7 7 5
-                    7 7 6 c c 6 7 6 c c 6 6 7 7 7 7
-                    5 6 6 6 c c 7 7 6 c 7 6 6 7 7 5
-                    6 6 7 7 5 c 7 7 6 c 7 5 6 1 7 7
-                    6 6 7 5 5 6 6 7 6 6 7 5 c c 7 7
-                    c 6 6 5 7 7 6 c 6 6 5 5 c 6 c 7
-                    7 c 6 6 6 6 c c 6 7 7 6 6 7 6 6
-                    6 6 5 7 7 c c c c 6 6 7 5 5 7 6
-                    6 7 5 7 7 c c c c 6 7 5 5 7 7 6
-                    6 6 6 6 6 6 c c 6 5 5 6 6 7 6 6
-                    7 c 6 5 7 7 6 c 6 7 5 5 c 6 c 7
-                    c 6 7 5 5 6 6 7 6 6 7 5 c c 7 7
-                    6 6 7 7 5 c 7 7 6 c 7 7 6 1 7 7
-                    7 6 6 6 c c 7 7 6 c 7 6 6 7 1 7
-                    7 6 6 c c 6 7 6 c 6 7 6 6 1 7 7
-                    7 7 6 d 1 c 6 6 6 7 6 6 7 7 7 7
-                `],
-                    100,
-                    false
-                )
-            })
-        }
     }
 
 }// Add your code here
