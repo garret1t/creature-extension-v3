@@ -83,7 +83,7 @@ namespace creatures {
         public _sayHP: boolean;
         public _sayXP: boolean;
 
-        constructor(spr: Sprite, cType: CreatureType, cType2: CreatureType, name: string, level: number = 5, evolutionLevel: number = 10, evolutionID: number = 0, xp: number = 0, hp: number = 20, attackValue: number = 5, xpReward: number = 150) {
+        constructor(spr: Sprite, cType: CreatureType, cType2: CreatureType, name: string, level: number = 5, evolutionLevel: number = 10, evolutionID: number = 0, xp: number = 0, hp: number = 20, attackValue: number = 5, xpReward: number = 150, shouldLevel: boolean = true) {
             this._sprite = spr;
             this._creatureType1 = cType;
             this._creatureType2 = cType2;
@@ -94,13 +94,15 @@ namespace creatures {
             this._evolutionLevel = evolutionLevel;
             this._xp = xp;
             this._hp = hp;
-            this._maxHP = hp;
             this._attackValue = attackValue;
-            for (let i = 5; i < level; i++) {
-                this._maxHP *= 1.05;
-                this._hp *= 1.05;
-                this._attackValue *= 1.05;
+            if(shouldLevel){
+                for (let i = 5; i < level; i++) {
+                    this._maxHP *= 1.05;
+                    this._hp *= 1.05;
+                    this._attackValue *= 1.05;
+                }
             }
+            this._maxHP = this._hp;
             this._xpReward = xpReward;
             this._sayHP = false;
             this._sayXP = false;
@@ -108,6 +110,7 @@ namespace creatures {
             this._healthbar = statusbars.create(20, 4, StatusBarKind.Health)
             this._healthbar.attachToSprite(spr)
             this._healthbar.max = this._maxHP;
+            this._healthbar.value = this._hp;
             this._healthbar.setFlag(SpriteFlag.Invisible, true);
 
 
@@ -280,6 +283,10 @@ namespace creatures {
         public _money: number;
         public _badges: number;
         public _currentRouteID: number;
+
+        public _menuOpen: boolean;
+        public _inBattle: boolean;
+
         public _sprite: Sprite;
         public _moveUp: Image[];
         public _moveDown: Image[];
@@ -296,6 +303,9 @@ namespace creatures {
             this._moveLeft = moveLeft;
             this._moveRight = moveRight;
             this._partyPokemon = [];
+            this._boxPokemon = [];
+            this._menuOpen = false;
+            this._inBattle = false;
             if(currentRouteID != null){
                 this._currentRouteID = currentRouteID;
             }
@@ -333,6 +343,23 @@ namespace creatures {
             this._currentRouteID = currentRouteID;
         }
 
+        get menuOpen() : boolean {
+            return this._menuOpen;
+        }
+
+        set menuOpen(menuOpen : boolean){
+            this._menuOpen = menuOpen;
+        }
+
+        get inBattle(): boolean {
+            return this._inBattle;
+        }
+
+        
+        set inBattle(inBattle: boolean) {
+            this._inBattle = inBattle;
+        }
+
         get sprite(): Sprite {
             return this._sprite;
         }
@@ -349,12 +376,24 @@ namespace creatures {
             this._partyPokemon = partyPokemon;
         }
 
+        get boxPokemon(): Creature[] {
+            return this._boxPokemon;
+        }
+
+        set boxPokemon(boxPokemon: Creature[]) {
+            this._boxPokemon = boxPokemon;
+        }
+
         addPartyPokemon(creature: Creature) {
             if (this._partyPokemon.length < 6) {
-                this._partyPokemon.push(creature)
+                this._partyPokemon.push(new Creature(sprites.create(creature.sprite.image, SpriteKind.Creature), creature.creatureType1, creature.creatureType2, creature.name, creature.level, creature.evolutionLevel, creature. evolutionID, creature.xp, creature.hp, creature.attackValue, creature.xpReward));
             } else {
                 //throw "Too many pokemon"
             }
+        }
+
+        addBoxPokemon(creature: Creature){
+            this._boxPokemon.push(new Creature(sprites.create(creature.sprite.image, SpriteKind.Creature), creature.creatureType1, creature.creatureType2, creature.name, creature.level, creature.evolutionLevel, creature.evolutionID, creature.xp, creature.hp, creature.attackValue, creature.xpReward));
         }
 
     }
@@ -592,7 +631,7 @@ namespace creatures {
     //% blockSetVariable=myCreature
     //% group="Create"
     //% weight=99
-    export function makeCreatureFromID(id: number, level: number = 5, xp: number = 50): Creature {
+    export function makeCreatureFromID(id: number, level: number = 5, xp: number = 50, shouldLevel: boolean = true): Creature {
         //return null;
         let sprite = makeCreatureImageDex(id);
         if (id > 151) {
@@ -601,590 +640,590 @@ namespace creatures {
 
         switch (id) {
             case 0:
-                return new Creature(sprite, CreatureType.None, CreatureType.None, "Missingno", level, 0, 0, xp, 100, 100);
+                return new Creature(sprite, CreatureType.None, CreatureType.None, "Missingno", level, 0, 0, xp, 100, 100, 5, shouldLevel);
                 break;
             case 1:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Bulbasaur", level, 16, 2, xp, 25, 5);
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Bulbasaur", level, 16, 2, xp, 25, 5, 5, shouldLevel);
                 break;
             case 2:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Ivysaur", level, 32, 3, xp, 42, 12);
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Ivysaur", level, 32, 3, xp, 42, 12, 5, shouldLevel);
                 break;
             case 3:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Venosaur", level, 0, 0, xp, 70, 18);
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Venosaur", level, 0, 0, xp, 70, 18, 5, shouldLevel);
                 break;
             case 4:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Charmander", level, 16, 5, xp, 25, 5);
+                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Charmander", level, 16, 5, xp, 25, 5, 5, shouldLevel);
                 break;
             case 5:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Charmeleon", level, 32, 6, xp, 42, 12);
+                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Charmeleon", level, 32, 6, xp, 42, 12, 5, shouldLevel);
                 break;
             case 6:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.Flying, "Charizard", level, 0, 0, xp, 70, 18);
+                return new Creature(sprite, CreatureType.Fire, CreatureType.Flying, "Charizard", level, 0, 0, xp, 70, 18, 5, shouldLevel);
                 break;
             case 7:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Squirtle", level, 16, 8, xp, 25, 5);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Squirtle", level, 16, 8, xp, 25, 5, 5, shouldLevel);
                 break;
             case 8:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Wartortle", level, 32, 9, xp, 42, 12);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Wartortle", level, 32, 9, xp, 42, 12, 5, shouldLevel);
                 break;
             case 9:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Blastoise", level, 0, 0, xp, 70, 18);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Blastoise", level, 0, 0, xp, 70, 18, 5, shouldLevel);
                 break;
             case 10:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Caterpie", level, 7, 11, xp, 20, 3);
+                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Caterpie", level, 7, 11, xp, 20, 3, 5, shouldLevel);
                 break;
             case 11:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Metapod", level, 10, 12, xp, 22, 5);
+                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Metapod", level, 10, 12, xp, 22, 5, 5, shouldLevel);
                 break;
             case 12:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.Flying, "Butterfree", level, 0, 0, xp, 40, 8);
+                return new Creature(sprite, CreatureType.Bug, CreatureType.Flying, "Butterfree", level, 0, 0, xp, 40, 8, 5, shouldLevel);
                 break;
             case 13:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Weedle", level, 7, 14, xp, 20, 3);
+                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Weedle", level, 7, 14, xp, 20, 3, 5, shouldLevel);
                 break;
             case 14:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Kakuna", level, 10, 15, xp, 24, 4);
+                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Kakuna", level, 10, 15, xp, 24, 4, 5, shouldLevel);
                 break;
             case 15:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Beedrill", level, 0, 0, xp, 36, 9);
+                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Beedrill", level, 0, 0, xp, 36, 9, 5, shouldLevel);
                 break;
             case 16:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Pidgey", level, 18, 17, xp, 20, 4);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Pidgey", level, 18, 17, xp, 20, 4, 5, shouldLevel);
                 break;
             case 17:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Pidgeotto", level, 36, 18, xp, 40, 8);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Pidgeotto", level, 36, 18, xp, 40, 8, 5, shouldLevel);
                 break;
             case 18:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Pidgeot", level, 0, 0, xp, 58, 13);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Pidgeot", level, 0, 0, xp, 58, 13, 5, shouldLevel);
                 break;
             case 19:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Rattata", level, 20, 20, xp, 18, 5);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Rattata", level, 20, 20, xp, 18, 5, 5, shouldLevel);
                 break;
             case 20:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Raticate", level, 0, 0, xp, 44, 12);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Raticate", level, 0, 0, xp, 44, 12, 5, shouldLevel);
                 break;
             case 21:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Spearow", level, 20, 22, xp, 20, 5);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Spearow", level, 20, 22, xp, 20, 5, 5, shouldLevel);
 
                 break;
             case 22:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Fearow", level, 0, 0, xp, 50, 11);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Fearow", level, 0, 0, xp, 50, 11, 5, shouldLevel);
 
                 break;
             case 23:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Ekans", level, 22, 24, xp, 25, 5);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Ekans", level, 22, 24, xp, 25, 5, 5, shouldLevel);
 
                 break;
             case 24:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Arbok", level, 0, 0, xp, 50, 12);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Arbok", level, 0, 0, xp, 50, 12, 5, shouldLevel);
 
                 break;
             case 25:
-                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Pikachu", level, 20, 26, xp, 25, 5);
+                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Pikachu", level, 20, 26, xp, 25, 5, 5, shouldLevel);
 
                 break;
             case 26:
-                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Raichu", level, 0, 0, xp, 48, 13.5);
+                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Raichu", level, 0, 0, xp, 48, 13.5, 5, shouldLevel);
 
                 break;
             case 27:
-                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Sandshrew", level, 22, 28, xp, 34, 8);
+                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Sandshrew", level, 22, 28, xp, 34, 8, 5, shouldLevel);
 
                 break;
             case 28:
-                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Sandslash", level, 0, 0, xp, 60, 13);
+                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Sandslash", level, 0, 0, xp, 60, 13, 5, shouldLevel);
 
                 break;
             case 29:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Nidoran (f)", level, 16, 30, xp, 24, 6);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Nidoran (f)", level, 16, 30, xp, 24, 6, 5, shouldLevel);
 
                 break;
             case 30:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Nidorina", level, 32, 31, xp, 40, 10);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Nidorina", level, 32, 31, xp, 40, 10, 5, shouldLevel);
 
                 break;
             case 31:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.Ground, "Nidoqueen", level, 0, 0, xp, 64, 13);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.Ground, "Nidoqueen", level, 0, 0, xp, 64, 13, 5, shouldLevel);
 
                 break;
             case 32:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Nidoran (m)", level, 16, 33, xp, 24, 6);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Nidoran (m)", level, 16, 33, xp, 24, 6, 5, shouldLevel);
 
                 break;
             case 33:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Nidorino", level, 32, 34, xp, 40, 10);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Nidorino", level, 32, 34, xp, 40, 10, 5, shouldLevel);
 
                 break;
             case 34:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.Ground, "Nidoking", level, 0, 0, xp, 64, 13);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.Ground, "Nidoking", level, 0, 0, xp, 64, 13, 5, shouldLevel);
 
                 break;
             case 35:
-                return new Creature(sprite, CreatureType.Fairy, CreatureType.None, "Clefairy", level, 20, 36, xp, 25, 5);
+                return new Creature(sprite, CreatureType.Fairy, CreatureType.None, "Clefairy", level, 20, 36, xp, 25, 5, 5, shouldLevel);
 
                 break;
             case 36:
-                return new Creature(sprite, CreatureType.Fairy, CreatureType.None, "Clefable", level, 0, 0, xp, 58, 10);
+                return new Creature(sprite, CreatureType.Fairy, CreatureType.None, "Clefable", level, 0, 0, xp, 58, 10, 5, shouldLevel);
 
                 break;
             case 37:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Vulpix", level, 20, 38, xp, 22, 6);
+                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Vulpix", level, 20, 38, xp, 22, 6, 5, shouldLevel);
 
                 break;
             case 38:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Ninetales", level, 0, 0, xp, 66, 17);
+                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Ninetales", level, 0, 0, xp, 66, 17, 5, shouldLevel);
 
                 break;
             case 39:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.Fairy, "Jigglypuff", level, 20, 40, xp, 30, 4);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.Fairy, "Jigglypuff", level, 20, 40, xp, 30, 4, 5, shouldLevel);
 
                 break;
             case 40:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.Fairy, "Wigglytuff", level, 0, 0, xp, 52, 10);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.Fairy, "Wigglytuff", level, 0, 0, xp, 52, 10, 5, shouldLevel);
 
                 break;
             case 41:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.Flying, "Zubat", level, 22, 42, xp, 20, 5);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.Flying, "Zubat", level, 22, 42, xp, 20, 5, 5, shouldLevel);
 
                 break;
             case 42:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.Flying, "Golbat", level, 0, 0, xp, 52, 13);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.Flying, "Golbat", level, 0, 0, xp, 52, 13, 5, shouldLevel);
 
                 break;
             case 43:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Oddish", level, 21, 44, xp, 25, 5);
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Oddish", level, 21, 44, xp, 25, 5, 5, shouldLevel);
 
                 break;
             case 44:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Gloom", level, 34, 45, xp, 42, 10);
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Gloom", level, 34, 45, xp, 42, 10, 5, shouldLevel);
 
                 break;
             case 45:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Vileplume", level, 0, 0, xp, 55, 14);
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Vileplume", level, 0, 0, xp, 55, 14, 5, shouldLevel);
 
                 break;
             case 46:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.Grass, "Paras", level, 24, 47, xp, 20, 7);
+                return new Creature(sprite, CreatureType.Bug, CreatureType.Grass, "Paras", level, 24, 47, xp, 20, 7, 5, shouldLevel);
 
                 break;
             case 47:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.Grass, "Parasect", level, 0, 0, xp, 48, 9);
+                return new Creature(sprite, CreatureType.Bug, CreatureType.Grass, "Parasect", level, 0, 0, xp, 48, 9, 5, shouldLevel);
 
                 break;
             case 48:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.Poison, "Venonat", level, 31, 49, xp, 26, 5.5);
+                return new Creature(sprite, CreatureType.Bug, CreatureType.Poison, "Venonat", level, 31, 49, xp, 26, 5.5, 5, shouldLevel);
 
                 break;
             case 49:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.Poison, "Venomoth", level, 0, 0, xp, 50, 11);
+                return new Creature(sprite, CreatureType.Bug, CreatureType.Poison, "Venomoth", level, 0, 0, xp, 50, 11, 5, shouldLevel);
 
                 break;
             case 50:
-                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Diglett", level, 26, 51, xp, 16, 6);
+                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Diglett", level, 26, 51, xp, 16, 6, 5, shouldLevel);
 
                 break;
             case 51:
-                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Dugtrio", level, 0, 0, xp, 44, 15.5);
+                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Dugtrio", level, 0, 0, xp, 44, 15.5, 5, shouldLevel);
 
                 break;
             case 52:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Meowth", level, 28, 53, xp, 24, 6);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Meowth", level, 28, 53, xp, 24, 6, 5, shouldLevel);
 
                 break;
             case 53:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Persian", level, 0, 0, xp, 50, 11);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Persian", level, 0, 0, xp, 50, 11, 5, shouldLevel);
 
                 break;
             case 54:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Psyduck", level, 33, 55, xp, 25, 5);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Psyduck", level, 33, 55, xp, 25, 5, 5, shouldLevel);
 
                 break;
             case 55:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Golduck", level, 0, 0, xp, 60, 11.5);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Golduck", level, 0, 0, xp, 60, 11.5, 5, shouldLevel);
 
                 break;
             case 56:
-                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Mankey", level, 28, 57, xp, 25, 7);
+                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Mankey", level, 28, 57, xp, 25, 7, 5, shouldLevel);
 
                 break;
             case 57:
-                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Primeape", level, 0, 0, xp, 54, 14);
+                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Primeape", level, 0, 0, xp, 54, 14, 5, shouldLevel);
 
                 break;
             case 58:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Growlithe", level, 20, 59, xp, 34, 8);
+                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Growlithe", level, 20, 59, xp, 34, 8, 5, shouldLevel);
 
                 break;
             case 59:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Arcanine", level, 0, 0, xp, 75, 13.5);
+                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Arcanine", level, 0, 0, xp, 75, 13.5, 5, shouldLevel);
 
                 break;
             case 60:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Poliwag", level, 25, 61, xp, 28, 6);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Poliwag", level, 25, 61, xp, 28, 6, 5, shouldLevel);
 
                 break;
             case 61:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Poliwhirl", level, 34, 62, xp, 42, 9);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Poliwhirl", level, 34, 62, xp, 42, 9, 5, shouldLevel);
 
                 break;
             case 62:
-                return new Creature(sprite, CreatureType.Water, CreatureType.Fighting, "Poliwrath", level, 0, 0, xp, 64, 13);
+                return new Creature(sprite, CreatureType.Water, CreatureType.Fighting, "Poliwrath", level, 0, 0, xp, 64, 13, 5, shouldLevel);
 
                 break;
             case 63:
-                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Abra", level, 16, 64, xp, 25, 7);
+                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Abra", level, 16, 64, xp, 25, 7, 5, shouldLevel);
 
                 break;
             case 64:
-                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Kadabra", level, 32, 65, xp, 40, 12);
+                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Kadabra", level, 32, 65, xp, 40, 12, 5, shouldLevel);
 
                 break;
             case 65:
-                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Alakazam", level, 0, 0, xp, 65, 16);
+                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Alakazam", level, 0, 0, xp, 65, 16, 5, shouldLevel);
 
                 break;
             case 66:
-                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Machop", level, 28, 67, xp, 26, 7);
+                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Machop", level, 28, 67, xp, 26, 7, 5, shouldLevel);
 
                 break;
             case 67:
-                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Machoke", level, 38, 68, xp, 44, 10);
+                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Machoke", level, 38, 68, xp, 44, 10, 5, shouldLevel);
 
                 break;
             case 68:
-                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Machamp", level, 0, 0, xp, 64, 14);
+                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Machamp", level, 0, 0, xp, 64, 14, 5, shouldLevel);
 
                 break;
             case 69:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Bellsprout", level, 21, 70, xp, 28, 6);
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Bellsprout", level, 21, 70, xp, 28, 6, 5, shouldLevel);
 
                 break;
             case 70:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Weepinbell", level, 34, 71, xp, 46, 9.5);
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Weepinbell", level, 34, 71, xp, 46, 9.5, 5, shouldLevel);
 
                 break;
             case 71:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Victreebel", level, 0, 0, xp, 60, 13);
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Victreebel", level, 0, 0, xp, 60, 13, 5, shouldLevel);
 
                 break;
             case 72:
-                return new Creature(sprite, CreatureType.Water, CreatureType.Poison, "Tentacool", level, 30, 73, xp, 38, 8);
+                return new Creature(sprite, CreatureType.Water, CreatureType.Poison, "Tentacool", level, 30, 73, xp, 38, 8, 5, shouldLevel);
 
                 break;
             case 73:
-                return new Creature(sprite, CreatureType.Water, CreatureType.Poison, "Tentacruel", level, 0, 0, xp, 70, 12);
+                return new Creature(sprite, CreatureType.Water, CreatureType.Poison, "Tentacruel", level, 0, 0, xp, 70, 12, 5, shouldLevel);
 
                 break;
             case 74:
-                return new Creature(sprite, CreatureType.Rock, CreatureType.Ground, "Geodude", level, 25, 75, xp, 28, 6);
+                return new Creature(sprite, CreatureType.Rock, CreatureType.Ground, "Geodude", level, 25, 75, xp, 28, 6, 5, shouldLevel);
 
                 break;
             case 75:
-                return new Creature(sprite, CreatureType.Rock, CreatureType.Ground, "Graveler", level, 35, 76, xp, 44, 10);
+                return new Creature(sprite, CreatureType.Rock, CreatureType.Ground, "Graveler", level, 35, 76, xp, 44, 10, 5, shouldLevel);
 
                 break;
             case 76:
-                return new Creature(sprite, CreatureType.Rock, CreatureType.Ground, "Golem", level, 0, 0, xp, 65, 18);
+                return new Creature(sprite, CreatureType.Rock, CreatureType.Ground, "Golem", level, 0, 0, xp, 65, 18, 5, shouldLevel);
 
                 break;
             case 77:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Ponyta", level, 40, 78, xp, 42, 10);
+                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Ponyta", level, 40, 78, xp, 42, 10, 5, shouldLevel);
 
                 break;
             case 78:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Rapidash", level, 0, 0, xp, 62, 19);
+                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Rapidash", level, 0, 0, xp, 62, 19, 5, shouldLevel);
 
                 break;
             case 79:
-                return new Creature(sprite, CreatureType.Water, CreatureType.Psychic, "Slowpoke", level, 37, 80, xp, 34, 6);
+                return new Creature(sprite, CreatureType.Water, CreatureType.Psychic, "Slowpoke", level, 37, 80, xp, 34, 6, 5, shouldLevel);
 
                 break;
             case 80:
-                return new Creature(sprite, CreatureType.Water, CreatureType.Psychic, "Slowbro", level, 0, 0, xp, 58, 10);
+                return new Creature(sprite, CreatureType.Water, CreatureType.Psychic, "Slowbro", level, 0, 0, xp, 58, 10, 5, shouldLevel);
 
                 break;
             case 81:
-                return new Creature(sprite, CreatureType.Electric, CreatureType.Steel, "Magnemite", level, 30, 82, xp, 28, 6);
+                return new Creature(sprite, CreatureType.Electric, CreatureType.Steel, "Magnemite", level, 30, 82, xp, 28, 6, 5, shouldLevel);
 
                 break;
             case 82:
-                return new Creature(sprite, CreatureType.Electric, CreatureType.Steel, "Magneton", level, 0, 0, xp, 55, 12);
+                return new Creature(sprite, CreatureType.Electric, CreatureType.Steel, "Magneton", level, 0, 0, xp, 55, 12, 5, shouldLevel);
 
                 break;
             case 83:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Farfetchd", level, 0, 0, xp, 37, 9);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Farfetchd", level, 0, 0, xp, 37, 9, 5, shouldLevel);
 
                 break;
             case 84:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Doduo", level, 31, 85, xp, 32, 8);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Doduo", level, 31, 85, xp, 32, 8, 5, shouldLevel);
 
                 break;
             case 85:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Dodrio", level, 0, 0, xp, 58, 13);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Dodrio", level, 0, 0, xp, 58, 13, 5, shouldLevel);
 
                 break;
             case 86:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Seel", level, 34, 87, xp, 35, 7);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Seel", level, 34, 87, xp, 35, 7, 5, shouldLevel);
 
                 break;
             case 87:
-                return new Creature(sprite, CreatureType.Water, CreatureType.Ice, "Dewgong", level, 0, 0, xp, 60, 13);
+                return new Creature(sprite, CreatureType.Water, CreatureType.Ice, "Dewgong", level, 0, 0, xp, 60, 13, 5, shouldLevel);
 
                 break;
             case 88:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Grimer", level, 38, 89, xp, 34, 7);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Grimer", level, 38, 89, xp, 34, 7, 5, shouldLevel);
 
                 break;
             case 89:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Muk", level, 0, 0, xp, 60, 12.5);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Muk", level, 0, 0, xp, 60, 12.5, 5, shouldLevel);
 
                 break;
             case 90:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Shelder", level, 26, 91, xp, 36, 7);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Shelder", level, 26, 91, xp, 36, 7, 5, shouldLevel);
 
                 break;
             case 91:
-                return new Creature(sprite, CreatureType.Water, CreatureType.Ice, "Cloyster", level, 0, 0, xp, 70, 12);
+                return new Creature(sprite, CreatureType.Water, CreatureType.Ice, "Cloyster", level, 0, 0, xp, 70, 12, 5, shouldLevel);
 
                 break;
             case 92:
-                return new Creature(sprite, CreatureType.Ghost, CreatureType.Poison, "Gastly", level, 25, 93, xp, 33, 8);
+                return new Creature(sprite, CreatureType.Ghost, CreatureType.Poison, "Gastly", level, 25, 93, xp, 33, 8, 5, shouldLevel);
 
                 break;
             case 93:
-                return new Creature(sprite, CreatureType.Ghost, CreatureType.Poison, "Haunter", level, 35, 94, xp, 48, 13);
+                return new Creature(sprite, CreatureType.Ghost, CreatureType.Poison, "Haunter", level, 35, 94, xp, 48, 13, 5, shouldLevel);
 
                 break;
             case 94:
-                return new Creature(sprite, CreatureType.Ghost, CreatureType.Poison, "Gengar", level, 0, 0, xp, 68, 19);
+                return new Creature(sprite, CreatureType.Ghost, CreatureType.Poison, "Gengar", level, 0, 0, xp, 68, 19, 5, shouldLevel);
 
                 break;
             case 95:
-                return new Creature(sprite, CreatureType.Rock, CreatureType.Ground, "Onix", level, 0, 0, xp, 44, 10);
+                return new Creature(sprite, CreatureType.Rock, CreatureType.Ground, "Onix", level, 0, 0, xp, 44, 10, 5, shouldLevel);
 
                 break;
             case 96:
-                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Drowsee", level, 26, 97, xp, 38, 8);
+                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Drowsee", level, 26, 97, xp, 38, 8, 5, shouldLevel);
 
                 break;
             case 97:
-                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Hypno", level, 0, 0, xp, 60, 13.5);
+                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Hypno", level, 0, 0, xp, 60, 13.5, 5, shouldLevel);
 
                 break;
             case 98:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Krabby", level, 28, 99, xp, 40, 8);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Krabby", level, 28, 99, xp, 40, 8, 5, shouldLevel);
 
                 break;
             case 99:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Kingler", level, 0, 0, xp, 75, 16);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Kingler", level, 0, 0, xp, 75, 16, 5, shouldLevel);
 
                 break;
             case 100:
-                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Voltorb", level, 30, 101, xp, 33, 8);
+                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Voltorb", level, 30, 101, xp, 33, 8, 5, shouldLevel);
 
                 break;
             case 101:
-                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Electrode", level, 0, 0, xp, 55, 15);
+                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Electrode", level, 0, 0, xp, 55, 15, 5, shouldLevel);
 
                 break;
             case 102:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Psychic, "Exeggcute", level, 30, 103, xp, 36, 7);
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Psychic, "Exeggcute", level, 30, 103, xp, 36, 7, 5, shouldLevel);
 
                 break;
             case 103:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Psychic, "Exeggutor", level, 0, 0, xp, 75, 13);
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Psychic, "Exeggutor", level, 0, 0, xp, 75, 13, 5, shouldLevel);
 
                 break;
             case 104:
-                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Cubone", level, 28, 105, xp, 30, 7);
+                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Cubone", level, 28, 105, xp, 30, 7, 5, shouldLevel);
 
                 break;
             case 105:
-                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Marowak", level, 0, 0, xp, 42, 12);
+                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Marowak", level, 0, 0, xp, 42, 12, 5, shouldLevel);
 
                 break;
             case 106:
-                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Hitmonlee", level, 0, 0, xp, 41, 13);
+                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Hitmonlee", level, 0, 0, xp, 41, 13, 5, shouldLevel);
 
                 break;
             case 107:
-                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Hitmonchan", level, 0, 0, xp, 38, 13.5);
+                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Hitmonchan", level, 0, 0, xp, 38, 13.5, 5, shouldLevel);
 
                 break;
             case 108:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Lickitung", level, 0, 0, xp, 42, 11);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Lickitung", level, 0, 0, xp, 42, 11, 5, shouldLevel);
 
                 break;
             case 109:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Koffing", level, 35, 110, xp, 36, 9);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Koffing", level, 35, 110, xp, 36, 9, 5, shouldLevel);
 
                 break;
             case 110:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Weezing", level, 0, 0, xp, 64, 18);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Weezing", level, 0, 0, xp, 64, 18, 5, shouldLevel);
 
                 break;
             case 111:
-                return new Creature(sprite, CreatureType.Ground, CreatureType.Rock, "Rhyhorn", level, 42, 112, xp, 40, 11);
+                return new Creature(sprite, CreatureType.Ground, CreatureType.Rock, "Rhyhorn", level, 42, 112, xp, 40, 11, 5, shouldLevel);
 
                 break;
             case 112:
-                return new Creature(sprite, CreatureType.Ground, CreatureType.Rock, "Rhydon", level, 0, 0, xp, 70, 13);
+                return new Creature(sprite, CreatureType.Ground, CreatureType.Rock, "Rhydon", level, 0, 0, xp, 70, 13, 5, shouldLevel);
 
                 break;
             case 113:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Chansey", level, 0, 0, xp, 76, 10);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Chansey", level, 0, 0, xp, 76, 10, 5, shouldLevel);
 
                 break;
             case 114:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.None, "Tangela", level, 0, 0, xp, 55, 12);
+                return new Creature(sprite, CreatureType.Grass, CreatureType.None, "Tangela", level, 0, 0, xp, 55, 12, 5, shouldLevel);
 
                 break;
             case 115:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Kangaskhan", level, 0, 0, xp, 70, 12.5);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Kangaskhan", level, 0, 0, xp, 70, 12.5, 5, shouldLevel);
 
                 break;
             case 116:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Horsea", level, 32, 117, xp, 30, 7);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Horsea", level, 32, 117, xp, 30, 7, 5, shouldLevel);
 
                 break;
             case 117:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Seadra", level, 0, 0, xp, 57, 13);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Seadra", level, 0, 0, xp, 57, 13, 5, shouldLevel);
 
                 break;
             case 118:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Goldeen", level, 33, 119, xp, 38, 8);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Goldeen", level, 33, 119, xp, 38, 8, 5, shouldLevel);
 
                 break;
             case 119:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Seaking", level, 0, 0, xp, 52, 13);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Seaking", level, 0, 0, xp, 52, 13, 5, shouldLevel);
 
                 break;
             case 120:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Staryu", level, 30, 121, xp, 37, 9);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Staryu", level, 30, 121, xp, 37, 9, 5, shouldLevel);
 
                 break;
             case 121:
-                return new Creature(sprite, CreatureType.Water, CreatureType.Psychic, "Starmie", level, 0, 0, xp, 65, 14);
+                return new Creature(sprite, CreatureType.Water, CreatureType.Psychic, "Starmie", level, 0, 0, xp, 65, 14, 5, shouldLevel);
 
                 break;
             case 122:
-                return new Creature(sprite, CreatureType.Psychic, CreatureType.Fairy, "Mr. Mime", level, 0, 0, xp, 40, 12);
+                return new Creature(sprite, CreatureType.Psychic, CreatureType.Fairy, "Mr. Mime", level, 0, 0, xp, 40, 12, 5, shouldLevel);
 
                 break;
             case 123:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.Flying, "Scyther", level, 0, 0, xp, 62, 16.5);
+                return new Creature(sprite, CreatureType.Bug, CreatureType.Flying, "Scyther", level, 0, 0, xp, 62, 16.5, 5, shouldLevel);
 
                 break;
             case 124:
-                return new Creature(sprite, CreatureType.Ice, CreatureType.Psychic, "Jynx", level, 0, 0, xp, 44, 11);
+                return new Creature(sprite, CreatureType.Ice, CreatureType.Psychic, "Jynx", level, 0, 0, xp, 44, 11, 5, shouldLevel);
 
                 break;
             case 125:
-                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Electabuzz", level, 0, 0, xp, 55, 13);
+                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Electabuzz", level, 0, 0, xp, 55, 13, 5, shouldLevel);
 
                 break;
             case 126:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Magmar", level, 0, 0, xp, 55, 13);
+                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Magmar", level, 0, 0, xp, 55, 13, 5, shouldLevel);
 
                 break;
             case 127:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Pinsir", level, 0, 0, xp, 52, 14);
+                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Pinsir", level, 0, 0, xp, 52, 14, 5, shouldLevel);
 
                 break;
             case 128:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Tauros", level, 0, 0, xp, 60, 15.5);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Tauros", level, 0, 0, xp, 60, 15.5, 5, shouldLevel);
 
                 break;
             case 129:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Magikarp", level, 20, 130, xp, 18, 5);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Magikarp", level, 20, 130, xp, 18, 5, 5, shouldLevel);
 
                 break;
             case 130:
-                return new Creature(sprite, CreatureType.Water, CreatureType.Flying, "Gyarados", level, 0, 0, xp, 68, 14);
+                return new Creature(sprite, CreatureType.Water, CreatureType.Flying, "Gyarados", level, 0, 0, xp, 68, 14, 5, shouldLevel);
 
                 break;
             case 131:
-                return new Creature(sprite, CreatureType.Water, CreatureType.Ice, "Lapras", level, 0, 0, xp, 63, 13.5);
+                return new Creature(sprite, CreatureType.Water, CreatureType.Ice, "Lapras", level, 0, 0, xp, 63, 13.5, 5, shouldLevel);
 
                 break;
             case 132:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Ditto", level, 0, 0, xp, 22, 5);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Ditto", level, 0, 0, xp, 22, 5, 5, shouldLevel);
 
                 break;
             case 133:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Eevee", level, 10, 134, xp, 24, 5);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Eevee", level, 10, 134, xp, 24, 5, 5, shouldLevel);
 
                 break;
             case 134:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Vaporeon", level, 20, 135, xp, 44, 10);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Vaporeon", level, 20, 135, xp, 44, 10, 5, shouldLevel);
 
                 break;
             case 135:
-                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Jolteon", level, 30, 136, xp, 52, 13);
+                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Jolteon", level, 30, 136, xp, 52, 13, 5, shouldLevel);
 
                 break;
             case 136:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Flareon", level, 0, 0, xp, 65, 17);
+                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Flareon", level, 0, 0, xp, 65, 17, 5, shouldLevel);
 
                 break;
             case 137:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Porygon", level, 0, 0, xp, 42, 11);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Porygon", level, 0, 0, xp, 42, 11, 5, shouldLevel);
 
                 break;
             case 138:
-                return new Creature(sprite, CreatureType.Rock, CreatureType.Water, "Omanyte", level, 40, 139, xp, 42, 8);
+                return new Creature(sprite, CreatureType.Rock, CreatureType.Water, "Omanyte", level, 40, 139, xp, 42, 8, 5, shouldLevel);
 
                 break;
             case 139:
-                return new Creature(sprite, CreatureType.Rock, CreatureType.Water, "Omastar", level, 0, 0, xp, 75, 16.5);
+                return new Creature(sprite, CreatureType.Rock, CreatureType.Water, "Omastar", level, 0, 0, xp, 75, 16.5, 5, shouldLevel);
 
                 break;
             case 140:
-                return new Creature(sprite, CreatureType.Rock, CreatureType.Water, "Kabuto", level, 40, 141, xp, 36, 10);
+                return new Creature(sprite, CreatureType.Rock, CreatureType.Water, "Kabuto", level, 40, 141, xp, 36, 10, 5, shouldLevel);
 
                 break;
             case 141:
-                return new Creature(sprite, CreatureType.Rock, CreatureType.Water, "Kabutops", level, 0, 0, xp, 72, 17);
+                return new Creature(sprite, CreatureType.Rock, CreatureType.Water, "Kabutops", level, 0, 0, xp, 72, 17, 5, shouldLevel);
 
                 break;
             case 142:
-                return new Creature(sprite, CreatureType.Rock, CreatureType.Flying, "Aerodactyl", level, 0, 0, xp, 75, 17.5);
+                return new Creature(sprite, CreatureType.Rock, CreatureType.Flying, "Aerodactyl", level, 0, 0, xp, 75, 17.5, 5, shouldLevel);
 
                 break;
             case 143:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Snorlax", level, 0, 0, xp, 80, 15);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Snorlax", level, 0, 0, xp, 80, 15, 5, shouldLevel);
 
                 break;
             case 144:
-                return new Creature(sprite, CreatureType.Ice, CreatureType.Flying, "Articuno", level, 0, 0, xp, 100, 22);
+                return new Creature(sprite, CreatureType.Ice, CreatureType.Flying, "Articuno", level, 0, 0, xp, 100, 22, 5, shouldLevel);
 
                 break;
             case 145:
-                return new Creature(sprite, CreatureType.Electric, CreatureType.Flying, "Zapdos", level, 0, 0, xp, 100, 22);
+                return new Creature(sprite, CreatureType.Electric, CreatureType.Flying, "Zapdos", level, 0, 0, xp, 100, 22, 5, shouldLevel);
 
                 break;
             case 146:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.Flying, "Moltres", level, 0, 0, xp, 100, 22);
+                return new Creature(sprite, CreatureType.Fire, CreatureType.Flying, "Moltres", level, 0, 0, xp, 100, 22, 5, shouldLevel);
 
                 break;
             case 147:
-                return new Creature(sprite, CreatureType.Dragon, CreatureType.None, "Dratini", level, 30, 148, xp, 25, 7);
+                return new Creature(sprite, CreatureType.Dragon, CreatureType.None, "Dratini", level, 30, 148, xp, 25, 7, 5, shouldLevel);
 
                 break;
             case 148:
-                return new Creature(sprite, CreatureType.Dragon, CreatureType.None, "Dragonair", level, 55, 149, xp, 50, 14);
+                return new Creature(sprite, CreatureType.Dragon, CreatureType.None, "Dragonair", level, 55, 149, xp, 50, 14, 5, shouldLevel);
 
                 break;
             case 149:
-                return new Creature(sprite, CreatureType.Dragon, CreatureType.Flying, "Dragonite", level, 0, 0, xp, 105, 23);
+                return new Creature(sprite, CreatureType.Dragon, CreatureType.Flying, "Dragonite", level, 0, 0, xp, 105, 23, 5, shouldLevel);
 
                 break;
             case 150:
-                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Mewtwo", level, 0, 0, xp, 120, 25);
+                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Mewtwo", level, 0, 0, xp, 120, 25, 5, shouldLevel);
 
                 break;
             case 151:
-                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Mew", level, 0, 0, xp, 120, 25);
+                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Mew", level, 0, 0, xp, 120, 25, 5, shouldLevel);
 
                 break;
             default:
@@ -1274,17 +1313,584 @@ namespace creatures {
     }
 
 
+    //% blockId=creatures_openParty
+    //% block="open party"
+    //% group="Display"
+    export function openParty() {
+        pause(150);
+        let map: tiles.TileMapData = game.currentScene().tileMap.data;
+        tiles.setCurrentTilemap(tilemap` `)
+        scene.setBackgroundImage(img`
+            ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777ceeebec7777cecccebbbbbbbe77777cee77b77b7cebbbebeeec777cee77777777cbbbeebebe
+            777777777777777777777777777777777777777777777777777777777777777777777777777777777777ceebbbeb7777cecceebebbbbbe777777bebcee7b77ebbbebeeeec77cee77777777beebeebbbe
+            777777777777777777777777777777777777777777777777777777777777777777777777777777777777cebbbbeb7777ebcceebebbbbbe7777777ee7ee777bebbbebeeeec7ceee77777777bebbeebbbe
+            777777777777777777c77777777777777777777777777777777777777777777777777777777777777777eebbbe777777ebeeeebebbbbbb77777777ebee77777bbbbeebeee7eeec777777777ceeeebbbe
+            777777777777777777c77777777777777777777777777777777777777777777777777777777777777777eebbbe777777ebeeeebebbbbb7777777777ebbe7777bbbbebbeeeebee77777777777eeeebbee
+            777777777777777777c777777cc777777777777777777777777777777777777777777777777777777777eebbbe777777eebbeebebbbbb77777777b77eebbbb7ebbbebbeeebbee77777777777ebeebbee
+            77777777777777777cc7777ccc777777777777777777777777777777777777777777777777c777777777eebbbe7777777ebbeebebbbbe7777777777777ebb77ebbbebbbeeebe7777777777777beebbee
+            777777777777cc77cccc77cccc7777777b77777777777777777777777777777777777c7777c77777777cebbbbe7777777eebeebbbbbbe7777777777777ebbe7ebbbbbbbbeeec7777777777777bbebbbe
+            777777777777cc77cccc77ccc777c77777cc77777777c77777777777777777777777cc777cc7777777bcebebbb7777777eeeeeebbbbbeb777777777777bebbeeebbbbbebeee77777777777777ebebbbe
+            7777777cc777cc77cccc7cccc77cc7777cc777777777c77c77777b77777777777c77cc7777c7777777beebbbe77777777ceeeeebbbbbe777777777777777ebbbebbbbbeeeeec777777777c77cceebbbe
+            777c7777c7777cc7cccccccccb7cc7c77cc77777777cc7cc77777777777777777c77cc77cc777c77777eebebe77b77777ceeeeebbbbe7777777777777777bbbbbbbbbbebeeec7777777777c7ccbebbbb
+            7777cc77cc7777c7ccccccccc7ccc7c7ccc77777c77cc7cc7c77c777c77777777cc7ccc7ccc77cc7c7cebeebe77b77b77ceeeeebbbbe7777777777777777cbebbeebbbebeeee777b7c77c7ccc7debbbb
+            7c77ccc7ccc77ccccccccccccccc7cc7cc77cc77c7cccccccc7cc777c77cc7777cccccccccccccccccceeeeec77777b77ceeeebbbbbeb777777777777777777beeebbbebbeeecc7b7ccbcccccbbebbbb
+            77c7ccc7ccc77cccccccccccccccccccccc7cc7cccccccccccccc777c7cc77cc7cccccc7ccccccccccceeeee77cb77777eeeeebbbbbe777777777777777777bbeeebbbebbeeec7c77c77cccccbbebebb
+            7cc7ccc7ccc7ccccccccccccccccccccccc7cc7cccccc77ccccccc7cccccc7cccccccccccccccccccceeeeee77cb77777eeeeebbbbb777777777777777777777bebbbbebbeeeebccbcccccc77b7eebbb
+            cccccc7cccc7cccccccccccccccccccccc77cc7cccccccccc77ccc7cccccc7cccccccccc77777ccccc77ccee7c777777ceeeeebbbbb777777777777777777777bebbbbbbbeeeeccc7ccccccc777ebbbb
+            ccccccccccccccccccccccccccccccccccccccccccccc7ccccccccccccccccccccccccc7bdb7b7bbe77777cccc777777ceeeeebbbbbb777777777777777777777ebbbbbbebeeeccc7ccccb77777ebbbb
+            ccccc7777cccccccccccccccccccccccccc7cc777ccc77cccccccccccc777ccccccccccdbbbbbbbbb7bb7777cc77c7ccceeeeebbbbbb7777777777777777777777bbbbbbeeeeeecccccbdb77777ebbbb
+            77c777777cccccccccccccccccccccccc7c7c7777ccccc77cccccc777777777777cccc7bbdbbdddbbbbdb777ccc7c7cceeeeeebbbbe7c77777777777777777777bbbbbebeeeeeecccccddb77777ebbbe
+            7777777777ccccccccc7cc7c7cccccc7cc7c77ccc7cc77777777c777777777777bccb7c7dbdbdbddbb7bdb77ccccccceeeceeebebbccc777777777777c77777ccbbbbbb7ccceeecccccbdbb7777ebbbe
+            7777777777777ccccccccccccccccc77ccccccccccc77777777777777777777777bddb77bbdbbbbb77bbbdb77cccccccccceec7ebbccc777c77777777cc7777cc7bbbec7bbbceecccc7bbbb7777ebbee
+            777777777777777cccccccccccc7cc777ccccccccc77777777777777777777777ddddd7bbdbbbbb777dbbdb777c7ccc77ceeccccbbccccc7c77777777cc7777ccccbbc777bbbeccccc777b77777ebbee
+            777777777777777c7ccbccccc777c777cccc7ccc7777777777777777777777777bdddddbbddbbbbbbbdbbb7777777c777ccc77cbbccc7c7777777c7777ccccc7cccbc7777bbddccccc777b77777ebbeb
+            777777777777777ccc77cccc777cc777ccc77cc77777777777777777777777db77dddbdbbbbb77bdbbb77777777776777cc777cccc77cc7cc777ccc777ccccccccccc777bbb777c7777bbbb7777ebbeb
+            777777777777777ccc777cc7777c7777c777ccc77777777777777777777777ddb7bdb7bddbb777bdbb77777777777c777777cccc777ccc7cc7c777c77ccccccc7bddb777bb77777bb7bdbbb7777ebbeb
+            7777777777777777c777cc77777c77777777cc77777777777777777777777bddbdddb7bdddbb7bbbbb77777777c77c7c77777cc7777ccccccc7c77777ccc7ccc77dbd777bb7777db77bbbb77777ebbeb
+            77777777777777777777ccc7777c777777777777777777777777777777777dddddddddddddbb7bbbbb77777777cc777777c7cc7777cccccccccc777c77ccc7c777b7777777777777777b7777777ebbbb
+            777777777777777777777777777777c77777c7777777777777777777777cbdddddbbddddddbb77777777777777cc77777cc777777ccccccccc7ccccc7cccc77c777777777777777777777777777ebebb
+            777777777777777777c77777777777c7777c77777777777777777777777cdbdbddddddddddb777777777777777c777c77d7c777777ccccccccc7cccc7cccc77777777c777777777777777777777eebbb
+            777777777777777777777777777777777ccc7777777777777777777777777bb7bddbbbddddb777777777777777cc777bbdb7777777c7ccccccccccccccccc777777777777777777777777777777ebbbb
+            77777777777777777c7777cc777c77777ccc777777777777777777777bbbbb77bbbb77bddb777777777777777777777bbddbb7777777ccc77ccc7cccccccc777777777777777777777777777777eeebb
+            77777777777777777cccc777777cc7c77ccc777777777777777777777dddddb777777777b777777777777777bbb7777777bbbbc77777cc77cc77ccccccccc777b77777b77777777777777777777eebbb
+            7777777777777777777777777777c77c7c7777777777777777777777bddbbdb777777777777777777777777bb777777777bb777777777cc76777ccccccccc77777777777c77777777c77777777cebbeb
+            77777777777777777777777777777777c7777777777777777777777bddd7bbb7777777777777777777777777b77777777777777777777cccc777cccccc7cc777777c7777777777777c777777777ebbeb
+            7777777777777777777777cc77777777777777777777777777777c7bbbb7777777777777777777777777777777777777777777777c777777777cc7ccc777c777777cc7777c7777777c777777777ebeeb
+            777777777777777777c7777777777777777777777777777777777c777b777777777777777777777bb77777777777777777777777777777777777777cc777c7777777c7777c7777777c77c777777ebeeb
+            77777777777777777777777c77777777777777777777777777777777777777777777777bbb77777777777777777777777777777bb777cc7777777777c7777c777777c777767777777c777777777ebeee
+            777777777777777777c7777c77c7c777777777777777777777777c777777777777777bddb777777777777777777777777777777b77777c77777777ccc777bc77777777777777777c7c777777777ebeee
+            c77777777777777777c77c7c777cc777777777777777777bb777777777777777777bbddddb77777777777777777777777777777777777cc777777777c77777777777777767777c77cc7777777ccebebe
+            cc7777777777777777c777cc777cc7777c77777777cbbdbddbb7cc777777777777777dbbdb7777777777777777777777777777777777777777777777777777777777777ccc777777cc77777777cebebe
+            c7c7777777777777777cb7cc7777c7777c777777777ddbddddbb77777777777777777b77b77777777777777777777777777777777777777777777c777c7777777777777777c77777cc7777c7c7cebbbe
+            77c7c77777777777777c777c7777c7777777777777ddddddddb77c777777777777777777777777777777777777777777777777777777777c777777c77777777777777777c777c7777c7777c7c7cebbbe
+            7777c77777777777777c777777777777777c777c7bbbdddbbbb777777777777777777777777777777777c77777777777777777777777777cc777cccc7777777777777777c77cc77c777777c777cebbbe
+            777cc77777777777777c77777ccc777777777777bdbdbb77bdb777777777777777cc7777777777777777777777777777777777777c777777777c7ccc77c77777777777777c77c7c7c777777c77cbbbbe
+            7777777777777777c777777777d7777777cc777bdbd777777bb77777777777777777777777777777777777777777c7777777777777c7c7c777777c7c7c77c777c777777c77c77c77cc7cc77c77cbbbee
+            7777777777777777c7777777bdb77bbddd77c77bbbb7777777777777777777c77cc7777777777777777c77777777c777777c7ccc7777c7777cc777cc7c777cc7c77c7ccc77c77777c77c77777cebbbee
+            777c77777777777cc7777777b77777b77b77777bb7b7777777777777777777777777777c777777777777c7777777c7c7777777777777777777777777777777777777777c777c777777777c777cbbbbee
+            777777cc77777777c777bbb777777777777777777777777777777777777777777c77777cc77777777c7777777777777777777777777777777777777777777777777777777777777777cc7c777cbbbbee
+            7777777c7777c77c77cdb777777777777b77777777777777777777c7777c7777c77c77cc7777c7c777777777777777777777777777777777777777777777777777777777777777777777bc7ccebbbbee
+            7777777c7ccc777c77cbb777777777777c77777777777777777777c777c77777c7c777ccc7777cc7777777777777777777777777777777777777777777777777777777777777777777777cc7cebbbeee
+            77c777777ccc77cc7777777777777777777777c777777777777777c777c77777c77777ccc77777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbeee
+            777777777cc777c7c7777777777777777777c77777777777777c77cc77cc777c77777cc7777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbebe
+            77777777777777cc777777777777777c7c77c777c7777777777c77777cc777cc77777cc7777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbebb
+            7777777777777c7777777777777777777c7777777777777777c777777777777c7777c777777777777777777777777777777777777777777777777777777777777777777777777777777777777eebbbbb
+            777777777777777777777777777777c77c7777777777c77777c77777777777777777ccc7777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbb
+            777777777777777777777777777777777cc77777c7777777c7c77c7777777777777cc7cc777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbb
+            77777777777777777777777777777777777777777cc7777777767c7cc7777777777cccc7777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbb
+            77777777777777777777777777777777c777777777c777777776cc777777777777ccc77c777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbb
+            777777777777777777777777777777777777777777777777777cc7777777777777ccc77c777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbb
+            777777777777777777777777777777777777777777777777777c7777777777777c7777c7777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbe
+            77777777777777777777777777777777777777777777777777cc7777777c777777777cc777777777777777777777777777777777777777777777777777777777777777777777777777777777eebeebbe
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbebbee
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbee
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbeebee
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbebee
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbeebe
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbeeeee
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbeeeee
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777eebeeeeb
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbeeeeb
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbeeeeb
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbeeebb
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbebb
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbebb
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbebe
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbeeebe
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbeebbe
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777bebbbebbe
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbebbe
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbebbe
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbbbe
+            77777777777777777777777777777777777777777777777777777777777777b7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbeebbe
+            77777777777777777777777777777777777777777777777777777777777777b7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbeebbe
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbeebbe
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbeebbe
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777bbbbeeebe
+            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbeeee
+            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ebbbbbeeee
+            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777cbebbbeeee
+            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777cbeebbeeee
+            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777cbebeee777
+            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777ceeeec7777
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777cc777ee77777
+            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777c7777777c7777
+            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777c777777777777
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777779977777777777777777777777777777777777777777777777777777777777777777777
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
+            7777777777777777777777777b77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
+            7777777777777777777777777777777777777777777777777777777777b77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
+            7777777777777777777777777777777777777777777777777777777777b77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777cccc77777777777777777
+            77777777777777777777777777777777777777777777777777b77777777777777777777777777777777777777777777777777777777777777777777777777777777777777c77777c7777777777777777
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
+            7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777
+            77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777c7777
+            777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777c777777777777777777777777
+            7777777777777777777777777777777777777777777777ccc777777777777777777777777777777777777777777777777777777777777777777777777777777777777777c77777777777777777777777
+            777cccc77777777777777777777777777777777777777c7777c7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777cc7777
+            7cccc7777777777777777b7777777777777777777777c7bb777777777777777777777777777777777777777777777777777777777777777777777777777c777777777777777777777777777777777777
+            c77c77777777777777777777777777777777777777cbb7bddb777bb77777777777777777777777777777777777777777777777777777777777777777777777c777777c77777777777777777777777777
+            777c777777777777777777777777777777777cccc7cbdbbddb7777b7777c7777777777777777777777777777777777777777777777777777777777777777777c77ccc7c7777777777777777777777777
+            77c7777777777777777777777777777777777bd7777bb77b77777777777777777777777777777777ccc77777777777777777777777777777777777777777777777777777777777777777777777777777
+            7777777cccc777777777777777777777777bdddbb777777777777777777767777777777777777777777777777777777777777777777777cc77c77c777777777777777777777777777777777777777777
+            7c77cc77777777777777777777777777c7cdddddb7777777777777777777c76cc7777777777777777c77c77c777777777777777777777777777cc7777777777777777777777777777777777777777777
+            7ccc77777777777777776777777777b7777b777b777777777777777777777777777777777777c777777776ccc77777777777777777777777777777777777777777777777777777777777777777777777
+            777777777ccccc777777777777777dd77777bbb77777b7777777777777777777777cc7777777c7c777c777c77c7cc7777777777777777777777777777777777777777777777777777777777777777777
+            c7cc7777ccc77677c7c777c7ccc777777777bbb7777777777777777777777777777777777777c77c77c777c77c7ccc777767777777777777777777777777777777777777777777777777777777777777
+            77ccc77cbb7dbcceecbbbb6bbbbbbbb777d9b77db7e7c77bbbb7b777e7bc7777777777777777777777e777bbb777b7bbbb77bb77777b77777777777777777b77b777777777e77777b7bb7777777e7777
+            777777cb999999999bcc999999999bbeee99bececbbcebeb9999ccceb99bc7777777777777eeeeeebbbebbbbbbebbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbebebbeeeeebbbbbbeebbbbbbbbeebbe
+        `)
+        scene.centerCameraAt(80, 60);
+
+        game.setDialogFrame(img`
+            ..99999999999999999999..
+            .9966666666666666666699.
+            996661111111111111166699
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            966611111111111111116669
+            996661111111111111166699
+            .9966666666666666666699.
+            ..99999999999999999999..
+        `)
+        scene.backgroundImage().fillRect(10, 13, 140, 70, 1)
+        scene.backgroundImage().drawRect(10, 13, 140, 70, 15)
+        myTrainer.menuOpen = true;
+
+        
+        let partySprites: Sprite[] = [];
+        let partySpritesText: Sprite[] = [];
+        let partySpritesHealthBars: Sprite[] = [];
+        let instructions = textsprite.create("Choose a pokemon to", 1, 15);
+        instructions.setPosition(78, 90)
+        let instructions2 = textsprite.create("swap with another.", 1, 15);
+        instructions2.setPosition(78, 100)
+        let instructions3 = textsprite.create("Press B again to close.", 1, 15);
+        instructions3.setPosition(78, 110)
+        let currSelection = 0;
+        let selection = -1;
+        let selector :Sprite = null;
+        let secondCurrSelection = 0;
+        let secondSelection = -1;
+        let secondSelector:Sprite = null;
+
+
+        while (myTrainer.menuOpen && !controller.B.isPressed()) {
+            
+            for (let i = 0; i < myTrainer.partyPokemon.length; i++) {
+                let partySprite = sprites.create(myTrainer.partyPokemon[i].sprite.image, SpriteKind.Creature)
+                partySprite.setFlag(SpriteFlag.Invisible, false);
+                partySprite.scale = 0.42;
+                let partyCreatureNameTextSprite = textsprite.create(myTrainer.partyPokemon[i].name.substr(0, 6), 1, 15)
+                let partyCreatureHealthBar = statusbars.create(35, 2, StatusBarKind.Health)
+                partyCreatureHealthBar.max = myTrainer.partyPokemon[i].maxHP;
+                partyCreatureHealthBar.value = myTrainer.partyPokemon[i].hp;
+
+
+                if (i < 3) {
+                    partySprite.setPosition(25, 27 + i * 20)
+                    partyCreatureNameTextSprite.setPosition(55, 27 + i * 20);
+                    partyCreatureHealthBar.setPosition(55, 33 + i * 20)
+                } else {
+                    partySprite.setPosition(85, 27 + (i - 3) * 20)
+                    partyCreatureNameTextSprite.setPosition(115, 27 + (i - 3) * 20);
+                    partyCreatureHealthBar.setPosition(115, 33 + i * 20)
+                }
+                partySprites.push(partySprite);
+                partySpritesText.push(partyCreatureNameTextSprite);
+                partySpritesHealthBars.push(partyCreatureHealthBar);
+            }
+
+           
+
+            currSelection = 0;
+            selection = -1;
+            selector = sprites.create(img`
+                        ff11ffff11ffff11ffff11ffff11ffff11fff11ffff11fff11ffff11ffff11ff1
+                        1...............................................................f
+                        1...............................................................f
+                        f...............................................................1
+                        f...............................................................1
+                        f...............................................................f
+                        f...............................................................f
+                        1...............................................................f
+                        1...............................................................f
+                        f...............................................................1
+                        f...............................................................1
+                        f...............................................................f
+                        f...............................................................f
+                        1...............................................................f
+                        1...............................................................f
+                        f...............................................................1
+                        f...............................................................1
+                        f...............................................................f
+                        f...............................................................f
+                        1...............................................................f
+                        1...............................................................f
+                        f...............................................................1
+                        f...............................................................1
+                        11ffff11ffff11ffff11ffff11ffff11ffff11fff11fff11ffff11ffff11fffff
+                    `, SpriteKind.Player)
+            selector.setPosition(45, 27);
+            while (selection == -1 && !controller.B.isPressed()) {
+
+                timer.background(function () {
+                    controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
+                        if (currSelection < 3 && currSelection + 3 < myTrainer.partyPokemon.length) {
+                            currSelection += 3;
+                        }
+                    })
+                    controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
+                        if (currSelection >= 3) {
+                            currSelection -= 3;
+                        }
+                    })
+                    controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+                        if (currSelection > 0) {
+                            currSelection -= 1;
+                        }
+                    })
+                    controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+                        if (currSelection < 5 && currSelection + 1 < myTrainer.partyPokemon.length) {
+                            currSelection += 1;
+                        }
+                    })
+
+
+                    controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+                        selection = currSelection;
+                    })
+
+                    switch (currSelection) {
+                        case 0:
+                            selector.setPosition(45, 27);
+                            break;
+                        case 1:
+                            selector.setPosition(45, 47);
+                            break;
+                        case 2:
+                            selector.setPosition(45, 67);
+                            break;
+                        case 3:
+                            selector.setPosition(115, 27);
+                            break;
+                        case 4:
+                            selector.setPosition(115, 47);
+                            break;
+                        case 5:
+                            selector.setPosition(115, 67);
+                            break;
+
+                    }
+                })
+                pause(100);
+            }
+
+            //Leave old selector on pokemon but exclude it from new selection list.
+            //let selectionList = []
+            //for (let i = 0; i < myTrainer.partyPokemon.length; i++) {
+            //    if (i != selection) {
+            //        selectionList.push(myTrainer.partyPokemon[i])
+            //    }
+            //}
+
+            //Select second pokemon
+            secondCurrSelection = 0;
+            secondSelection = -1;
+            secondSelector = sprites.create(img`
+                        ff11ffff11ffff11ffff11ffff11ffff11fff11ffff11fff11ffff11ffff11ff1
+                        1...............................................................f
+                        1...............................................................f
+                        f...............................................................1
+                        f...............................................................1
+                        f...............................................................f
+                        f...............................................................f
+                        1...............................................................f
+                        1...............................................................f
+                        f...............................................................1
+                        f...............................................................1
+                        f...............................................................f
+                        f...............................................................f
+                        1...............................................................f
+                        1...............................................................f
+                        f...............................................................1
+                        f...............................................................1
+                        f...............................................................f
+                        f...............................................................f
+                        1...............................................................f
+                        1...............................................................f
+                        f...............................................................1
+                        f...............................................................1
+                        11ffff11ffff11ffff11ffff11ffff11ffff11fff11fff11ffff11ffff11fffff
+                    `, SpriteKind.Player)
+            secondSelector.setPosition(45, 27);
+            while (secondSelection == -1 && !controller.B.isPressed()) {
+
+                timer.background(function () {
+                    controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
+                        if (secondCurrSelection < 3 && secondCurrSelection + 3 < myTrainer.partyPokemon.length) {
+                            secondCurrSelection += 3;
+                        }
+                    })
+                    controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
+                        if (secondCurrSelection >= 3) {
+                            secondCurrSelection -= 3;
+                        }
+                    })
+                    controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+                        if (secondCurrSelection > 0) {
+                            secondCurrSelection -= 1;
+                        }
+                    })
+                    controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+                        if (secondCurrSelection < 5 && currSelection + 1 < myTrainer.partyPokemon.length) {
+                            secondCurrSelection += 1;
+                        }
+                    })
+
+                    controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+                        if (secondCurrSelection != selection) {
+                            secondSelection = secondCurrSelection;
+                        }
+                    })
+
+                    switch (secondCurrSelection) {
+                        case 0:
+                            secondSelector.setPosition(45, 27);
+                            break;
+                        case 1:
+                            secondSelector.setPosition(45, 47);
+                            break;
+                        case 2:
+                            secondSelector.setPosition(45, 67);
+                            break;
+                        case 3:
+                            secondSelector.setPosition(115, 27);
+                            break;
+                        case 4:
+                            secondSelector.setPosition(115, 47);
+                            break;
+                        case 5:
+                            secondSelector.setPosition(115, 67);
+                            break;
+
+                    }
+                })
+                pause(100);
+            }
+            
+            selector.destroy();
+            secondSelector.destroy();
+            scene.backgroundImage().fillRect(10, 13, 140, 70, 1)
+
+            if (selection != -1 && secondSelection != -1) {
+                let tempCreature = myTrainer.partyPokemon[selection];
+                myTrainer.partyPokemon[selection] = myTrainer.partyPokemon[secondSelection]
+                myTrainer.partyPokemon[secondSelection] = tempCreature;
+            }
+
+        }
+
+        controller.right.onEvent(ControllerButtonEvent.Pressed, function () { })
+        controller.left.onEvent(ControllerButtonEvent.Pressed, function () { })
+        controller.up.onEvent(ControllerButtonEvent.Pressed, function () { })
+        controller.down.onEvent(ControllerButtonEvent.Pressed, function () { })
+        controller.A.onEvent(ControllerButtonEvent.Pressed, function () { })
+        controller.B.onEvent(ControllerButtonEvent.Pressed, function () { })
+        //myTrainer.menuOpen = false;
+
+
+        
+
+        //game.splash("Close during no selector")
+        //pause(100);
+        scene.setBackgroundImage(img`
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+            ................................................................................................................................................................
+        `);
+        tiles.setCurrentTilemap(map)
+
+        scene.centerCameraAt(myTrainer.sprite.x, myTrainer.sprite.y);
+        scene.cameraFollowSprite(myTrainer.sprite);
+
+
+        instructions.destroy()
+        instructions2.destroy();
+        instructions3.destroy();
+
+        for (let spr of partySprites) {
+            spr.destroy();
+        }
+        for (let spr of partySpritesText) {
+            spr.destroy();
+        }
+        for (let spr of partySpritesHealthBars) {
+            spr.destroy();
+        }
+        selector.destroy();
+        secondSelector.destroy();
+        scene.backgroundImage().fillRect(10, 13, 140, 70, 1)
+
+      
+
+        timer.after(400, function () {
+            //pause(100)
+            controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
+                if (!(creatures.trainerInBattle(myTrainer))) {
+                    creatures.openParty()
+                } })
+        })
+
+
+    }
 
 
 
-
-    export function creatureBattleCreature(creature1: Creature, creature2: Creature): boolean {
+    export function creatureBattleCreature(creature1: Creature, creature2: Creature, isWild: boolean, enemyFirst: boolean = false): boolean {
         let turn: number = 0;
-
+        if(enemyFirst){
+            turn = 1;
+        }
+        let caught = false;
         creature1.sprite.setPosition(45, 52)
         creature2.sprite.setPosition(115, 52)
-        creature1.setSayHP(true);
-        creature2.setSayHP(true);
+        //creature1.setSayHP(true);
+        //creature2.setSayHP(true);
         creature1.sprite.setFlag(SpriteFlag.Invisible, false);
         creature2.sprite.setFlag(SpriteFlag.Invisible, false);
         creature1.healthbar.attachToSprite(null);
@@ -1311,43 +1917,336 @@ namespace creatures {
         while (creature1.hp > 0 && creature2.hp > 0) {
             pause(200)
             if (turn == 0) {
-                let attackType: CreatureType = null;
-                story.printDialog("Pick a move.", 80, 90, 50, 150, 15, 1, story.TextSpeed.VeryFast)
-                const move1Type = getMoveFromType(getCreatureType1(creature1));
-                const move2Type = getMoveFromType(getCreatureType2(creature1));
-                //game.splash(getCreatureType1(creature1));
-                //game.splash(getCreatureType2(creature1));
-                story.showPlayerChoices(move1Type, move2Type);
+                story.showPlayerChoices("Fight", "Catch", "Pokemon", "Run");
 
                 pauseUntil(() => !story.isMenuOpen());
-                attackType = getTypeFromMove(story.getLastAnswer());
 
-                animation.runMovementAnimation(creature1.sprite, animation.animationPresets(animation.easeRight), 5000, false)
-                pause(500)
-                animation.stopAnimation(animation.AnimationTypes.All, creature1.sprite)
-                //animation.runMovementAnimation(creature1.sprite, animation.animationPresets(animation.bobbing), 5000, true)
-                animation.runMovementAnimation(creature1.sprite, animation.animationPresets(animation.easeLeft), 2000, false)
-                pause(200)
-                animation.stopAnimation(animation.AnimationTypes.All, creature1.sprite)
-                let mult = calculateAttackMult(attackType, [creature2.creatureType1, creature2.creatureType2]);
+                let choice = story.getLastAnswer();
 
-                if (Math.percentChance(6.25)) {
-                    creature2.hp -= Math.round(creature1.attackValue * mult * 1.5);
-                    pause(50)
-                    game.showLongText("Critical Hit", DialogLayout.Bottom)
-                    creature2HealthTextSprite.setText(Math.round(creature2.hp).toString());
-                } else {
-                    creature2.hp -= Math.round(creature1.attackValue * mult);
-                    creature2HealthTextSprite.setText(Math.round(creature2.hp).toString());
+                
+
+                if (choice == "Fight") {
+                    let attackType: CreatureType = null;
+                    story.printDialog("Pick a move.", 80, 90, 50, 150, 15, 1, 100)
+                    const move1Type = getMoveFromType(getCreatureType1(creature1));
+                    const move2Type = getMoveFromType(getCreatureType2(creature1));
+                    //game.splash(getCreatureType1(creature1));
+                    //game.splash(getCreatureType2(creature1));
+                    story.showPlayerChoices(move1Type, move2Type);
+
+                    pauseUntil(() => !story.isMenuOpen());
+                    attackType = getTypeFromMove(story.getLastAnswer());
+
+                    animation.runMovementAnimation(creature1.sprite, animation.animationPresets(animation.easeRight), 5000, false)
+                    pause(500)
+                    animation.stopAnimation(animation.AnimationTypes.All, creature1.sprite)
+                    //animation.runMovementAnimation(creature1.sprite, animation.animationPresets(animation.bobbing), 5000, true)
+                    animation.runMovementAnimation(creature1.sprite, animation.animationPresets(animation.easeLeft), 2000, false)
+                    pause(200)
+                    animation.stopAnimation(animation.AnimationTypes.All, creature1.sprite)
+                    let mult = calculateAttackMult(attackType, [creature2.creatureType1, creature2.creatureType2]);
+
+                    if (Math.percentChance(6.25)) {
+                        creature2.hp -= Math.round(creature1.attackValue * mult * 1.5);
+                        pause(50)
+                        game.showLongText("Critical Hit", DialogLayout.Bottom)
+                        creature2HealthTextSprite.setText(Math.round(creature2.hp).toString());
+                    } else {
+                        creature2.hp -= Math.round(creature1.attackValue * mult);
+                        creature2HealthTextSprite.setText(Math.round(creature2.hp).toString());
+                    }
+                    if (mult > 1) {
+                        game.showLongText("Super Effective", DialogLayout.Bottom);
+                    } else if (mult == 0) {
+                        game.showLongText("Does not effect " + creature2.name, DialogLayout.Bottom);
+                    } else if (mult < 1) {
+                        game.showLongText("Not very Effective", DialogLayout.Bottom);
+                    }
+                    turn = 1;
+                } else if(choice == "Catch") {
+                    if(!isWild){
+                        game.showLongText("You can only catch wild pokemon.", DialogLayout.Bottom);
+                        continue;
+                    }
+                    story.printDialog("You threw a pokeball!", 80, 90, 50, 150, 15, 1, story.TextSpeed.VeryFast)
+                    let pokeball = sprites.create(img`
+                        . . . . . . . . . . . . . . .
+                        . . . . . . . . . . . . . . .
+                        . . . . f f f f f f f . . . .
+                        . . . f 2 2 2 2 2 2 2 f . . .
+                        . . f 2 2 2 2 2 2 2 2 2 f . .
+                        . . f 2 2 2 2 2 2 2 2 2 f . .
+                        . . f 2 2 2 2 2 2 2 2 2 f . .
+                        . . f f 2 2 2 f 2 2 2 f f . .
+                        . . f 1 f f f 1 f f f 1 f . .
+                        . . f 1 1 1 1 f 1 1 1 1 f . .
+                        . . f 1 1 1 1 1 1 1 1 1 f . .
+                        . . . f 1 1 1 1 1 1 1 f . . .
+                        . . . . f f f f f f f . . . .
+                        . . . . . . . . . . . . . . .
+                        . . . . . . . . . . . . . . .
+                    `, SpriteKind.Player)
+                    pokeball.scale = 0.5;
+                    pokeball.setPosition( 0, 110);
+                    animation.runMovementAnimation(pokeball, animation.animationPresets(animation.flyToCenter), 1000, false)
+                    pause(1000);
+                    let pokeball2 = sprites.create(img`
+                        . . . . . . . . . . . . . . .
+                        . . . . . . . . . . . . . . .
+                        . . . . f f f f f f f . . . .
+                        . . . f 2 2 2 2 2 2 2 f . . .
+                        . . f 2 2 2 2 2 2 2 2 2 f . .
+                        . . f 2 2 2 2 2 2 2 2 2 f . .
+                        . . f 2 2 2 2 2 2 2 2 2 f . .
+                        . . f f 2 2 2 f 2 2 2 f f . .
+                        . . f 1 f f f 1 f f f 1 f . .
+                        . . f 1 1 1 1 f 1 1 1 1 f . .
+                        . . f 1 1 1 1 1 1 1 1 1 f . .
+                        . . . f 1 1 1 1 1 1 1 f . . .
+                        . . . . f f f f f f f . . . .
+                        . . . . . . . . . . . . . . .
+                        . . . . . . . . . . . . . . .
+                    `, SpriteKind.Player)
+                    pokeball2.scale = 0.5;
+                    pokeball2.setPosition(80, 61)
+                    pokeball.setFlag(SpriteFlag.Invisible, true);
+                    pause(10);
+                    pokeball.setPosition(65, 20);
+                    
+                    animation.stopAnimation(animation.AnimationTypes.MovementAnimation, pokeball)
+                    pause(10);
+                    
+                    animation.runMovementAnimation(pokeball, animation.animationPresets(animation.bounceRight), 2000, false)
+                    pause(10)
+                    pokeball2.destroy();
+                    pokeball.setFlag(SpriteFlag.Invisible, false);
+                    pause(800);
+
+
+                    creature2.sprite.setFlag(SpriteFlag.Invisible, true);
+                    pokeball.setPosition(122, 50);
+                    for (let i =0; i<3;i++) {
+                        animation.runMovementAnimation(pokeball, animation.animationPresets(animation.bobbingLeft), 3000, true);
+                        pause(800);
+                        pokeball.setPosition(122, 50);
+                        animation.runMovementAnimation(pokeball, animation.animationPresets(animation.bobbingRight), 3000, true);
+                        pause(800);
+                        pokeball.setPosition(122, 50);
+                    }
+                    animation.runMovementAnimation(pokeball, animation.animationPresets(animation.shake), 3000, false);
+                    pause(1000);
+                    pokeball.setFlag(SpriteFlag.Invisible, true);
+                    //TESTING
+                    let catchChance = 40 + 40 * (1.5 - (creature2.hp / creature2.maxHP))
+                    //game.splash(catchChance);
+                    if(Math.percentChance(catchChance)) {
+                        
+                        music.play(music.melodyPlayable(music.baDing), music.PlaybackMode.UntilDone)
+                        story.printDialog("You caught the wild " + creature2.name + ".", 80, 90, 50, 150, 15, 1, story.TextSpeed.VeryFast)
+                        caught = true;
+
+                        //check if space in party and add to partyPokemon
+                        if(myTrainer.partyPokemon.length < 6){
+                            myTrainer.addPartyPokemon(creature2);
+                            game.showLongText(creature2.name + " was added to the party.", DialogLayout.Bottom);
+                        } else{
+                            myTrainer.addBoxPokemon(creature2);
+                            game.showLongText(creature2.name + " was added to the box.", DialogLayout.Bottom);
+                        }
+                        //creature2.sprite.setFlag(SpriteFlag.Invisible, false);
+                        break;
+                    } else {
+                        creature2.sprite.setFlag(SpriteFlag.Invisible, false);
+                        music.play(music.melodyPlayable(music.footstep), music.PlaybackMode.LoopingInBackground)
+                        pause(500);
+                        music.stopAllSounds();
+
+                        story.printDialog("Wild " + creature2.name + " escaped the ball.", 80, 90, 50, 150, 15, 1, story.TextSpeed.VeryFast)
+                        creature2.sprite.setFlag(SpriteFlag.Invisible, false);
+                        
+                        turn = 1
+                    }
+                } else if(choice == "Pokemon") {
+                    
+                    scene.backgroundImage().fillRect(10, 13, 140, 70, 1)
+                    scene.backgroundImage().drawRect(10, 13, 140, 70, 15)
+                    
+
+                    creature1LevelTextSprite.setText("")
+                    creature2LevelTextSprite.setText("")
+                    creature1HealthTextSprite.setText("")
+                    creature2HealthTextSprite.setText("")
+
+                    creature1.sprite.setPosition(0, 0)
+                    creature2.sprite.setPosition(0, 0)
+                    creature1.setSayHP(false);
+                    creature2.setSayHP(false);
+                    creature1.sprite.setFlag(SpriteFlag.Invisible, true);
+                    creature2.sprite.setFlag(SpriteFlag.Invisible, true);
+                    creature1.healthbar.setFlag(SpriteFlag.Invisible, true);
+                    creature2.healthbar.setFlag(SpriteFlag.Invisible, true);
+
+                    pause(100)
+                    creature1LevelTextSprite.destroy();
+                    creature2LevelTextSprite.destroy();
+                    creature1HealthTextSprite.destroy();
+                    creature2HealthTextSprite.destroy();
+
+
+                    let partySprites = [];
+                    let partySpritesText =[];
+                    let partySpritesHealthBars =[];
+                    for(let i =0;i<myTrainer.partyPokemon.length;i++){
+                        let partySprite = sprites.create(myTrainer.partyPokemon[i].sprite.image, SpriteKind.Creature)
+                        partySprite.setFlag(SpriteFlag.Invisible, false);
+                        partySprite.scale = 0.42;
+                        let partyCreatureNameTextSprite = textsprite.create(myTrainer.partyPokemon[i].name.substr(0, 6), 1, 15)
+                        let partyCreatureHealthBar = statusbars.create(35, 2, StatusBarKind.Health)
+                        partyCreatureHealthBar.max = myTrainer.partyPokemon[i].maxHP;
+                        partyCreatureHealthBar.value = myTrainer.partyPokemon[i].hp;
+                        
+
+                        if(i<3){
+                            partySprite.setPosition(25, 27 + i * 20)
+                            partyCreatureNameTextSprite.setPosition(55, 27 + i * 20);
+                            partyCreatureHealthBar.setPosition(55, 33 + i * 20)
+                        } else{
+                            partySprite.setPosition(85, 27 + (i-3) * 20)
+                            partyCreatureNameTextSprite.setPosition(115, 27 + (i - 3) * 20);
+                            partyCreatureHealthBar.setPosition(115, 33 + i * 20)
+                        }
+                        partySprites.push(partySprite);
+                        partySpritesText.push(partyCreatureNameTextSprite);
+                        partySpritesHealthBars.push(partyCreatureHealthBar);
+                    }
+
+                    let instructions = textsprite.create("Choose a pokemon", 1, 15);
+                    instructions.setPosition(78, 90)
+                    let instructions2 = textsprite.create("to send out", 1, 15);
+                    instructions2.setPosition(78, 100)
+                    
+                    let currSelection = 0;
+                    let selection = -1;
+                    let selector = sprites.create(img`
+                        ff11ffff11ffff11ffff11ffff11ffff11fff11ffff11fff11ffff11ffff11ff1
+                        1...............................................................f
+                        1...............................................................f
+                        f...............................................................1
+                        f...............................................................1
+                        f...............................................................f
+                        f...............................................................f
+                        1...............................................................f
+                        1...............................................................f
+                        f...............................................................1
+                        f...............................................................1
+                        f...............................................................f
+                        f...............................................................f
+                        1...............................................................f
+                        1...............................................................f
+                        f...............................................................1
+                        f...............................................................1
+                        f...............................................................f
+                        f...............................................................f
+                        1...............................................................f
+                        1...............................................................f
+                        f...............................................................1
+                        f...............................................................1
+                        11ffff11ffff11ffff11ffff11ffff11ffff11fff11fff11ffff11ffff11fffff
+                    `, SpriteKind.Player)
+                    selector.setPosition(45, 27);
+                    while(selection == -1){
+                        
+                        timer.background(function() {
+                            controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
+                                if (currSelection < 3 && currSelection+3 < myTrainer.partyPokemon.length) {
+                                    currSelection += 3;
+                                }
+                            })
+                            controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
+                                if (currSelection >= 3) {
+                                    currSelection -= 3;
+                                }
+                            })
+                            controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+                                if (currSelection > 0) {
+                                    currSelection -= 1;
+                                }
+                            })
+                            controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+                                if (currSelection < 5 && currSelection + 1 < myTrainer.partyPokemon.length) {
+                                    currSelection += 1;
+                                }
+                            })
+
+                            controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+                                selection = currSelection;
+                            })
+
+                            switch (currSelection) {
+                                case 0:
+                                    selector.setPosition(45, 27);
+                                    break;
+                                case 1:
+                                    selector.setPosition(45, 47);
+                                    break;
+                                case 2:
+                                    selector.setPosition(45, 67);
+                                    break;
+                                case 3:
+                                    selector.setPosition(115, 27);
+                                    break;
+                                case 4:
+                                    selector.setPosition(115, 47);
+                                    break;
+                                case 5:
+                                    selector.setPosition(115, 67);
+                                    break;
+
+                            }
+                        })
+                        pause(100);
+                    }
+                    
+                    controller.right.onEvent(ControllerButtonEvent.Pressed, function (){})
+                    controller.left.onEvent(ControllerButtonEvent.Pressed, function () { })
+                    controller.up.onEvent(ControllerButtonEvent.Pressed, function () { })
+                    controller.down.onEvent(ControllerButtonEvent.Pressed, function () { })
+                    controller.A.onEvent(ControllerButtonEvent.Pressed, function () { })
+
+
+                    instructions.destroy()
+                    instructions2.destroy();
+                    for(let spr of partySprites){
+                        spr.destroy();
+                    }
+                    for (let spr of partySpritesText) {
+                        spr.destroy();
+                    }
+                    for (let spr of partySpritesHealthBars) {
+                        spr.destroy();
+                    }
+                    selector.destroy();
+                    scene.backgroundImage().fillRect(10, 13, 140, 70, 1)
+                    
+                    if(selection!= 0){
+                        let newLead = myTrainer.partyPokemon.removeAt(selection);
+                        myTrainer.partyPokemon.insertAt(0,newLead)
+                        return creatureBattleCreature(newLead, creature2, isWild, true)
+                    } else {
+                        return creatureBattleCreature(myTrainer.partyPokemon[0], creature2, isWild, false)
+                    }
+
+                } else if(choice == "Run") {
+                    if (!isWild) {
+                        game.showLongText("You can only run from wild pokemon.", DialogLayout.Bottom);
+                        continue;
+                    }
+                    break;
                 }
-                if (mult > 1) {
-                    game.showLongText("Super Effective", DialogLayout.Bottom);
-                } else if (mult == 0) {
-                    game.showLongText("Does not effect " + creature2.name, DialogLayout.Bottom);
-                } else if (mult < 1) {
-                    game.showLongText("Not very Effective", DialogLayout.Bottom);
-                }
-                turn = 1;
+
+
+
+
             } else {
                 const move1Type = getMoveFromType(getCreatureType1(creature2));
                 const move2Type = getMoveFromType(getCreatureType2(creature2));
@@ -1386,10 +2285,10 @@ namespace creatures {
             }
         }
 
-        if (creature1.hp > 0) {
-            //game.showLongText(creature1.name + " knocked out " + creature2.name + " and earned " + creature2.xpReward + " xp.", DialogLayout.Bottom)
+        if (creature1.hp > 0 && creature2.hp <= 0) {
+            game.showLongText(creature1.name + " knocked out " + creature2.name + " and earned " + creature2.xpReward + " xp.", DialogLayout.Bottom)
             creature1.xp += creature2.xpReward;
-        } else {
+        } else if (creature2.hp > 0 && creature1.hp <= 0) {
             //game.showLongText(creature2.name + " knocked out " + creature1.name + " and earned " + creature2.xpReward + " xp.", DialogLayout.Bottom)
             creature2.xp += creature1.xpReward;
         }
@@ -1414,10 +2313,16 @@ namespace creatures {
         creature2LevelTextSprite.destroy();
         creature1HealthTextSprite.destroy();
         creature2HealthTextSprite.destroy();
-        if (creature1.hp > 0) {
-            return true;
+        if (creature1.hp > 0 && creature2.hp <=0) {
+            return true;//kill
+        } else if (creature1.hp > 0 && creature2.hp > 0){
+            if (caught) {
+            return true;//catch
+            } else {
+                return false; // run
+            }
         } else {
-            return false;
+            return false;//lose
         }
 
     }
@@ -1429,6 +2334,7 @@ namespace creatures {
     //% group="Battle"
     //% weight=80
     export function trainerBattleTrainer(player: Trainer, opponent: Trainer) : boolean {
+        player.inBattle = true;
         let battleResult = false;
         let playerCurrentCreature = player.partyPokemon[0];
         let opponentCurrentCreature = opponent.partyPokemon[0];
@@ -1609,7 +2515,7 @@ namespace creatures {
         enemySprite.destroy();
 
         while (playerRemainingPokemon > 0 && opponentRemainingPokemon > 0) {
-            let win = creatureBattleCreature(playerCurrentCreature, opponentCurrentCreature)
+            let win = creatureBattleCreature(playerCurrentCreature, opponentCurrentCreature, false)
             if (win) {
                 game.showLongText("You knocked out " + opponentCurrentCreature.name + " and earned " + opponentCurrentCreature.xpReward + " xp.", DialogLayout.Bottom)
                 opponentRemainingPokemon--;
@@ -1813,7 +2719,7 @@ namespace creatures {
             checkLevelUp(creature);
             checkEvolve(creature);
         }
-
+       
         return battleResult;
 
     }
@@ -1823,7 +2729,8 @@ namespace creatures {
     //% expandableArgumentMode=toggle
     //% group="Battle"
     //% weight=80
-    export function trainerBattleWild(player: Trainer, wildCreature: Creature) {
+    export function trainerBattleWild(player: Trainer, wildCreature: Creature) :boolean {
+        player.inBattle = true;
         let battleResult = false;
         let playerCurrentCreature = player.partyPokemon[0];
         let playerCurrentIndex = 0;
@@ -1993,11 +2900,26 @@ namespace creatures {
         game.showLongText("You sent out " + playerCurrentCreature.name + " to battle!", DialogLayout.Bottom)
 
         while (playerRemainingPokemon > 0 && wildCreature.hp > 0) {
-            let win = creatureBattleCreature(playerCurrentCreature, wildCreature);
+            let win = creatureBattleCreature(playerCurrentCreature, wildCreature, true);
             if (win) {
-                game.showLongText("You knocked out " + wildCreature.name + " and earned " + wildCreature.xpReward + " xp.", DialogLayout.Bottom)
-                game.showLongText("You won the battle", DialogLayout.Bottom)
+                if(wildCreature.hp > 0){
+                    
+                    game.showLongText("You caught the " + wildCreature.name + " and earned " + wildCreature.xpReward + " xp.", DialogLayout.Bottom)
+                    battleResult = true;
+                    break;
+
+                } else {
+                    game.showLongText("You knocked out " + wildCreature.name + " and earned " + wildCreature.xpReward + " xp.", DialogLayout.Bottom)
+                    game.showLongText("You won the battle", DialogLayout.Bottom)
+                    battleResult = true;
+                }
             } else {
+                playerCurrentCreature = player.partyPokemon[0];
+                if (wildCreature.hp > 0 && playerCurrentCreature.hp > 0) {
+                    game.showLongText("You escaped from the " + wildCreature.name + ".", DialogLayout.Bottom)
+                    battleResult = true;
+                    break;
+                }
                 game.showLongText("The wild pokemon knocked out " + playerCurrentCreature.name, DialogLayout.Bottom)
                 playerRemainingPokemon--;
                 if (playerRemainingPokemon > 0) {
@@ -2192,7 +3114,7 @@ namespace creatures {
             checkEvolve(creature);
         }
 
-
+        return battleResult;
     }
 
     //% blockId=creatures_trainerHealAll
@@ -2203,6 +3125,13 @@ namespace creatures {
         for(let creature of player.partyPokemon){
             creature.hp = creature.maxHP;
         }
+    }
+
+    //% blockId=creatures_trainerInBattle
+    //% group="Value"
+    //% block="$player=variables_get(myTrainer) in battle?" callInDebugger
+    export function trainerInBattle(player: Trainer) : boolean{
+        return player.inBattle;
     }
 
 
@@ -2240,7 +3169,7 @@ namespace creatures {
                 pause(500)
 
                 const evId = creature._evolutionID;
-                let evolution = makeCreatureFromID(evId);
+                let evolution = makeCreatureFromID(evId,creature.level,creature.xp);
                 creature.sprite = evolution.sprite;
                 oldSprite.setImage(creature._sprite.image);
                 oldSprite.setPosition(scene.cameraLeft() + 80, scene.cameraTop() + 30)
@@ -2249,15 +3178,15 @@ namespace creatures {
                 creature.creatureType2 = evolution.creatureType2;
                 creature.name = evolution.name;
                 creature.evolutionID = evolution.evolutionID;
-                creature.xp = 0;
+                //creature.xp = 0;
                 creature.hp = evolution.hp;
                 creature.maxHP = evolution.maxHP;
                 creature.attackValue = evolution.attackValue;
-                for(let i = 0; i < creature.level-5; i++) {
-                    creature.maxHP *= 1.05;
-                    creature.hp *= 1.05;
-                    creature.attackValue *= 1.05;
-                }
+                // for (let i = 0; i < creature.level - 5; i++) {
+                //     creature.maxHP *= 1.05;
+                //     creature.hp *= 1.05;
+                //     creature.attackValue *= 1.05;
+                // }
                 creature.xpReward = evolution.xpReward;
                 creature._sayHP = false;
                 creature._sayXP = false;
@@ -3594,7 +4523,7 @@ namespace creatures {
         let enemyTrainer = new Trainer(trainerName, 0, enemySprite, [enemySprite.image], [enemySprite.image], [enemySprite.image], [enemySprite.image]);
         //game.splash(starter)
         for(let i = 0; i < ids.length && levels.length; i++) {
-            enemyTrainer.addPartyPokemon(makeCreatureFromID(ids[i], levels[i], getXpForLevel(levels[i])));
+            enemyTrainer.addPartyPokemon(makeCreatureFromID(ids[i], levels[i], getXpForLevel(levels[i]),false));
         }
 
         return enemyTrainer;
@@ -3900,10 +4829,17 @@ namespace creatures {
                         if (player.badges == 14) {
                             game.gameOver(true)
                         }
+                        player.inBattle = false;
                     } else {
                         game.showLongText("You lost. Get stronger and try again!", DialogLayout.Bottom)
                         controller.moveSprite(player.sprite, 80, 80)
                         tiles.setTileAt(location, assets.tile`myTile11`)
+                        player.inBattle = false;
+                        game.showLongText(player.name + " whited out. " + player.name + " returned to the pokemon center.", DialogLayout.Bottom);
+                        player.sprite.setFlag(SpriteFlag.GhostThroughTiles, true);
+                        tiles.placeOnRandomTile(player.sprite, assets.tile`myTile10`);
+                        pause(100);
+                        player.sprite.setFlag(SpriteFlag.GhostThroughTiles, false);
                     }
                 } else {
                     tiles.placeOnTile(player.sprite, tiles.getTileLocation(location.column, location.row + 1))
@@ -3911,6 +4847,7 @@ namespace creatures {
                     game.showLongText("Not feeling strong enough yet?", DialogLayout.Bottom)
                     controller.moveSprite(player.sprite, 80, 80)
                     tiles.setTileAt(location, assets.tile`myTile11`)
+                    player.inBattle = false;
                 }
                 player.sprite.setFlag(SpriteFlag.GhostThroughTiles, false)
             })
@@ -3928,12 +4865,21 @@ namespace creatures {
                     sprite.setFlag(SpriteFlag.GhostThroughSprites, true)
                     controller.moveSprite(sprite, 0, 0)
                     const wildCreature = creatures.makeCreatureFromID(
-                        routes[player.currentRouteID].wildIDs._pickRandom(), 5, 0
+                        routes[player.currentRouteID].wildIDs._pickRandom(), 15, 0
                     )
-                    creatures.trainerBattleWild(player, wildCreature);
+                    let result = creatures.trainerBattleWild(player, wildCreature);
+                    
                     scene.cameraFollowSprite(sprite)
                     timer.after(500, function () {
                         controller.moveSprite(sprite, 80, 80)
+                        player.inBattle = false;
+                        if (!result){
+                            game.showLongText(player.name + " whited out. " + player.name + " returned to the pokemon center.", DialogLayout.Bottom);
+                            sprite.setFlag(SpriteFlag.GhostThroughTiles, true);
+                            tiles.placeOnRandomTile(player.sprite, assets.tile`myTile10`);
+                            pause(100);
+                            sprite.setFlag(SpriteFlag.GhostThroughTiles, false);
+                        }
                         //heal pokemon in first slot;
                         //myTrainer.partyPokemon[0].hp = myTrainer.partyPokemon[0].maxHP;
                     })
@@ -4437,114 +5383,114 @@ namespace creatures {
                         `, SpriteKind.Creature)
             case 8:
                 return sprites.create(img`
-                            111111111111111111111111111111111111111111111111
-                            111111111111111111111111111111111111111111111111
-                            11111111111111fff1111111111111111111111111111111
-                            1111111111111f19f1111111111111111111111111111111
-                            111111111111fb19f1111111111111111ffff11111111111
-                            111111111111f1b9f11111111111111ff999f11111111111
-                            11111111111f11b9f111111111111ff1199f111111111111
-                            11111111111fb99bf11111111111f11199bf111111111111
-                            11111111111f1b9ffffffb11111f111bbbf1111111111111
-                            1111111111f19ff911999bff11f11bb999f1111111111111
-                            1111111111f9f911111999bbbf11b1999f11111111111111
-                            11111111111f91111119999bf11b1999f111111111111111
-                            1111111111f9111111999999f1b1999f1111111111111111
-                            1111111111ff1111999bbff9fb1bbbbf1111111111111111
-                            111111111f9bf99999bbfb999ff119f11111111111111111
-                            111111111fb9bf999bbfb9199bbf99f11111111111111111
-                            111111fff911f1999bb1f1199bbfff111111111111111111
-                            1111ff11f9f1ff9999bff119fbbf11111111111111111111
-                            111f11111f991f99999f1199ffbf11111ffff11111111111
-                            11f111111ff9999999999999bbbf111ffb99bf1111111111
-                            1f1111111f9f9999999999fbbbfffffbb99911f111111111
-                            1f11fb1111f9ff99999fffbbbbffffbb9991111f11111111
-                            1f1999b1111f99ffffff1fbbfffffbbb9991111f11111111
-                            1f1999f111fbf999bbbbfbbfffbbbfbb9999111f11111111
-                            11f19f111fbbbfbbbbbbbffffb99bbfbb999911f11111111
-                            111ff111fb99bbfffffffffbf1199bffbbb999f111111111
-                            1111f111f999bbfffffb9bbbf1199bffbbbb9f1111111111
-                            111f111fb999bffffb9199bbbf99bfbbfffff11111111111
-                            111f111fb99bf919ff11199bffbff99bf111111111111111
-                            11fb111fbbbff1119bff199f9bf1999bbf11111111111111
-                            11f1b11fffff9111999bffb919bf1199bf11111111111111
-                            1f11b11fb99f91119999bbf1119f1199bf11111111111111
-                            1f11b99fb99fb1119999bbbf119f199bf111111111111111
-                            1f99b99fb99bfb999999bbbf119f9bfff111111111111111
-                            1f999b9bfb9bffb9999bbbbf19ffff9bf111111111111111
-                            11f999bbfbbbfffbbbbbbbff9fbf19bbf111111111111111
-                            11f99bbbbfbffffffbbbbffff9bfbbbfff11111111111111
-                            111fbbbbbffffffffffff999999fbbfffff1111111111111
-                            1111ffbbbbffbbbfffb9111199ffbffbbbbf111111111111
-                            111111fffffbbbbbfffb91199bffffbbbbbbf11111111111
-                            1111111111f99bbbbfffbbbbbffffbbb999bf11111111111
-                            111111111f99999bbbfffffff111ffb9999bf11111111111
-                            111111111f199999bbf11111111111ffffff111111111111
-                            11111111f11199999f111111111111111111111111111111
-                            11111111f9199999f1111111111111111111111111111111
-                            111111111fffffff11111111111111111111111111111111
-                            111111111111111111111111111111111111111111111111
-                            111111111111111111111111111111111111111111111111
-                        `, SpriteKind.Creature)
+                    111111111111111111111111111111111111111111111111
+                    111111111111111111111111111111111111111111111111
+                    11111111111111fff1111111111111111111111111111111
+                    1111111111111f19f1111111111111111111111111111111
+                    111111111111fb19f1111111111111111ffff11111111111
+                    111111111111f1b9f11111111111111ff999f11111111111
+                    11111111111f11b9f111111111111ff1199f111111111111
+                    11111111111fb99bf11111111111f11199bf111111111111
+                    11111111111f1b9ffffffb11111f111bbbf1111111111111
+                    1111111111f19ff911999bff11f11bb999f1111111111111
+                    1111111111f9f911111999bbbf11b1999f11111111111111
+                    11111111111f91111119999bf11b1999f111111111111111
+                    1111111111f9111111999999f1b1999f1111111111111111
+                    1111111111ff1111999bbff9fb1bbbbf1111111111111111
+                    111111111f9bf99999bbfb999ff119f11111111111111111
+                    111111111fb9bf999bbfb9199bbf99f11111111111111111
+                    111111fff911f1999bb1f1199bbfff111111111111111111
+                    1111ff11f9f1ff9999bff119fbbf11111111111111111111
+                    111f11111f991f99999f1199ffbf11111ffff11111111111
+                    11f111111ff9999999999999bbbf111ffb99bf1111111111
+                    1f1111111f9f9999999999fbbbfffffbb99911f111111111
+                    1f11fb1111f9ff99999fffbbbbffffbb9991111f11111111
+                    1f1999b1111f99ffffff1fbbfffffbbb9991111f11111111
+                    1f1999f111fbf999bbbbfbbfffbbbfbb9999111f11111111
+                    11f19f111fbbbfbbbbbbbffffb99bbfbb999911f11111111
+                    111ff111fb99bbfffffffffbf1199bffbbb999f111111111
+                    1111f111f999bbfffffb9bbbf1199bffbbbb9f1111111111
+                    111f111fb999bffffb9199bbbf99bfbbfffff11111111111
+                    111f111fb99bf919ff11199bffbff99bf111111111111111
+                    11fb111fbbbff1119bff199f9bf1999bbf11111111111111
+                    11f1b11fffff9111999bffb919bf1199bf11111111111111
+                    1f11b11fb99f91119999bbf1119f1199bf11111111111111
+                    1f11b99fb99fb1119999bbbf119f199bf111111111111111
+                    1f99b99fb99bfb999999bbbf119f9bfff111111111111111
+                    1f999b9bfb9bffb9999bbbbf19ffff9bf111111111111111
+                    11f999bbfbbbfffbbbbbbbff9fbf19bbf111111111111111
+                    11f99bbbbfbffffffbbbbffff9bfbbbfff11111111111111
+                    111fbbbbbffffffffffff999999fbbfffff1111111111111
+                    1111ffbbbbffbbbfffb9111199ffbffbbbbf111111111111
+                    111111fffffbbbbbfffb91199bffffbbbbbbf11111111111
+                    1111111111f99bbbbfffbbbbbffffbbb999bf11111111111
+                    111111111f99999bbbfffffff111ffb9999bf11111111111
+                    111111111f199999bbf11111111111ffffff111111111111
+                    11111111f11199999f111111111111111111111111111111
+                    11111111f9199999f1111111111111111111111111111111
+                    111111111fffffff11111111111111111111111111111111
+                    111111111111111111111111111111111111111111111111
+                    111111111111111111111111111111111111111111111111
+                `, SpriteKind.Creature)
             case 9:
                 return sprites.create(img`
-                            11111111111111111111111111111111111111111111111111111111
-                            11111111111111111111111111111111111111111111111111111111
-                            1111111111111111ff11111111111111111111111111111111111111
-                            111111111111111f9bf1bffffffff1111111fff11111111111111111
-                            111111111111111fbfffbb9119999ff111ff199f1111111111111111
-                            111111111111111fffbbb91199ffffff1f199bbbf111111111111111
-                            111111111111111ffbbbbf91ff99ffbff199bbfff111111111111111
-                            111111111111111ffbbbbf9ff9111fbbbb9bffff1111111111111111
-                            11111111111111f9ffbbbbff1ff11fbbbbbffffff11fff1111111111
-                            11111111111111fffb999bbffffffbbbbbffffb99ff9bbff11111111
-                            111111111bfb1ffb9999ff999bbbbbbbbbbffb99bf9bfffbf1111111
-                            1111111bbffff91f11999999999bbbbbbbbbfb99f99fffffbf111111
-                            111111b9ffff9111119999999999bbbbbbbbffbbf91bffffbf111111
-                            111111f1ffff11111999999999999bb9fbbbffff9911bffbbf111111
-                            111111f1bfbf11119bfffffb999999919fbbfff991119bbbbff11111
-                            111111b119bf1119f9999bbbffb991199fbbfff911199bbbffff1111
-                            1111111f199bf19f9999999bbbbff999fbbfff991199bbbfffbbb111
-                            11111111f199bffb991119999bbbbfffbbfbf9f1199bbbfffbbbf111
-                            11111111ff199bff91111199999bbbbbbfb9f91f199bbfffb919bb11
-                            11111111fbf199bfb9111119999bbbbbffb9f111fffbfffb91999f11
-                            1111111fbbbf19fffb911119999bbbffffb1ff199bfffff919999b11
-                            1111111fbbbbfffffffb911999bbfffffb91bff9bfffffb1199b99b1
-                            1111111f9bbffbbbbffffffffffffffff9999bffffffff9199bb99f1
-                            111111f199f9999bbbbbffffffffffff911999bffffffb1199bb99f1
-                            111111f19f1111999bbbbbbbbbbbfff9111199bbbffff91199bbb9f1
-                            111111f1f111111199999999bbbbbf91111bbfffffffb1199bbbb9f1
-                            111111ff11111111199999999bbbbf911bfff1199fff91199bbbb9f1
-                            11111fbff11111111199999999bbf999bffbf1999bff9119bbbbbbf1
-                            1111fbffbff111111199999999bffb9bff99bf99bbff9119bbbbbf11
-                            111fbbfb9bbbf11111199999fffbfbbff9999bfbbbffb99bbbbbff11
-                            11f9bfb999bbbffffffffffbbbbbfbff91999bfffffffb9bbbbffbf1
-                            11f9bf911199bbbbbbbbbbbbb9bbbfff11199fbbbfffffbbbfffbbf1
-                            11b9bf11111999bbbbbbbb99999bbbf91119f999bbbffffffffbbbf1
-                            1b9ffff11111119999999999999bbbf9911b91199bbbffffffbbbbf1
-                            1f1bbfbf1111111119999999999bbfff999f911999bbffffbbb99bf1
-                            1b19bf9bff1111111199999999fffffff99f91199bbbf999fb999bf1
-                            11f9bf99bbff11111199999ffbbbbfffbf9f9199bbbbff11f999bf11
-                            11ffbf199bbbffffff999ffbbbbbffffbbffb99bbbbf99ff9919bf11
-                            11f99ff1999bbbbbbbbbbbbbbbffbbffbbb9fbbbbfff11f9919bf111
-                            11b1f9f111999bbbbbbbb9999fbbbbbfbb991bfff19fff9999bf1111
-                            111fb1ff1111999999999999f999bbbfbb91111bf11fb999bbff1111
-                            11111fff111111111199999f99999bbfbb911111bffbbbbbffbf1111
-                            11111ffff11111111199999f11999bbfbb9911119ffbbbffbbf11111
-                            11111fbfff111111199999f1111999bbfbb911199fffffffbbf11111
-                            111111fbbffb911199999bf1111999bbfbbb9999bbfffffbbf111111
-                            111111f9bbbffb99999bbbf1111999bbbfbbb99bbbffffbbf1111111
-                            1111111f99bbfffbbbbbfff1119999bbbbfbbbbbbbfffbbf11111111
-                            1111111f119bbbbfffffffffb9999bbbbbbffbbbbbffbff111111111
-                            111111f1f199bbbbfffffffffb99bbbbbbffffbbbffff11111111111
-                            11111f119f19ffffff1111111ffbbbbbbffffffffff1111111111111
-                            1111f1119bff91bfff111111111fffffffbbbbfffff1111111111111
-                            11111ff99bbf119bf1111111111f19fbbffffbbfffff111111111111
-                            1111111ffffff19b1111111111f199bff19bbfff99bbf11111111111
-                            1111111111111ff111111111111fffff11199bff999bf11111111111
-                            11111111111111111111111111111111f1119f11ffff111111111111
-                            111111111111111111111111111111111ffff1111111111111111111
-                        `, SpriteKind.Creature)
+                    11111111111111111111111111111111111111111111111111111111
+                    11111111111111111111111111111111111111111111111111111111
+                    1111111111111111ff11111111111111111111111111111111111111
+                    111111111111111f9bf1bffffffff1111111fff11111111111111111
+                    111111111111111fbfffbb9119999ff111ff199f1111111111111111
+                    111111111111111fffbbb91199ffffff1f199bbbf111111111111111
+                    111111111111111ffbbbbf91ff99ffbff199bbfff111111111111111
+                    111111111111111ffbbbbf9ff9111fbbbb9bffff1111111111111111
+                    11111111111111f9ffbbbbff1ff11fbbbbbffffff11fff1111111111
+                    11111111111111fffb999bbffffffbbbbbffffb99ff9bbff11111111
+                    111111111bfb1ffb9999ff999bbbbbbbbbbffb99bf9bfffbf1111111
+                    1111111bbffff91f11999999999bbbbbbbbbfb99f99fffffbf111111
+                    111111b9ffff9111119999999999bbbbbbbbffbbf91bffffbf111111
+                    111111f1ffff11111999999999999bb9fbbbffff9911bffbbf111111
+                    111111f1bfbf11119bfffffb999999919fbbfff991119bbbbff11111
+                    111111b119bf1119f9999bbbffb991199fbbfff911199bbbffff1111
+                    1111111f199bf19f9999999bbbbff999fbbfff991199bbbfffbbb111
+                    11111111f199bffb991119999bbbbfffbbfbf9f1199bbbfffbbbf111
+                    11111111ff199bff91111199999bbbbbbfb9f91f199bbfffb919bb11
+                    11111111fbf199bfb9111119999bbbbbffb9f111fffbfffb91999f11
+                    1111111fbbbf19fffb911119999bbbffffb1ff199bfffff919999b11
+                    1111111fbbbbfffffffb911999bbfffffb91bff9bfffffb1199b99b1
+                    1111111f9bbffbbbbffffffffffffffff9999bffffffff9199bb99f1
+                    111111f199f9999bbbbbffffffffffff911999bffffffb1199bb99f1
+                    111111f19f1111999bbbbbbbbbbbfff9111199bbbffff91199bbb9f1
+                    111111f1f111111199999999bbbbbf91111bbfffffffb1199bbbb9f1
+                    111111ff11111111199999999bbbbf911bfff1199fff91199bbbb9f1
+                    11111fbff11111111199999999bbf999bffbf1999bff9119bbbbbbf1
+                    1111fbffbff111111199999999bffb9bff99bf99bbff9119bbbbbf11
+                    111fbbfb9bbbf11111199999fffbfbbff9999bfbbbffb99bbbbbff11
+                    11f9bfb999bbbffffffffffbbbbbfbff91999bfffffffb9bbbbffbf1
+                    11f9bf911199bbbbbbbbbbbbb9bbbfff11199fbbbfffffbbbfffbbf1
+                    11b9bf11111999bbbbbbbb99999bbbf91119f999bbbffffffffbbbf1
+                    1b9ffff11111119999999999999bbbf9911b91199bbbffffffbbbbf1
+                    1f1bbfbf1111111119999999999bbfff999f911999bbffffbbb99bf1
+                    1b19bf9bff1111111199999999fffffff99f91199bbbf999fb999bf1
+                    11f9bf99bbff11111199999ffbbbbfffbf9f9199bbbbff11f999bf11
+                    11ffbf199bbbffffff999ffbbbbbffffbbffb99bbbbf99ff9919bf11
+                    11f99ff1999bbbbbbbbbbbbbbbffbbffbbb9fbbbbfff11f9919bf111
+                    11b1f9f111999bbbbbbbb9999fbbbbbfbb991bfff19fff9999bf1111
+                    111fb1ff1111999999999999f999bbbfbb91111bf11fb999bbff1111
+                    11111fff111111111199999f99999bbfbb911111bffbbbbbffbf1111
+                    11111ffff11111111199999f11999bbfbb9911119ffbbbffbbf11111
+                    11111fbfff111111199999f1111999bbfbb911199fffffffbbf11111
+                    111111fbbffb911199999bf1111999bbfbbb9999bbfffffbbf111111
+                    111111f9bbbffb99999bbbf1111999bbbfbbb99bbbffffbbf1111111
+                    1111111f99bbfffbbbbbfff1119999bbbbfbbbbbbbfffbbf11111111
+                    1111111f119bbbbfffffffffb9999bbbbbbffbbbbbffbff111111111
+                    111111f1f199bbbbfffffffffb99bbbbbbffffbbbffff11111111111
+                    11111f119f19ffffff1111111ffbbbbbbffffffffff1111111111111
+                    1111f1119bff91bfff111111111fffffffbbbbfffff1111111111111
+                    11111ff99bbf119bf1111111111f19fbbffffbbfffff111111111111
+                    1111111ffffff19b1111111111f199bff19bbfff99bbf11111111111
+                    1111111111111ff111111111111fffff11199bff999bf11111111111
+                    11111111111111111111111111111111f1119f11ffff111111111111
+                    111111111111111111111111111111111ffff1111111111111111111
+                `, SpriteKind.Creature)
             case 10:
                 return sprites.create(img`
                             1111111111111111111111111111111111111111

@@ -2,6 +2,11 @@ namespace SpriteKind {
     export const Grass = SpriteKind.create()
     export const Structure = SpriteKind.create()
 }
+controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (!(creatures.trainerInBattle(myTrainer))) {
+        creatures.openParty()
+    }
+})
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile`, function (sprite, location) {
     creatures.goToRouteFromOverlap(
     myTrainer,
@@ -65,15 +70,7 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile11`, function (sprite, 
 let myTrainer: creatures.Trainer = null
 let route0 = creatures.makeNewRoute(
 tilemap`level`,
-[
-16,
-16,
-7,
-19,
-19,
-1,
-4
-],
+[16, 19],
 "Pallet Town",
 2,
 1,
