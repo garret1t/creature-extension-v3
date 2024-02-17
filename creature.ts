@@ -69,6 +69,7 @@ namespace creatures {
         public _creatureType2: CreatureType;
         public _name: string;
 
+        public _id: number;
         public _evolutionID: number;
 
         public _healthbar: StatusBarSprite;
@@ -83,11 +84,12 @@ namespace creatures {
         public _sayHP: boolean;
         public _sayXP: boolean;
 
-        constructor(spr: Sprite, cType: CreatureType, cType2: CreatureType, name: string, level: number = 5, evolutionLevel: number = 10, evolutionID: number = 0, xp: number = 0, hp: number = 20, attackValue: number = 5, xpReward: number = 150, shouldLevel: boolean = true) {
+        constructor(spr: Sprite, cType: CreatureType, cType2: CreatureType, name: string, level: number = 5, evolutionLevel: number = 10, evolutionID: number = 0, xp: number = 0, hp: number = 20, attackValue: number = 5, xpReward: number = 150, shouldLevel: boolean = true, id: number = -1) {
             this._sprite = spr;
             this._creatureType1 = cType;
             this._creatureType2 = cType2;
             this._name = name;
+            this._id = id;
             this._evolutionID = evolutionID;
             this._level = level;
             
@@ -186,6 +188,14 @@ namespace creatures {
 
         set level(level: number) {
             this._level = level;
+        }
+
+        get id() {
+            return this._id;
+        }
+        
+        set id(id: number){
+            this._id = id;
         }
 
         get evolutionLevel() {
@@ -386,14 +396,14 @@ namespace creatures {
 
         addPartyPokemon(creature: Creature) {
             if (this._partyPokemon.length < 6) {
-                this._partyPokemon.push(new Creature(sprites.create(creature.sprite.image, SpriteKind.Creature), creature.creatureType1, creature.creatureType2, creature.name, creature.level, creature.evolutionLevel, creature. evolutionID, creature.xp, creature.hp, creature.attackValue, creature.xpReward));
+                this._partyPokemon.push(new Creature(sprites.create(creature.sprite.image, SpriteKind.Creature), creature.creatureType1, creature.creatureType2, creature.name, creature.level, creature.evolutionLevel, creature. evolutionID, creature.xp, creature.hp, creature.attackValue, creature.xpReward,false,creature.id));
             } else {
                 //throw "Too many pokemon"
             }
         }
 
         addBoxPokemon(creature: Creature){
-            this._boxPokemon.push(new Creature(sprites.create(creature.sprite.image, SpriteKind.Creature), creature.creatureType1, creature.creatureType2, creature.name, creature.level, creature.evolutionLevel, creature.evolutionID, creature.xp, creature.hp, creature.attackValue, creature.xpReward));
+            this._boxPokemon.push(new Creature(sprites.create(creature.sprite.image, SpriteKind.Creature), creature.creatureType1, creature.creatureType2, creature.name, creature.level, creature.evolutionLevel, creature.evolutionID, creature.xp, creature.hp, creature.attackValue, creature.xpReward,false, creature.id));
         }
 
     }
@@ -640,590 +650,590 @@ namespace creatures {
 
         switch (id) {
             case 0:
-                return new Creature(sprite, CreatureType.None, CreatureType.None, "Missingno", level, 0, 0, xp, 100, 100, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.None, CreatureType.None, "Missingno", level, 0, 0, xp, 100, 100, 5, shouldLevel, 0);
                 break;
             case 1:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Bulbasaur", level, 16, 2, xp, 25, 5, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Bulbasaur", level, 16, 2, xp, 25, 5, 5, shouldLevel, 1);
                 break;
             case 2:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Ivysaur", level, 32, 3, xp, 42, 12, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Ivysaur", level, 32, 3, xp, 42, 12, 5, shouldLevel, 2);
                 break;
             case 3:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Venosaur", level, 0, 0, xp, 70, 18, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Venosaur", level, 0, 0, xp, 70, 18, 5, shouldLevel, 3);
                 break;
             case 4:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Charmander", level, 16, 5, xp, 25, 5, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Charmander", level, 16, 5, xp, 25, 5, 5, shouldLevel, 4);
                 break;
             case 5:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Charmeleon", level, 32, 6, xp, 42, 12, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Charmeleon", level, 32, 6, xp, 42, 12, 5, shouldLevel, 5);
                 break;
             case 6:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.Flying, "Charizard", level, 0, 0, xp, 70, 18, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Fire, CreatureType.Flying, "Charizard", level, 0, 0, xp, 70, 18, 5, shouldLevel, 6);
                 break;
             case 7:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Squirtle", level, 16, 8, xp, 25, 5, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Squirtle", level, 16, 8, xp, 25, 5, 5, shouldLevel, 7);
                 break;
             case 8:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Wartortle", level, 32, 9, xp, 42, 12, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Wartortle", level, 32, 9, xp, 42, 12, 5, shouldLevel, 8);
                 break;
             case 9:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Blastoise", level, 0, 0, xp, 70, 18, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Blastoise", level, 0, 0, xp, 70, 18, 5, shouldLevel, 9);
                 break;
             case 10:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Caterpie", level, 7, 11, xp, 20, 3, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Caterpie", level, 7, 11, xp, 20, 3, 5, shouldLevel, 10);
                 break;
             case 11:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Metapod", level, 10, 12, xp, 22, 5, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Metapod", level, 10, 12, xp, 22, 5, 5, shouldLevel, 11);
                 break;
             case 12:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.Flying, "Butterfree", level, 0, 0, xp, 40, 8, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Bug, CreatureType.Flying, "Butterfree", level, 0, 0, xp, 40, 8, 5, shouldLevel, 12);
                 break;
             case 13:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Weedle", level, 7, 14, xp, 20, 3, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Weedle", level, 7, 14, xp, 20, 3, 5, shouldLevel, 13);
                 break;
             case 14:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Kakuna", level, 10, 15, xp, 24, 4, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Kakuna", level, 10, 15, xp, 24, 4, 5, shouldLevel, 14);
                 break;
             case 15:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Beedrill", level, 0, 0, xp, 36, 9, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Beedrill", level, 0, 0, xp, 36, 9, 5, shouldLevel, 15);
                 break;
             case 16:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Pidgey", level, 18, 17, xp, 20, 4, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Pidgey", level, 18, 17, xp, 20, 4, 5, shouldLevel, 16);
                 break;
             case 17:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Pidgeotto", level, 36, 18, xp, 40, 8, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Pidgeotto", level, 36, 18, xp, 40, 8, 5, shouldLevel, 17);
                 break;
             case 18:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Pidgeot", level, 0, 0, xp, 58, 13, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Pidgeot", level, 0, 0, xp, 58, 13, 5, shouldLevel, 18);
                 break;
             case 19:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Rattata", level, 20, 20, xp, 18, 5, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Rattata", level, 20, 20, xp, 18, 5, 5, shouldLevel, 19);
                 break;
             case 20:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Raticate", level, 0, 0, xp, 44, 12, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Raticate", level, 0, 0, xp, 44, 12, 5, shouldLevel, 20);
                 break;
             case 21:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Spearow", level, 20, 22, xp, 20, 5, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Spearow", level, 20, 22, xp, 20, 5, 5, shouldLevel, 21);
 
                 break;
             case 22:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Fearow", level, 0, 0, xp, 50, 11, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Fearow", level, 0, 0, xp, 50, 11, 5, shouldLevel, 22);
 
                 break;
             case 23:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Ekans", level, 22, 24, xp, 25, 5, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Ekans", level, 22, 24, xp, 25, 5, 5, shouldLevel, 23);
 
                 break;
             case 24:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Arbok", level, 0, 0, xp, 50, 12, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Arbok", level, 0, 0, xp, 50, 12, 5, shouldLevel, 24);
 
                 break;
             case 25:
-                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Pikachu", level, 20, 26, xp, 25, 5, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Pikachu", level, 20, 26, xp, 25, 5, 5, shouldLevel, 25);
 
                 break;
             case 26:
-                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Raichu", level, 0, 0, xp, 48, 13.5, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Raichu", level, 0, 0, xp, 48, 13.5, 5, shouldLevel, 26);
 
                 break;
             case 27:
-                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Sandshrew", level, 22, 28, xp, 34, 8, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Sandshrew", level, 22, 28, xp, 34, 8, 5, shouldLevel, 27);
 
                 break;
             case 28:
-                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Sandslash", level, 0, 0, xp, 60, 13, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Sandslash", level, 0, 0, xp, 60, 13, 5, shouldLevel, 28);
 
                 break;
             case 29:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Nidoran (f)", level, 16, 30, xp, 24, 6, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Nidoran (f)", level, 16, 30, xp, 24, 6, 5, shouldLevel, 29);
 
                 break;
             case 30:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Nidorina", level, 32, 31, xp, 40, 10, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Nidorina", level, 32, 31, xp, 40, 10, 5, shouldLevel, 30);
 
                 break;
             case 31:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.Ground, "Nidoqueen", level, 0, 0, xp, 64, 13, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.Ground, "Nidoqueen", level, 0, 0, xp, 64, 13, 5, shouldLevel, 31);
 
                 break;
             case 32:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Nidoran (m)", level, 16, 33, xp, 24, 6, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Nidoran (m)", level, 16, 33, xp, 24, 6, 5, shouldLevel, 32);
 
                 break;
             case 33:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Nidorino", level, 32, 34, xp, 40, 10, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Nidorino", level, 32, 34, xp, 40, 10, 5, shouldLevel, 33);
 
                 break;
             case 34:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.Ground, "Nidoking", level, 0, 0, xp, 64, 13, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.Ground, "Nidoking", level, 0, 0, xp, 64, 13, 5, shouldLevel, 34);
 
                 break;
             case 35:
-                return new Creature(sprite, CreatureType.Fairy, CreatureType.None, "Clefairy", level, 20, 36, xp, 25, 5, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Fairy, CreatureType.None, "Clefairy", level, 20, 36, xp, 25, 5, 5, shouldLevel, 35);
 
                 break;
             case 36:
-                return new Creature(sprite, CreatureType.Fairy, CreatureType.None, "Clefable", level, 0, 0, xp, 58, 10, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Fairy, CreatureType.None, "Clefable", level, 0, 0, xp, 58, 10, 5, shouldLevel, 36);
 
                 break;
             case 37:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Vulpix", level, 20, 38, xp, 22, 6, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Vulpix", level, 20, 38, xp, 22, 6, 5, shouldLevel, 37);
 
                 break;
             case 38:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Ninetales", level, 0, 0, xp, 66, 17, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Ninetales", level, 0, 0, xp, 66, 17, 5, shouldLevel, 38);
 
                 break;
             case 39:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.Fairy, "Jigglypuff", level, 20, 40, xp, 30, 4, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.Fairy, "Jigglypuff", level, 20, 40, xp, 30, 4, 5, shouldLevel, 39);
 
                 break;
             case 40:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.Fairy, "Wigglytuff", level, 0, 0, xp, 52, 10, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.Fairy, "Wigglytuff", level, 0, 0, xp, 52, 10, 5, shouldLevel, 40);
 
                 break;
             case 41:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.Flying, "Zubat", level, 22, 42, xp, 20, 5, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.Flying, "Zubat", level, 22, 42, xp, 20, 5, 5, shouldLevel, 41);
 
                 break;
             case 42:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.Flying, "Golbat", level, 0, 0, xp, 52, 13, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.Flying, "Golbat", level, 0, 0, xp, 52, 13, 5, shouldLevel, 42);
 
                 break;
             case 43:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Oddish", level, 21, 44, xp, 25, 5, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Oddish", level, 21, 44, xp, 25, 5, 5, shouldLevel, 43);
 
                 break;
             case 44:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Gloom", level, 34, 45, xp, 42, 10, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Gloom", level, 34, 45, xp, 42, 10, 5, shouldLevel, 44);
 
                 break;
             case 45:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Vileplume", level, 0, 0, xp, 55, 14, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Vileplume", level, 0, 0, xp, 55, 14, 5, shouldLevel, 45);
 
                 break;
             case 46:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.Grass, "Paras", level, 24, 47, xp, 20, 7, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Bug, CreatureType.Grass, "Paras", level, 24, 47, xp, 20, 7, 5, shouldLevel, 46);
 
                 break;
             case 47:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.Grass, "Parasect", level, 0, 0, xp, 48, 9, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Bug, CreatureType.Grass, "Parasect", level, 0, 0, xp, 48, 9, 5, shouldLevel, 47);
 
                 break;
             case 48:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.Poison, "Venonat", level, 31, 49, xp, 26, 5.5, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Bug, CreatureType.Poison, "Venonat", level, 31, 49, xp, 26, 5.5, 5, shouldLevel, 48);
 
                 break;
             case 49:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.Poison, "Venomoth", level, 0, 0, xp, 50, 11, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Bug, CreatureType.Poison, "Venomoth", level, 0, 0, xp, 50, 11, 5, shouldLevel, 49);
 
                 break;
             case 50:
-                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Diglett", level, 26, 51, xp, 16, 6, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Diglett", level, 26, 51, xp, 16, 6, 5, shouldLevel, 50);
 
                 break;
             case 51:
-                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Dugtrio", level, 0, 0, xp, 44, 15.5, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Dugtrio", level, 0, 0, xp, 44, 15.5, 5, shouldLevel, 51);
 
                 break;
             case 52:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Meowth", level, 28, 53, xp, 24, 6, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Meowth", level, 28, 53, xp, 24, 6, 5, shouldLevel, 52);
 
                 break;
             case 53:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Persian", level, 0, 0, xp, 50, 11, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Persian", level, 0, 0, xp, 50, 11, 5, shouldLevel, 53);
 
                 break;
             case 54:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Psyduck", level, 33, 55, xp, 25, 5, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Psyduck", level, 33, 55, xp, 25, 5, 5, shouldLevel, 54);
 
                 break;
             case 55:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Golduck", level, 0, 0, xp, 60, 11.5, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Golduck", level, 0, 0, xp, 60, 11.5, 5, shouldLevel, 55);
 
                 break;
             case 56:
-                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Mankey", level, 28, 57, xp, 25, 7, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Mankey", level, 28, 57, xp, 25, 7, 5, shouldLevel, 56);
 
                 break;
             case 57:
-                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Primeape", level, 0, 0, xp, 54, 14, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Primeape", level, 0, 0, xp, 54, 14, 5, shouldLevel, 57);
 
                 break;
             case 58:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Growlithe", level, 20, 59, xp, 34, 8, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Growlithe", level, 20, 59, xp, 34, 8, 5, shouldLevel, 58);
 
                 break;
             case 59:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Arcanine", level, 0, 0, xp, 75, 13.5, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Arcanine", level, 0, 0, xp, 75, 13.5, 5, shouldLevel, 59);
 
                 break;
             case 60:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Poliwag", level, 25, 61, xp, 28, 6, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Poliwag", level, 25, 61, xp, 28, 6, 5, shouldLevel, 60);
 
                 break;
             case 61:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Poliwhirl", level, 34, 62, xp, 42, 9, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Poliwhirl", level, 34, 62, xp, 42, 9, 5, shouldLevel, 61);
 
                 break;
             case 62:
-                return new Creature(sprite, CreatureType.Water, CreatureType.Fighting, "Poliwrath", level, 0, 0, xp, 64, 13, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Water, CreatureType.Fighting, "Poliwrath", level, 0, 0, xp, 64, 13, 5, shouldLevel, 62);
 
                 break;
             case 63:
-                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Abra", level, 16, 64, xp, 25, 7, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Abra", level, 16, 64, xp, 25, 7, 5, shouldLevel, 63);
 
                 break;
             case 64:
-                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Kadabra", level, 32, 65, xp, 40, 12, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Kadabra", level, 32, 65, xp, 40, 12, 5, shouldLevel, 64);
 
                 break;
             case 65:
-                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Alakazam", level, 0, 0, xp, 65, 16, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Alakazam", level, 0, 0, xp, 65, 16, 5, shouldLevel, 65);
 
                 break;
             case 66:
-                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Machop", level, 28, 67, xp, 26, 7, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Machop", level, 28, 67, xp, 26, 7, 5, shouldLevel, 66);
 
                 break;
             case 67:
-                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Machoke", level, 38, 68, xp, 44, 10, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Machoke", level, 38, 68, xp, 44, 10, 5, shouldLevel, 67);
 
                 break;
             case 68:
-                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Machamp", level, 0, 0, xp, 64, 14, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Machamp", level, 0, 0, xp, 64, 14, 5, shouldLevel, 68);
 
                 break;
             case 69:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Bellsprout", level, 21, 70, xp, 28, 6, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Bellsprout", level, 21, 70, xp, 28, 6, 5, shouldLevel, 69);
 
                 break;
             case 70:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Weepinbell", level, 34, 71, xp, 46, 9.5, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Weepinbell", level, 34, 71, xp, 46, 9.5, 5, shouldLevel,70);
 
                 break;
             case 71:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Victreebel", level, 0, 0, xp, 60, 13, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Poison, "Victreebel", level, 0, 0, xp, 60, 13, 5, shouldLevel, 71);
 
                 break;
             case 72:
-                return new Creature(sprite, CreatureType.Water, CreatureType.Poison, "Tentacool", level, 30, 73, xp, 38, 8, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Water, CreatureType.Poison, "Tentacool", level, 30, 73, xp, 38, 8, 5, shouldLevel, 72);
 
                 break;
             case 73:
-                return new Creature(sprite, CreatureType.Water, CreatureType.Poison, "Tentacruel", level, 0, 0, xp, 70, 12, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Water, CreatureType.Poison, "Tentacruel", level, 0, 0, xp, 70, 12, 5, shouldLevel, 73);
 
                 break;
             case 74:
-                return new Creature(sprite, CreatureType.Rock, CreatureType.Ground, "Geodude", level, 25, 75, xp, 28, 6, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Rock, CreatureType.Ground, "Geodude", level, 25, 75, xp, 28, 6, 5, shouldLevel, 74);
 
                 break;
             case 75:
-                return new Creature(sprite, CreatureType.Rock, CreatureType.Ground, "Graveler", level, 35, 76, xp, 44, 10, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Rock, CreatureType.Ground, "Graveler", level, 35, 76, xp, 44, 10, 5, shouldLevel, 75);
 
                 break;
             case 76:
-                return new Creature(sprite, CreatureType.Rock, CreatureType.Ground, "Golem", level, 0, 0, xp, 65, 18, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Rock, CreatureType.Ground, "Golem", level, 0, 0, xp, 65, 18, 5, shouldLevel, 76);
 
                 break;
             case 77:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Ponyta", level, 40, 78, xp, 42, 10, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Ponyta", level, 40, 78, xp, 42, 10, 5, shouldLevel, 77);
 
                 break;
             case 78:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Rapidash", level, 0, 0, xp, 62, 19, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Rapidash", level, 0, 0, xp, 62, 19, 5, shouldLevel, 78);
 
                 break;
             case 79:
-                return new Creature(sprite, CreatureType.Water, CreatureType.Psychic, "Slowpoke", level, 37, 80, xp, 34, 6, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Water, CreatureType.Psychic, "Slowpoke", level, 37, 80, xp, 34, 6, 5, shouldLevel, 79);
 
                 break;
             case 80:
-                return new Creature(sprite, CreatureType.Water, CreatureType.Psychic, "Slowbro", level, 0, 0, xp, 58, 10, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Water, CreatureType.Psychic, "Slowbro", level, 0, 0, xp, 58, 10, 5, shouldLevel, 80);
 
                 break;
             case 81:
-                return new Creature(sprite, CreatureType.Electric, CreatureType.Steel, "Magnemite", level, 30, 82, xp, 28, 6, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Electric, CreatureType.Steel, "Magnemite", level, 30, 82, xp, 28, 6, 5, shouldLevel, 81);
 
                 break;
             case 82:
-                return new Creature(sprite, CreatureType.Electric, CreatureType.Steel, "Magneton", level, 0, 0, xp, 55, 12, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Electric, CreatureType.Steel, "Magneton", level, 0, 0, xp, 55, 12, 5, shouldLevel, 82);
 
                 break;
             case 83:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Farfetchd", level, 0, 0, xp, 37, 9, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Farfetchd", level, 0, 0, xp, 37, 9, 5, shouldLevel, 83);
 
                 break;
             case 84:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Doduo", level, 31, 85, xp, 32, 8, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Doduo", level, 31, 85, xp, 32, 8, 5, shouldLevel, 84);
 
                 break;
             case 85:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Dodrio", level, 0, 0, xp, 58, 13, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.Flying, "Dodrio", level, 0, 0, xp, 58, 13, 5, shouldLevel, 85);
 
                 break;
             case 86:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Seel", level, 34, 87, xp, 35, 7, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Seel", level, 34, 87, xp, 35, 7, 5, shouldLevel, 86);
 
                 break;
             case 87:
-                return new Creature(sprite, CreatureType.Water, CreatureType.Ice, "Dewgong", level, 0, 0, xp, 60, 13, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Water, CreatureType.Ice, "Dewgong", level, 0, 0, xp, 60, 13, 5, shouldLevel, 87);
 
                 break;
             case 88:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Grimer", level, 38, 89, xp, 34, 7, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Grimer", level, 38, 89, xp, 34, 7, 5, shouldLevel, 88);
 
                 break;
             case 89:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Muk", level, 0, 0, xp, 60, 12.5, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Muk", level, 0, 0, xp, 60, 12.5, 5, shouldLevel, 89);
 
                 break;
             case 90:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Shelder", level, 26, 91, xp, 36, 7, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Shelder", level, 26, 91, xp, 36, 7, 5, shouldLevel, 90);
 
                 break;
             case 91:
-                return new Creature(sprite, CreatureType.Water, CreatureType.Ice, "Cloyster", level, 0, 0, xp, 70, 12, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Water, CreatureType.Ice, "Cloyster", level, 0, 0, xp, 70, 12, 5, shouldLevel, 91);
 
                 break;
             case 92:
-                return new Creature(sprite, CreatureType.Ghost, CreatureType.Poison, "Gastly", level, 25, 93, xp, 33, 8, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Ghost, CreatureType.Poison, "Gastly", level, 25, 93, xp, 33, 8, 5, shouldLevel, 92);
 
                 break;
             case 93:
-                return new Creature(sprite, CreatureType.Ghost, CreatureType.Poison, "Haunter", level, 35, 94, xp, 48, 13, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Ghost, CreatureType.Poison, "Haunter", level, 35, 94, xp, 48, 13, 5, shouldLevel,93 );
 
                 break;
             case 94:
-                return new Creature(sprite, CreatureType.Ghost, CreatureType.Poison, "Gengar", level, 0, 0, xp, 68, 19, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Ghost, CreatureType.Poison, "Gengar", level, 0, 0, xp, 68, 19, 5, shouldLevel, 94);
 
                 break;
             case 95:
-                return new Creature(sprite, CreatureType.Rock, CreatureType.Ground, "Onix", level, 0, 0, xp, 44, 10, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Rock, CreatureType.Ground, "Onix", level, 0, 0, xp, 44, 10, 5, shouldLevel, 95);
 
                 break;
             case 96:
-                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Drowsee", level, 26, 97, xp, 38, 8, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Drowsee", level, 26, 97, xp, 38, 8, 5, shouldLevel, 96);
 
                 break;
             case 97:
-                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Hypno", level, 0, 0, xp, 60, 13.5, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Hypno", level, 0, 0, xp, 60, 13.5, 5, shouldLevel, 97);
 
                 break;
             case 98:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Krabby", level, 28, 99, xp, 40, 8, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Krabby", level, 28, 99, xp, 40, 8, 5, shouldLevel, 98);
 
                 break;
             case 99:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Kingler", level, 0, 0, xp, 75, 16, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Kingler", level, 0, 0, xp, 75, 16, 5, shouldLevel, 99);
 
                 break;
             case 100:
-                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Voltorb", level, 30, 101, xp, 33, 8, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Voltorb", level, 30, 101, xp, 33, 8, 5, shouldLevel, 100);
 
                 break;
             case 101:
-                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Electrode", level, 0, 0, xp, 55, 15, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Electrode", level, 0, 0, xp, 55, 15, 5, shouldLevel, 101);
 
                 break;
             case 102:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Psychic, "Exeggcute", level, 30, 103, xp, 36, 7, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Psychic, "Exeggcute", level, 30, 103, xp, 36, 7, 5, shouldLevel, 102);
 
                 break;
             case 103:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.Psychic, "Exeggutor", level, 0, 0, xp, 75, 13, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Grass, CreatureType.Psychic, "Exeggutor", level, 0, 0, xp, 75, 13, 5, shouldLevel, 103);
 
                 break;
             case 104:
-                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Cubone", level, 28, 105, xp, 30, 7, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Cubone", level, 28, 105, xp, 30, 7, 5, shouldLevel, 104);
 
                 break;
             case 105:
-                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Marowak", level, 0, 0, xp, 42, 12, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Ground, CreatureType.None, "Marowak", level, 0, 0, xp, 42, 12, 5, shouldLevel, 105);
 
                 break;
             case 106:
-                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Hitmonlee", level, 0, 0, xp, 41, 13, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Hitmonlee", level, 0, 0, xp, 41, 13, 5, shouldLevel, 106);
 
                 break;
             case 107:
-                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Hitmonchan", level, 0, 0, xp, 38, 13.5, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Fighting, CreatureType.None, "Hitmonchan", level, 0, 0, xp, 38, 13.5, 5, shouldLevel, 107);
 
                 break;
             case 108:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Lickitung", level, 0, 0, xp, 42, 11, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Lickitung", level, 0, 0, xp, 42, 11, 5, shouldLevel, 108);
 
                 break;
             case 109:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Koffing", level, 35, 110, xp, 36, 9, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Koffing", level, 35, 110, xp, 36, 9, 5, shouldLevel, 109);
 
                 break;
             case 110:
-                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Weezing", level, 0, 0, xp, 64, 18, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Poison, CreatureType.None, "Weezing", level, 0, 0, xp, 64, 18, 5, shouldLevel, 110);
 
                 break;
             case 111:
-                return new Creature(sprite, CreatureType.Ground, CreatureType.Rock, "Rhyhorn", level, 42, 112, xp, 40, 11, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Ground, CreatureType.Rock, "Rhyhorn", level, 42, 112, xp, 40, 11, 5, shouldLevel, 111);
 
                 break;
             case 112:
-                return new Creature(sprite, CreatureType.Ground, CreatureType.Rock, "Rhydon", level, 0, 0, xp, 70, 13, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Ground, CreatureType.Rock, "Rhydon", level, 0, 0, xp, 70, 13, 5, shouldLevel, 112);
 
                 break;
             case 113:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Chansey", level, 0, 0, xp, 76, 10, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Chansey", level, 0, 0, xp, 76, 10, 5, shouldLevel,113 );
 
                 break;
             case 114:
-                return new Creature(sprite, CreatureType.Grass, CreatureType.None, "Tangela", level, 0, 0, xp, 55, 12, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Grass, CreatureType.None, "Tangela", level, 0, 0, xp, 55, 12, 5, shouldLevel,114 );
 
                 break;
             case 115:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Kangaskhan", level, 0, 0, xp, 70, 12.5, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Kangaskhan", level, 0, 0, xp, 70, 12.5, 5, shouldLevel, 115);
 
                 break;
             case 116:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Horsea", level, 32, 117, xp, 30, 7, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Horsea", level, 32, 117, xp, 30, 7, 5, shouldLevel, 116);
 
                 break;
             case 117:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Seadra", level, 0, 0, xp, 57, 13, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Seadra", level, 0, 0, xp, 57, 13, 5, shouldLevel, 117);
 
                 break;
             case 118:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Goldeen", level, 33, 119, xp, 38, 8, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Goldeen", level, 33, 119, xp, 38, 8, 5, shouldLevel, 118);
 
                 break;
             case 119:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Seaking", level, 0, 0, xp, 52, 13, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Seaking", level, 0, 0, xp, 52, 13, 5, shouldLevel, 119);
 
                 break;
             case 120:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Staryu", level, 30, 121, xp, 37, 9, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Staryu", level, 30, 121, xp, 37, 9, 5, shouldLevel,120 );
 
                 break;
             case 121:
-                return new Creature(sprite, CreatureType.Water, CreatureType.Psychic, "Starmie", level, 0, 0, xp, 65, 14, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Water, CreatureType.Psychic, "Starmie", level, 0, 0, xp, 65, 14, 5, shouldLevel,121 );
 
                 break;
             case 122:
-                return new Creature(sprite, CreatureType.Psychic, CreatureType.Fairy, "Mr. Mime", level, 0, 0, xp, 40, 12, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Psychic, CreatureType.Fairy, "Mr. Mime", level, 0, 0, xp, 40, 12, 5, shouldLevel,122 );
 
                 break;
             case 123:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.Flying, "Scyther", level, 0, 0, xp, 62, 16.5, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Bug, CreatureType.Flying, "Scyther", level, 0, 0, xp, 62, 16.5, 5, shouldLevel,123 );
 
                 break;
             case 124:
-                return new Creature(sprite, CreatureType.Ice, CreatureType.Psychic, "Jynx", level, 0, 0, xp, 44, 11, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Ice, CreatureType.Psychic, "Jynx", level, 0, 0, xp, 44, 11, 5, shouldLevel, 124);
 
                 break;
             case 125:
-                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Electabuzz", level, 0, 0, xp, 55, 13, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Electabuzz", level, 0, 0, xp, 55, 13, 5, shouldLevel, 125);
 
                 break;
             case 126:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Magmar", level, 0, 0, xp, 55, 13, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Magmar", level, 0, 0, xp, 55, 13, 5, shouldLevel, 126);
 
                 break;
             case 127:
-                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Pinsir", level, 0, 0, xp, 52, 14, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Bug, CreatureType.None, "Pinsir", level, 0, 0, xp, 52, 14, 5, shouldLevel, 127);
 
                 break;
             case 128:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Tauros", level, 0, 0, xp, 60, 15.5, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Tauros", level, 0, 0, xp, 60, 15.5, 5, shouldLevel, 128);
 
                 break;
             case 129:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Magikarp", level, 20, 130, xp, 18, 5, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Magikarp", level, 20, 130, xp, 18, 5, 5, shouldLevel,129 );
 
                 break;
             case 130:
-                return new Creature(sprite, CreatureType.Water, CreatureType.Flying, "Gyarados", level, 0, 0, xp, 68, 14, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Water, CreatureType.Flying, "Gyarados", level, 0, 0, xp, 68, 14, 5, shouldLevel, 130);
 
                 break;
             case 131:
-                return new Creature(sprite, CreatureType.Water, CreatureType.Ice, "Lapras", level, 0, 0, xp, 63, 13.5, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Water, CreatureType.Ice, "Lapras", level, 0, 0, xp, 63, 13.5, 5, shouldLevel, 131);
 
                 break;
             case 132:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Ditto", level, 0, 0, xp, 22, 5, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Ditto", level, 0, 0, xp, 22, 5, 5, shouldLevel, 132);
 
                 break;
             case 133:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Eevee", level, 10, 134, xp, 24, 5, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Eevee", level, 10, 134, xp, 24, 5, 5, shouldLevel, 133);
 
                 break;
             case 134:
-                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Vaporeon", level, 20, 135, xp, 44, 10, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Water, CreatureType.None, "Vaporeon", level, 20, 135, xp, 44, 10, 5, shouldLevel, 134);
 
                 break;
             case 135:
-                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Jolteon", level, 30, 136, xp, 52, 13, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Electric, CreatureType.None, "Jolteon", level, 30, 136, xp, 52, 13, 5, shouldLevel,135 );
 
                 break;
             case 136:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Flareon", level, 0, 0, xp, 65, 17, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Fire, CreatureType.None, "Flareon", level, 0, 0, xp, 65, 17, 5, shouldLevel, 136);
 
                 break;
             case 137:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Porygon", level, 0, 0, xp, 42, 11, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Porygon", level, 0, 0, xp, 42, 11, 5, shouldLevel, 137);
 
                 break;
             case 138:
-                return new Creature(sprite, CreatureType.Rock, CreatureType.Water, "Omanyte", level, 40, 139, xp, 42, 8, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Rock, CreatureType.Water, "Omanyte", level, 40, 139, xp, 42, 8, 5, shouldLevel,138 );
 
                 break;
             case 139:
-                return new Creature(sprite, CreatureType.Rock, CreatureType.Water, "Omastar", level, 0, 0, xp, 75, 16.5, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Rock, CreatureType.Water, "Omastar", level, 0, 0, xp, 75, 16.5, 5, shouldLevel,139 );
 
                 break;
             case 140:
-                return new Creature(sprite, CreatureType.Rock, CreatureType.Water, "Kabuto", level, 40, 141, xp, 36, 10, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Rock, CreatureType.Water, "Kabuto", level, 40, 141, xp, 36, 10, 5, shouldLevel, 140);
 
                 break;
             case 141:
-                return new Creature(sprite, CreatureType.Rock, CreatureType.Water, "Kabutops", level, 0, 0, xp, 72, 17, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Rock, CreatureType.Water, "Kabutops", level, 0, 0, xp, 72, 17, 5, shouldLevel, 141);
 
                 break;
             case 142:
-                return new Creature(sprite, CreatureType.Rock, CreatureType.Flying, "Aerodactyl", level, 0, 0, xp, 75, 17.5, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Rock, CreatureType.Flying, "Aerodactyl", level, 0, 0, xp, 75, 17.5, 5, shouldLevel,142 );
 
                 break;
             case 143:
-                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Snorlax", level, 0, 0, xp, 80, 15, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Normal, CreatureType.None, "Snorlax", level, 0, 0, xp, 80, 15, 5, shouldLevel, 143);
 
                 break;
             case 144:
-                return new Creature(sprite, CreatureType.Ice, CreatureType.Flying, "Articuno", level, 0, 0, xp, 100, 22, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Ice, CreatureType.Flying, "Articuno", level, 0, 0, xp, 100, 22, 5, shouldLevel, 144);
 
                 break;
             case 145:
-                return new Creature(sprite, CreatureType.Electric, CreatureType.Flying, "Zapdos", level, 0, 0, xp, 100, 22, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Electric, CreatureType.Flying, "Zapdos", level, 0, 0, xp, 100, 22, 5, shouldLevel,145 );
 
                 break;
             case 146:
-                return new Creature(sprite, CreatureType.Fire, CreatureType.Flying, "Moltres", level, 0, 0, xp, 100, 22, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Fire, CreatureType.Flying, "Moltres", level, 0, 0, xp, 100, 22, 5, shouldLevel, 146);
 
                 break;
             case 147:
-                return new Creature(sprite, CreatureType.Dragon, CreatureType.None, "Dratini", level, 30, 148, xp, 25, 7, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Dragon, CreatureType.None, "Dratini", level, 30, 148, xp, 25, 7, 5, shouldLevel, 147);
 
                 break;
             case 148:
-                return new Creature(sprite, CreatureType.Dragon, CreatureType.None, "Dragonair", level, 55, 149, xp, 50, 14, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Dragon, CreatureType.None, "Dragonair", level, 55, 149, xp, 50, 14, 5, shouldLevel, 148);
 
                 break;
             case 149:
-                return new Creature(sprite, CreatureType.Dragon, CreatureType.Flying, "Dragonite", level, 0, 0, xp, 105, 23, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Dragon, CreatureType.Flying, "Dragonite", level, 0, 0, xp, 105, 23, 5, shouldLevel, 149);
 
                 break;
             case 150:
-                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Mewtwo", level, 0, 0, xp, 120, 25, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Mewtwo", level, 0, 0, xp, 120, 25, 5, shouldLevel, 150);
 
                 break;
             case 151:
-                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Mew", level, 0, 0, xp, 120, 25, 5, shouldLevel);
+                return new Creature(sprite, CreatureType.Psychic, CreatureType.None, "Mew", level, 0, 0, xp, 120, 25, 5, shouldLevel, 151);
 
                 break;
             default:
@@ -1232,7 +1242,7 @@ namespace creatures {
         }
     }
 
-
+    let nextCustomCreatureID = 152
 
 
     //% blockId=makeCreatureFromSprite 
@@ -1241,8 +1251,8 @@ namespace creatures {
     //% blockSetVariable=myCreature
     //% group="Create"
     //% weight=100
-    export function makeCreatureFromSprite(sprite: Sprite, creatureType1: CreatureType, creatureType2: CreatureType, name: string, xp: number = 0, hp: number = 20, attackValue: number = 5, xpReward: number = 10): Creature {
-        return new Creature(sprite, creatureType1, creatureType2, name);
+    export function makeCreatureFromSprite(sprite: Sprite, creatureType1: CreatureType, creatureType2: CreatureType, name: string, level: number =5, evolutionLevel: number=100, evolutionID:number =-1, xp: number = 0, hp: number = 20, attackValue: number = 5, xpReward: number = 10): Creature {
+        return new Creature(sprite, creatureType1, creatureType2, name, level, evolutionLevel, evolutionID, xp, hp, attackValue, xpReward, true, nextCustomCreatureID++);
     }
 
     //% group="Value"
@@ -1317,6 +1327,7 @@ namespace creatures {
     //% block="open party"
     //% group="Display"
     export function openParty() {
+        
         pause(150);
         let map: tiles.TileMapData = game.currentScene().tileMap.data;
         tiles.setCurrentTilemap(tilemap` `)
@@ -1713,7 +1724,7 @@ namespace creatures {
         controller.up.onEvent(ControllerButtonEvent.Pressed, function () { })
         controller.down.onEvent(ControllerButtonEvent.Pressed, function () { })
         controller.A.onEvent(ControllerButtonEvent.Pressed, function () { })
-        controller.B.onEvent(ControllerButtonEvent.Pressed, function () { })
+        //controller.B.onEvent(ControllerButtonEvent.Pressed, function () { })
         //myTrainer.menuOpen = false;
 
 
@@ -1867,15 +1878,6 @@ namespace creatures {
         scene.backgroundImage().fillRect(10, 13, 140, 70, 1)
 
       
-
-        timer.after(400, function () {
-            //pause(100)
-            controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
-                if (!(creatures.trainerInBattle(myTrainer))) {
-                    creatures.openParty()
-                } })
-        })
-
 
     }
 
@@ -3177,6 +3179,7 @@ namespace creatures {
                 creature.creatureType1 = evolution.creatureType1;
                 creature.creatureType2 = evolution.creatureType2;
                 creature.name = evolution.name;
+                creature.id = evolution.id;
                 creature.evolutionID = evolution.evolutionID;
                 //creature.xp = 0;
                 creature.hp = evolution.hp;
@@ -3257,22 +3260,24 @@ namespace creatures {
     }
 
     const typeChart: TypeChart = {
-        12: { 15: 0.5, 8: 0 },
-        6: { 15: 2, 17: 0.5, 9: 2, 11: 2, 0: 2 },
-        17: { 10: 2, 9: 0.5, 6: 2 },
-        9: { 10: 2, 15: 2, 17: 0.5, 6: 0.5, 11: 2 },
-        3: { 10: 0, 17: 2, 7: 2 },
-        11: { 9: 2, 10: 2, 16: 0.5, 6: 2, 2: 2 },
-        5: { 12: 2, 15: 2, 16: 2, 8: 0, 14: 0.5, 7: 0.5, 0: 0.5 },
-        13: { 9: 2, 10: 0.5, 16: 0.5, 14: 2 },
-        10: { 15: 0.5, 3: 2, 9: 0.5, 11: 2, 13: 2, 0: 0.5 },
-        7: { 15: 0.5, 3: 0.5, 16: 0.5, 9: 2, 0: 2 },
-        14: { 5: 2, 13: 2, 16: 0.5 },
-        0: { 9: 2, 14: 2, 1: 2, 6: 0.5, 7: 0.5, 16: 0.5 },
-        15: { 5: 0.5, 10: 0.5, 6: 2, 9: 2, 17: 2 },
-        8: { 12: 0, 5: 0, 8: 2, 16: 0.5, 14: 2, 1: 0.5 },
-        2: { 2: 2, 16: 0.5, 11: 2 },
-        1: { 8: 2, 14: 2, 5: 0.5 },
+        12: { 15: 0.5, 8: 0, 16: 0.5 },
+        6: { 15: 0.5, 17: 0.5, 9: 2, 11: 2, 0: 2, 6: 0.5, 2: 0, 16: 2 },
+        17: { 10: 2, 9: 0.5, 6: 2, 17: 0.5, 15: 2, 2: 0.5 },
+        9: { 10: 2, 15: 2, 17: 2, 6: 0.5, 9: 0.5, 13: 0.5, 7: 0.5, 0: 0.5, 2: 0.5, 16: 0.5 },
+        3: { 10: 0, 17: 2, 7: 2, 3: 0.5, 9: 0.5, 2: 0.5 },
+        11: { 9: 2, 10: 2, 7: 2, 2: 2, 6: 0.5, 17: 0.5, 11: 0.5, 16: 0.5 },
+        5: { 12: 2, 15: 2, 16: 2, 11: 2, 1: 2, 8: 0, 14: 0.5, 7: 0.5, 0: 0.5, 13: 0.5, 4: 0.5 },
+        13: { 9: 2, 10: 0.5, 16: 0, 14: 2, 13: 0.5, 15: 0.5, 8: 0.5 },
+        10: { 6: 2, 3: 2, 9: 0.5, 11: 2, 13: 2, 0: 0.5, 15: 2, 16: 2, 7: 0 },
+        7: { 15: 0.5, 3: 0.5, 16: 0.5, 9: 2, 0: 2, 5: 2 },
+        14: { 5: 2, 13: 2, 16: 0.5, 14: 0.5, 1: 0 },
+        0: { 9: 2, 14: 2, 1: 2, 6: 0.5, 7: 0.5, 16: 0.5, 5: 0.5, 4: 0.5 },
+        15: { 5: 0.5, 10: 0.5, 6: 2, 11: 2, 7: 2, 0: 2, 16: 0.5 },
+        8: { 12: 0, 8: 2, 14: 2, 1: 0.5 },
+        2: { 2: 2, 16: 0.5, 4: 0 },
+        1: { 8: 2, 14: 2, 5: 0.5, 1: 0.5, 4: 0.5 },
+        16: { 6: 0.5, 17: 0.5, 9: 0.5, 11: 2, 15: 2, 16: 0.5, 4: 2 },
+        4: { 6: 0.5, 5: 2, 13: 0.5, 2: 2, 1: 2, 16: 0.5 },
     };
 
 
@@ -4539,6 +4544,7 @@ namespace creatures {
         timer.throttle("gym", 500, function () {
             tiles.setTileAt(location, assets.tile`transparency16`)
             player.sprite.setFlag(SpriteFlag.GhostThroughTiles, true)
+            player.menuOpen = true;
             game.showLongText("Welcome to the Gym. Do you wish to battle?", DialogLayout.Bottom)
             story.startCutscene(function () {
                 controller.moveSprite(player.sprite, 0, 0)
@@ -4850,6 +4856,7 @@ namespace creatures {
                     player.inBattle = false;
                 }
                 player.sprite.setFlag(SpriteFlag.GhostThroughTiles, false)
+                player.menuOpen = false;
             })
         })
 
@@ -4968,7 +4975,424 @@ namespace creatures {
     }
 
 
+    export function saveGame(){
+        
+        blockSettings.writeNumber("trainerBadges", myTrainer.badges);
+        blockSettings.writeString("trainerName", myTrainer.name);
+        let partyIds = []
+        let partyLevels = []
+        let partyHP = [];
+        let boxIds = []
+        let boxLevels = []
+        for(let creature of myTrainer.partyPokemon){
+            partyIds.push(creature.id);
+            partyLevels.push(creature.level);
+            partyHP.push(creature.hp)
+        }
+        for (let creature of myTrainer.boxPokemon) {
+            boxIds.push(creature.id);
+            boxLevels.push(creature.level);
+        }
+        blockSettings.writeNumberArray("trainerPartyIDs", partyIds);
+        blockSettings.writeNumberArray("trainerPartyLevels", partyLevels);
+        blockSettings.writeNumberArray("trainerPartyHP", partyHP);
 
+        blockSettings.writeNumberArray("trainerBoxIDs", boxIds);
+        blockSettings.writeNumberArray("trainerBoxLevels", boxLevels);
+
+        blockSettings.writeNumber("trainerCurrentRouteID", myTrainer.currentRouteID);
+        blockSettings.writeNumber("trainerX", myTrainer.sprite.x);
+        blockSettings.writeNumber("trainerY", myTrainer.sprite.y);
+
+
+    }
+
+    export function loadGame(){
+        let savedPartyIds: number[] = [];
+        let savedPartyLevels: number[] = [];
+        
+        let savedPartyHP: number[] = [];
+        let savedBoxIds: number[] = [];
+        let savedBoxLevels: number[] = [];
+        let savedName = "Ash";
+        let savedBadges = 0;
+        let savedCurrentRouteID = 0;
+        let savedTrainerX = 0;
+        let savedTrainerY = 0;
+
+        if (blockSettings.exists("trainerPartyIDs")){
+            savedPartyIds = blockSettings.readNumberArray("trainerPartyIDs")
+        }else{
+            game.showLongText("Save data not found or corrupted.", DialogLayout.Bottom);
+            return;
+        }
+        if (blockSettings.exists("trainerPartyLevels")) {
+            savedPartyLevels = blockSettings.readNumberArray("trainerPartyLevels");
+        } else {
+            game.showLongText("Save data not found or corrupted.", DialogLayout.Bottom);
+            return;
+        }
+        if (blockSettings.exists("trainerPartyHP")) {
+            savedPartyHP = blockSettings.readNumberArray("trainerPartyHP");
+        } else {
+            game.showLongText("Save data not found or corrupted.", DialogLayout.Bottom);
+            return;
+        }
+        if (blockSettings.exists("trainerBoxIDs")) {
+            savedBoxIds = blockSettings.readNumberArray("trainerBoxIDs");
+        } else {
+            game.showLongText("Save data not found or corrupted.", DialogLayout.Bottom);
+            return;
+        }
+        if (blockSettings.exists("trainerBoxLevels")) {
+            savedBoxLevels = blockSettings.readNumberArray("trainerBoxLevels");
+        } else {
+            game.showLongText("Save data not found or corrupted.", DialogLayout.Bottom);
+            return;
+        }
+        if (blockSettings.exists("trainerName")) {
+            savedName = blockSettings.readString("trainerName");
+        } else {
+            game.showLongText("Save data not found or corrupted.", DialogLayout.Bottom);
+            return;
+        }
+        if (blockSettings.exists("trainerBadges")) {
+            savedBadges = blockSettings.readNumber("trainerBadges");
+        } else {
+            game.showLongText("Save data not found or corrupted.", DialogLayout.Bottom);
+            return;
+        }
+        if (blockSettings.exists("trainerCurrentRouteID")) {
+            savedCurrentRouteID = blockSettings.readNumber("trainerCurrentRouteID");
+        } else {
+            game.showLongText("Save data not found or corrupted.", DialogLayout.Bottom);
+            return;
+        }
+        if (blockSettings.exists("trainerX")) {
+            savedTrainerX = blockSettings.readNumber("trainerX");
+        } else {
+            game.showLongText("Save data not found or corrupted.", DialogLayout.Bottom);
+            return;
+        }
+        if (blockSettings.exists("trainerY")) {
+            savedTrainerY = blockSettings.readNumber("trainerY");
+        } else {
+            game.showLongText("Save data not found or corrupted.", DialogLayout.Bottom);
+            return;
+        }
+        
+
+
+        let newPartyCreatures : Creature[] = [];
+        for(let id of savedPartyIds){
+            newPartyCreatures.push(makeCreatureFromID(id, savedPartyLevels[newPartyCreatures.length], getXpForLevel(savedPartyLevels[newPartyCreatures.length]),true))
+        }
+
+        for(let i = 0; i<savedPartyHP.length; i++){
+            newPartyCreatures[i].hp = savedPartyHP[i];
+        }
+
+        for(let creature of myTrainer.partyPokemon){
+            creature.sprite.destroy();
+        }
+
+        myTrainer.partyPokemon = newPartyCreatures;
+
+        let newBoxCreatures: Creature[] = [];
+        for (let id of savedBoxIds) {
+            newBoxCreatures.push(makeCreatureFromID(id, savedBoxLevels[newBoxCreatures.length], getXpForLevel(savedBoxLevels[newBoxCreatures.length]), true))
+        }
+
+        myTrainer.boxPokemon = newBoxCreatures;
+
+        myTrainer.currentRouteID = savedCurrentRouteID;
+        loadRoute(routes[myTrainer.currentRouteID], assets.tile`myTile1`,
+            assets.tile`myTile2`,
+            assets.tile`myTile3`,
+            assets.tile`myTile10`,
+            assets.tile`myTile11`)
+        myTrainer.sprite.setPosition(savedTrainerX,savedTrainerY);
+        myTrainer.name = savedName;
+        myTrainer.badges = savedBadges;
+    }
+
+    export function clearSave(){
+        blockSettings.clear()
+    }
+
+    //% blockId=creatures_openPause
+    //% block="open pause menu"
+    //% group="Display"
+    export function openPauseMenu(){
+        if(myTrainer.menuOpen){
+            return;
+        }
+        if(myTrainer.inBattle){
+            return;
+        }
+        //pause(100);
+        controller.moveSprite(myTrainer.sprite,0,0);
+        myTrainer.menuOpen = true;
+        let menuBackground = sprites.create(img`
+            fffffffffffffffffffffffffffffffffffffffffffff
+            fffffffffffffffffffffffffffffffffffffffffffff
+            fffffffffffffffffffffffffffffffffffffffffffff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fff111111111111111111111111111111111111111fff
+            fffffffffffffffffffffffffffffffffffffffffffff
+            fffffffffffffffffffffffffffffffffffffffffffff
+            fffffffffffffffffffffffffffffffffffffffffffff
+        `, SpriteKind.Text)
+        menuBackground.setPosition(myTrainer.sprite.x + 50, myTrainer.sprite.y)
+        
+        let saveText = textsprite.create("Save",1,15)
+        let loadText = textsprite.create("Load",1,15)
+        let deleteText = textsprite.create("Delete",1,15)
+        let partyText = textsprite.create("Party",1,15)
+        let boxText = textsprite.create("Box",1,15)
+
+        saveText.setPosition(myTrainer.sprite.x + 50, myTrainer.sprite.y - 45)
+        loadText.setPosition(myTrainer.sprite.x + 50, myTrainer.sprite.y - 25)
+        deleteText.setPosition(myTrainer.sprite.x + 50, myTrainer.sprite.y - 5)
+        partyText.setPosition(myTrainer.sprite.x + 50, myTrainer.sprite.y + 15)
+        boxText.setPosition(myTrainer.sprite.x + 50, myTrainer.sprite.y + 35)
+        
+        let selector = sprites.create(img`
+            .ff...fffff...ffffff...ffff...fffff....ffff..
+            ............................................f
+            ............................................f
+            f...........................................f
+            f............................................
+            f............................................
+            f............................................
+            ............................................f
+            ............................................f
+            ............................................f
+            ............................................f
+            ............................................f
+            f............................................
+            f............................................
+            f............................................
+            f............................................
+            f...........................................f
+            ............................................f
+            ............................................f
+            .fffff.....ffff....fff....fffff.....ffff.....
+        `, SpriteKind.Text)
+        selector.setPosition(myTrainer.sprite.x + 50, myTrainer.sprite.y - 45)
+        let currSelection = 0;
+        let selection = -1;
+        let confirm = 0;
+        pause(120);
+        while (confirm == 0 && !controller.B.isPressed()) {
+            //game.splash("waiting for selection", "Selection is " + selection);
+            while (selection == -1 && !controller.B.isPressed()) {
+                
+                timer.background(function () {
+
+                    controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+                        if (currSelection > 0) {
+                            currSelection -= 1;
+                        }
+                    })
+                    controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+                        if (currSelection < 4) {
+                            currSelection += 1;
+                        }
+                    })
+
+
+                    controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+                        selection = currSelection;
+                    })
+                    switch (currSelection) {
+                        case 0:
+                            selector.setPosition(myTrainer.sprite.x + 50, myTrainer.sprite.y - 45)
+                            break;
+                        case 1:
+                            selector.setPosition(myTrainer.sprite.x + 50, myTrainer.sprite.y - 25)
+                            break;
+                        case 2:
+                            selector.setPosition(myTrainer.sprite.x + 50, myTrainer.sprite.y - 5)
+                            break;
+                        case 3:
+                            selector.setPosition(myTrainer.sprite.x + 50, myTrainer.sprite.y + 15)
+                            break;
+                        case 4:
+                            selector.setPosition(myTrainer.sprite.x + 50, myTrainer.sprite.y + 35)
+                            break;
+
+                    }
+                    
+                })
+                pause(100);
+               
+            }
+            pause(30)
+            controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+                
+            })
+            controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+
+            })
+            controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+
+            })
+            //game.splash("Shwoing confirm");
+            if (selection == 0 || selection == 1 || selection ==2) {
+                story.showPlayerChoices("Yes", "No")
+
+                pauseUntil(() => !(story.isMenuOpen()))
+                if (story.checkLastAnswer("Yes")) {
+                    confirm = 1;
+                } else if (story.checkLastAnswer("No")) {
+                    confirm = 0;
+                    selection = -1;
+                }
+            } else {
+                confirm = 1;
+            }
+
+
+        }
+        
+        //choice is confirmed
+        if(selection == 0){
+            game.showLongText("Saving data please do not turn off the power .....",DialogLayout.Bottom);
+            saveGame()
+            game.showLongText("Game Saved.", DialogLayout.Bottom);
+            
+        } else if (selection == 1) {
+            game.showLongText("Loading data please do not turn off the power .....", DialogLayout.Bottom);
+            loadGame()
+            game.showLongText("Game Loaded.", DialogLayout.Bottom);
+        } else if (selection == 2) {
+            game.showLongText("Deleting save data please do not turn off the power .....", DialogLayout.Bottom);
+            clearSave();
+            game.showLongText("Save Deleted.", DialogLayout.Bottom);
+        } else if (selection == 3) {
+            openParty()
+        } else if (selection == 4) {
+            game.showLongText("Not yet implemented.", DialogLayout.Bottom);
+        }
+        menuBackground.destroy();
+        selector.destroy();
+        saveText.destroy();
+        loadText.destroy();
+        deleteText.destroy();
+        partyText.destroy();
+        boxText.destroy();
+        timer.after(100, function() {
+            myTrainer.menuOpen = false;
+        })
+        
+        controller.moveSprite(myTrainer.sprite, 80, 80);
+
+
+
+    }
 
     function makeCreatureImageDex(id: number): Sprite {
         switch (id) {
@@ -5187,47 +5611,47 @@ namespace creatures {
                         `, SpriteKind.Creature)
             case 4:
                 return sprites.create(img`
-                            1111111111111111111111111111111111111111
-                            1111111144ff4411111111411111111111111111
-                            1111111f1111114f111111141111114411111111
-                            111111f111144444f11111144111111411111111
-                            11111f1111444444441111114411111111111411
-                            11111414444441144f1111114444111111114411
-                            1111f14444441444144114111444411111114411
-                            11114414444414f114f114111444444411114111
-                            11114f1444444ffff4f114411144444441111111
-                            11114f4444444fff44f111441144444444411111
-                            1111f4f4444444f4444411444144444444411111
-                            11111f4444444444444f11144144444444441111
-                            1111441114444444444f11114144444444444111
-                            1111f11444444444f44441111144444444444411
-                            1111414444444f4f4444f1111144444444444441
-                            11111f444444f4f4444444111144444444444441
-                            111111f4444f4f4444444f111144444444444441
-                            11111114ff444444444444f11114444444444441
-                            11111111111f4444444444441114444444444441
-                            11111111111444444444444f1111444444444441
-                            111111111144144f44444444f111114444444411
-                            111111111ff111f1144444444f11111f44444411
-                            1111111f44f111411444f444444111f444411111
-                            111111f114f11411144f444444f11f4444411111
-                            1111141114f11f1444f444444444444444111111
-                            11111f1444f114444f444144444f44444f111111
-                            111114444f41114ff14f1444444f4444f1111111
-                            1111114f41141111111f1444444f444f11111111
-                            11111111111f111111114444444f44f111111111
-                            111111111111f1111111f44444f4ff1111111111
-                            1111111111111f1111111f4444ff111111111111
-                            11111111111111f4111144f44441111111111111
-                            111111111111111ff4444f44444f111111111111
-                            11111111111111f4444ff11f4444f11111111111
-                            1111111111111f4444f1111f44444f1111111111
-                            11111111111ff444444f111f444444f111111111
-                            1111111111f44444444f111f4444444f11111111
-                            111111111f44444f444f1111f4f44444f1111111
-                            111111111f4f44f44ff11111f44f44f4f1111111
-                            11111111114fffff411111111fffffff11111111
-                        `, SpriteKind.Creature)
+                    1111111111111111111111111111111111111111
+                    1111111144ff4411111111411111111111111111
+                    1111111f1111114f111111141111114411111111
+                    111111f111144444f11111144111111411111111
+                    11111f1111444444441111114411111111111411
+                    11111414444441144f1111114444111111114411
+                    1111f14444441444144114111444411111114411
+                    11114414444414f114f114111444444411114111
+                    11114f1444444ffff4f114411144444441111111
+                    11114f4444444fff44f111441144444444411111
+                    1111f4f4444444f4444411444144444444411111
+                    11111f4444444444444f11144144444444441111
+                    1111441114444444444f11114144444444444111
+                    1111f11444444444f44441111144444444444411
+                    1111414444444f4f4444f1111144444444444441
+                    11111f444444f4f4444444111144444444444441
+                    111111f4444f4f4444444f111144444444444441
+                    11111114ff444444444444f11114444444444441
+                    11111111111f4444444444441114444444444441
+                    11111111111444444444444f1111444444444441
+                    111111111144144f44444444f111114444444411
+                    111111111ff111f1144444444f11111f44444411
+                    1111111f44f111411444f444444111f444411111
+                    111111f114f11411144f444444f11f4444411111
+                    1111141114f11f1444f444444444444444111111
+                    11111f1444f114444f444144444f44444f111111
+                    111114444f41114ff14f1444444f4444f1111111
+                    1111114f41141111111f1444444f444f11111111
+                    11111111111f111111114444444f44f111111111
+                    111111111111f1111111f44444f4ff1111111111
+                    1111111111111f1111111f4444ff111111111111
+                    11111111111111f4111144f44441111111111111
+                    111111111111111ff4444f44444f111111111111
+                    11111111111111f4444ff11f4444f11111111111
+                    1111111111111f4444f1111f44444f1111111111
+                    11111111111ff444444f111f444444f111111111
+                    1111111111f44444444f111f4444444f11111111
+                    111111111f44444f444f1111f4f44444f1111111
+                    111111111f4f44f44ff11111f44f44f4f1111111
+                    11111111114fffff411111111fffffff11111111
+                `, SpriteKind.Creature)
             case 5:
                 return sprites.create(img`
                             111111111111111111111111111111111111111111111111

@@ -4,7 +4,7 @@ namespace SpriteKind {
 }
 controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
     if (!(creatures.trainerInBattle(myTrainer))) {
-        creatures.openParty()
+        creatures.openPauseMenu()
     }
 })
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile`, function (sprite, location) {
